@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+const tailwindConfig = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -8,10 +8,25 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: "#bcee45",
+        background: "#000000",
+        foreground: "#ffffff",
+        muted: {
+          DEFAULT: "#171717",
+          foreground: "#a3a3a3",
+        },
+        card: {
+          DEFAULT: "#111111",
+          foreground: "#ffffff",
+        },
+        border: "#262626",
+      },
+      fontFamily: {
+        sans: ["var(--font-poppins)", "sans-serif"],
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
+
+export default tailwindConfig;
