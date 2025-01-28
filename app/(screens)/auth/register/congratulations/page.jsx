@@ -1,11 +1,14 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Star, Sparkles } from 'lucide-react';
 import { useWindowSize } from 'react-use'
 import Confetti from 'react-confetti'
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { BackgroundBeamsWithCollision } from '@/components/background-beams-with-collision';
+import { BackgroundLines } from '@/components/background-lines';
 
 const LoadingScreen = ({ progress }) => (
   <motion.div 
@@ -72,23 +75,34 @@ const CongratulationsPage = () => {
   const [showLoader, setShowLoader] = useState(false);
   const [progress, setProgress] = useState(0);
   const router = useRouter();
+  const [isRunning, setIsRunning] = useState(true);
+
+
 
   const confettiConfig = {
     width,
     height,
-    recycle: true,
+    // recycle: true,
     numberOfPieces: 100,
-    colors: ['#bcee45', '#000000'],
-    gravity: 0.2,
-    initialVelocityY: { min: -15, max: -5 },
-    initialVelocityX: { min: -5, max: 5 },
+    // gravity: 0.2,
+    // initialVelocityY: { min: -15, max: -5 },
+    // initialVelocityX: { min: -5, max: 5 },
     confettiSource: { x: width/2, y: height/4 },
-    run: true
+    // tweenDuration: 3000,
+    // run: true
   }
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsRunning(false);
+    }, 4000); // Run confetti for 4 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleGetStarted = () => {
     setShowLoader(true);
-
     const timer = setInterval(() => {
       setProgress(prev => {
         if (prev >= 50) {
@@ -101,6 +115,7 @@ const CongratulationsPage = () => {
         return prev + 1;
       });
     }, 50);
+ 
   };
 
   return (
@@ -108,8 +123,10 @@ const CongratulationsPage = () => {
       {showLoader ? (
         <LoadingScreen progress={progress} />
       ) : (
-        <div className="min-h-screen bg-primary flex flex-col items-center justify-between pt-16 pb-[90px] px-6">
+        <div className="min-h-screen bg-black flex flex-col items-center justify-between pt-16 pb-[90px] px-6">
+
           <Confetti {...confettiConfig} />
+
           <motion.div 
             className="flex flex-col items-center text-center space-y-2"
             initial={{ opacity: 0, y: 20 }}
@@ -117,22 +134,24 @@ const CongratulationsPage = () => {
             transition={{ duration: 0.6 }}
           >
             <motion.div 
-              className="w-32 h-32 bg-black rounded-full flex items-center justify-center mb-8"
+              className="w-52 h-2  rounded-full flex items-center justify-center mb-8"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
             >
               <div className="relative">
-                <Star className="w-16 h-16 text-primary" />
+                <Image src={"/starrd-logo.png"} alt='logo' height={200} width={200} />
                 <motion.div
                   className="absolute -top-2 -right-2"
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ repeat: Infinity, duration: 2 }}
                 >
-                  <Sparkles className="w-6 h-6 text-primary" />
+                  <Sparkles className="w-6 h-6 text-black" />
                 </motion.div>
               </div>
             </motion.div>
+            {/* <BackgroundLines> */}
+            <BackgroundBeamsWithCollision>
 
             <motion.div
               initial={{ opacity: 0 }}
@@ -140,13 +159,13 @@ const CongratulationsPage = () => {
               transition={{ delay: 0.6 }}
               className="space-y-4"
             >
-              <h1 className="text-4xl font-bold">
+              <h1 className="text-4xl  text-primary font-bold">
                 Congratulations!
                 <br />
-                <span className="text-5xl font-extrabold relative">
+                <span className="text-5xl text-primary font-extrabold relative">
                   You're In
                   <motion.div
-                    className="absolute -right-8 top-0"
+                    className="absolute -right-20 top-0"
                     animate={{ rotate: [0, 15, 0] }}
                     transition={{ repeat: Infinity, duration: 2 }}
                   >
@@ -155,35 +174,50 @@ const CongratulationsPage = () => {
                 </span>
               </h1>
               
-              <p className="text-lg text-black/70 max-w-md mx-auto">
+              <p className="text-lg text-gray-400 pb-4 max-w-md mx-auto">
                 Welcome to the creator community. Let's start building your amazing presence!
               </p>
             </motion.div>
+            </BackgroundBeamsWithCollision>
+            {/* </BackgroundLines> */}
 
-            <motion.div 
-              className="grid grid-cols-2 gap-4 mt-8 mb-0 max-w-md w-full"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }}
-            >
-              {[
-                { icon: "🎯", text: "Targeted Growth" },
-                { icon: "💫", text: "Brand Building" },
-                { icon: "📊", text: "Analytics" },
-                { icon: "🤝", text: "Collaborations" }
-              ].map((feature, index) => (
-                <motion.div
-                  key={index}
-                  className="bg-black/5 p-4 rounded-2xl text-center"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  <div className="text-2xl mb-2">{feature.icon}</div>
-                  <div className="text-sm font-medium">{feature.text}</div>
-                </motion.div>
-              ))}
-            </motion.div>
+
           </motion.div>
+          <div className="relative block md:hidden w-full h-[200px] sm:h-[400px] pt-8">
+
+          <motion.div
+        initial={{ opacity: 0, x: -100, rotate: -20 }}
+        animate={{ opacity: 1, x: 0, rotate: -10 }}
+        transition={{ delay: 0.2 }}
+        className="absolute bottom-14 left-8 w-40 h-56 rounded-2xl overflow-hidden shadow-lg transform -rotate-6"
+      >
+        <div className="w-full h-full bg-black p-1 rounded-2xl">
+          <Image
+            src={"/pixar-2.jpg"}
+            alt="welcome"
+            fill
+            className="object-cover rounded-xl"
+          />
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, x: 100, rotate: 10 }}
+        animate={{ opacity: 1, x: 0, rotate: 5 }}
+        transition={{ delay: 0.3 }}
+        className="absolute bottom-14 right-8 w-40 h-56 rounded-2xl overflow-hidden shadow-lg transform rotate-6"
+      >
+        <div className="w-full h-full bg-black p-1 rounded-2xl">
+          <Image
+            src={"/pixar-1.jpg"}
+            alt="welcome"
+            fill
+            className="object-cover rounded-xl"
+          />
+        </div>
+      </motion.div>
+      </div>  
+
 
           <motion.div
             className="w-full max-w-md"
@@ -192,7 +226,7 @@ const CongratulationsPage = () => {
             transition={{ delay: 1.2 }}
           >
             <Button 
-              className="w-full bg-black text-primary hover:bg-black/90 text-lg py-6 rounded-3xl"
+              className="w-full bg-primary text-black hover:bg-primary/90 text-lg py-6 rounded-3xl"
               onClick={handleGetStarted}
             >
               GO TO DASHBOARD
