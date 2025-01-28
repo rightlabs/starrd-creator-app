@@ -1,34 +1,35 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
 import Image from "next/image";
-import image from "@/public/image-1.jpg";
+import image1 from "@/public/welcome-1.jpg";
+import image2 from "@/public/welcome-2.jpg";
 
 const slides = [
   {
     title: "Shape Your Story",
     subtitle: "Let's build a stunning media kit that showcases your unique creator journey",
     button: "Let's Begin",
-    url: image,
+    image1: image1,
+    image2:image2,
     images: true,
   },
   {
     title: "Stand Out to Brands",
     subtitle: "Your influence deserves recognition. Let's highlight your true impact",
     button: "Continue",
-    url: image,
-    images: true,
+    image1: image1,
+    image2:image2,    images: true,
   },
   {
     title: "Win Dream Collabs",
     subtitle: "Connect with brands that align with your authentic voice",
     button: "Get Started",
-    url: image,
-    images: true,
+    image1: image1,
+    image2:image2,    images: true,
   },
 ];
 
@@ -38,9 +39,9 @@ const WelcomeCarousel = () => {
 
   const handleButtonClick = () => {
     if (currentSlide === slides.length - 1) {
-      router.push("/auth/register"); // Redirect to the auth page
+      router.push("/auth/register");
     } else {
-      setCurrentSlide((prev) => prev + 1); // Move to the next slide
+      setCurrentSlide((prev) => prev + 1);
     }
   };
 
@@ -57,40 +58,61 @@ const WelcomeCarousel = () => {
         >
           <div className="h-100vh w-full relative flex flex-col px-8">
             <div className="flex flex-col h-full">
-              <div className="flex justify-center">
+              {/* Stacked Images Section */}
+              <div className="relative h-72 flex justify-center mt-8">
                 {slides[currentSlide].images && (
-                  <Image
-                    src={slides[currentSlide].url}
-                    alt="welcome"
-                    width={375}
-                    height={272}
-                    className="rounded-xl bg-primary"
-                  />
+                  <>
+                    <motion.div
+                      initial={{ opacity: 0, x: -100, rotate: -10 }}
+                      animate={{ opacity: 1, x: 0, rotate: -5 }}
+                      transition={{ delay: 0.2 }}
+                      className="absolute top-0 left-4 w-48 h-64 rounded-2xl overflow-hidden shadow-lg transform -rotate-6"
+                    >
+                      <div className="w-full h-full bg-black p-1 rounded-2xl">
+                        <Image
+                          src={slides[currentSlide].image1}
+                          alt="welcome"
+                          fill
+                          className="object-cover rounded-xl"
+                        />
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, x: 100, rotate: 10 }}
+                      animate={{ opacity: 1, x: 0, rotate: 5 }}
+                      transition={{ delay: 0.3 }}
+                      className="absolute top-0 right-4 w-48 h-64 rounded-2xl overflow-hidden shadow-lg transform rotate-6"
+                    >
+                      <div className="w-full h-full bg-black p-1 rounded-2xl">
+                        <Image
+                          src={slides[currentSlide].image2}
+                          alt="welcome"
+                          fill
+                          className="object-cover rounded-xl"
+                        />
+                      </div>
+                    </motion.div>
+                  </>
                 )}
               </div>
 
-              <div className="flex-1 flex flex-col items-center" style={{ paddingTop: "20%" }}>
-                <motion.div
-                  className="w-20 h-20 bg-black/10 rounded-3xl flex items-center justify-center"
-                >
-                  <Camera className="w-10 h-10 text-black" />
-                </motion.div>
+              <div className="flex-1 flex flex-col items-center" style={{ paddingTop: "10%" }}>
+           
 
                 <div className="flex gap-2 mt-8 mb-16">
                   {slides.map((_, index) => (
                     <div
                       key={index}
                       className={`w-3 h-3 rounded-full transition-colors shadow-md border border-black ${
-                        index === currentSlide
-                          ? "bg-black"
-                          : "bg-black/30"
+                        index === currentSlide ? "bg-black" : "bg-black/30"
                       }`}
                     />
                   ))}
                 </div>
 
                 <div className="text-center">
-                  <h1 className="text-5xl md:text-6xl font-extrabold mb-4">
+                  <h1 className="text-4xl font-extrabold mb-4">
                     {slides[currentSlide].title}
                   </h1>
                   <p className="text-lg text-black/90">
@@ -102,7 +124,7 @@ const WelcomeCarousel = () => {
               <div className="mt-4 mb-4">
                 <Button
                   onClick={handleButtonClick}
-                  className="w-full py-7 mb-30 bg-[#000] text-primary hover:bg-yellow/90 rounded-3xl text-lg font-semibold shadow-md"
+                  className="w-full py-7 bg-[#000] text-primary hover:bg-black/90 rounded-3xl text-lg font-semibold shadow-md"
                 >
                   {slides[currentSlide].button}
                 </Button>
