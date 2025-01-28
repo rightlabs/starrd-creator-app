@@ -38,7 +38,7 @@ const DashboardPage = () => {
                 className="relative"
               >
                 <div className="w-12 h-12 bg-[#1A1A1A] border border-[#333333] rounded-full flex items-center justify-center hover:border-[#bcee45]/50 transition-colors">
-                  <Bell className="w-6 h-6 text-[#bcee45]" />
+                 <Link href="/notifications"> <Bell className="w-6 h-6 text-[#bcee45]" /> </Link>
                   <span className="absolute -top-1 -right-1 bg-[#bcee45] text-black w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold">
                     2
                   </span>
@@ -104,14 +104,17 @@ const DashboardPage = () => {
                   />
                 </div>
               </div>
-
+              <Link href="/complete-profile/hair-type">
               <motion.button
                 className="w-full mt-4 py-3 bg-gradient-to-r from-[#bcee45] to-[#9BC53D] text-black rounded-xl font-semibold hover:opacity-90 transition-opacity"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
+             
                 Complete Profile
               </motion.button>
+              </Link>
+
             </motion.div>
           </div>
 
@@ -195,7 +198,7 @@ const DashboardPage = () => {
 
               {/* Feedback Button */}
          
-            </div>
+            </div> <Link href="/send-feedback"> 
             <motion.button 
                 className="w-full p-4 mb-14  bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl flex items-center gap-3 text-[#888888] border border-[#333333] hover:border-[#bcee45]/20 transition-colors"
                 initial={{ y: 20, opacity: 0 }}
@@ -205,8 +208,9 @@ const DashboardPage = () => {
                 whileTap={{ scale: 0.98 }}
               >
                 <MessageSquare className="w-6 h-6" />
-                <span className="font-medium">Send Feedback</span>
+              <span className="font-medium">Send Feedback</span> 
               </motion.button>
+              </Link>
           </div>
           <PreviewButton />
           <Navbar />

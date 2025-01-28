@@ -15,7 +15,7 @@ const Navbar = () => {
     },
     { 
       icon: <MessageSquare className="w-6 h-6" />, 
-      label: 'Inbox', 
+      label: 'Enquiries', 
       path: '/inbox' 
     },
     { 
