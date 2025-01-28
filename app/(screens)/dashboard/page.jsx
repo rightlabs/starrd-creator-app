@@ -128,7 +128,7 @@ const DashboardPage = () => {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl font-serif mb-8 flex items-center gap-3"
+              className="text-4xl  mb-8 flex items-center gap-3"
             >
               Welcome{" "}
               <span className="bg-gradient-to-r from-[#1A1A1A] to-[#252525] text-[#bcee45] font-semibold rounded-2xl px-4 py-2 border border-[#333333] shadow-lg">
