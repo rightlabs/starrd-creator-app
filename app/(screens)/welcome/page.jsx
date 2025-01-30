@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Camera } from "lucide-react";
 import Image from "next/image";
 import image1 from "@/public/welcome-1.jpg";
 import image2 from "@/public/welcome-2.jpg";
@@ -14,7 +13,7 @@ const slides = [
     subtitle: "Let's build a stunning media kit that showcases your unique creator journey",
     button: "Let's Begin",
     image1: image1,
-    image2:image2,
+    image2: image2,
     images: true,
   },
   {
@@ -22,14 +21,16 @@ const slides = [
     subtitle: "Your influence deserves recognition. Let's highlight your true impact",
     button: "Continue",
     image1: image1,
-    image2:image2,    images: true,
+    image2: image2,
+    images: true,
   },
   {
     title: "Win Dream Collabs",
     subtitle: "Connect with brands that align with your authentic voice",
     button: "Get Started",
     image1: image1,
-    image2:image2,    images: true,
+    image2: image2,
+    images: true,
   },
 ];
 
@@ -47,25 +48,25 @@ const WelcomeCarousel = () => {
 
   return (
     <div className="min-h-screen flex bg-primary items-center justify-center rounded-3xl">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentSlide}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.5 }}
-          className="w-[375px] h-[812px] relative overflow-hidden"
-        >
-          <div className="h-100vh w-full relative flex flex-col px-8">
+      <div className="w-[375px] h-[812px] relative overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlide}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="h-100vh w-full relative flex flex-col px-8"
+          >
             <div className="flex flex-col h-full">
               {/* Stacked Images Section */}
               <div className="relative h-72 flex justify-center mt-8">
                 {slides[currentSlide].images && (
                   <>
                     <motion.div
-                      initial={{ opacity: 0, x: -100, rotate: -10 }}
+                      initial={{ opacity: 0, x: -50 }}
                       animate={{ opacity: 1, x: 0, rotate: -5 }}
-                      transition={{ delay: 0.2 }}
+                      transition={{ duration: 0.3 }}
                       className="absolute top-0 left-4 w-48 h-64 rounded-2xl overflow-hidden shadow-lg transform -rotate-6"
                     >
                       <div className="w-full h-full bg-black p-1 rounded-2xl">
@@ -79,9 +80,9 @@ const WelcomeCarousel = () => {
                     </motion.div>
 
                     <motion.div
-                      initial={{ opacity: 0, x: 100, rotate: 10 }}
+                      initial={{ opacity: 0, x: 50 }}
                       animate={{ opacity: 1, x: 0, rotate: 5 }}
-                      transition={{ delay: 0.3 }}
+                      transition={{ duration: 0.3 }}
                       className="absolute top-0 right-4 w-48 h-64 rounded-2xl overflow-hidden shadow-lg transform rotate-6"
                     >
                       <div className="w-full h-full bg-black p-1 rounded-2xl">
@@ -98,8 +99,6 @@ const WelcomeCarousel = () => {
               </div>
 
               <div className="flex-1 flex flex-col items-center" style={{ paddingTop: "10%" }}>
-           
-
                 <div className="flex gap-2 mt-8 mb-16">
                   {slides.map((_, index) => (
                     <div
@@ -111,14 +110,19 @@ const WelcomeCarousel = () => {
                   ))}
                 </div>
 
-                <div className="text-center">
+                <motion.div 
+                  className="text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <h1 className="text-4xl font-extrabold mb-4">
                     {slides[currentSlide].title}
                   </h1>
                   <p className="text-lg text-black/90">
                     {slides[currentSlide].subtitle}
                   </p>
-                </div>
+                </motion.div>
               </div>
 
               <div className="mt-4 mb-4">
@@ -130,9 +134,9 @@ const WelcomeCarousel = () => {
                 </Button>
               </div>
             </div>
-          </div>
-        </motion.div>
-      </AnimatePresence>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 };

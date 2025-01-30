@@ -82,7 +82,7 @@ const InboxPage = () => {
         </motion.div>
 
         {/* Tabs */}
-        <motion.div 
+        {/* <motion.div 
           className="flex gap-2 mt-6"
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -101,7 +101,7 @@ const InboxPage = () => {
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
-        </motion.div>
+        </motion.div> */}
       </div>
 
       {/* Messages List */}
@@ -120,9 +120,9 @@ const InboxPage = () => {
               }`}
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#1A1A1A] border border-[#333333] rounded-xl flex items-center justify-center text-2xl">
+                {/* <div className="w-12 h-12 bg-[#1A1A1A] border border-[#333333] rounded-xl flex items-center justify-center text-2xl">
                   {message.sender.avatar}
-                </div>
+                </div> */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-semibold text-white truncate">

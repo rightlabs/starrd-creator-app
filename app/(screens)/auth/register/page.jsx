@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Star, Phone, Loader2 } from 'lucide-react';
+import { Star, Phone, Loader2, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import image from "@/public/image-1.jpg";
@@ -45,8 +45,11 @@ const AuthPage = () => {
       toast.success('OTP sent successfully', {
         style: { 
           backgroundColor: '#000000',
-          color: '#bcee45'
+          color: '#ffffff',
+          borderRadius:"16px"
+          
         },
+        icon: <CheckCircle size={24} color="#00ff00" />,
       });
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to connect to server');
@@ -64,8 +67,11 @@ const AuthPage = () => {
       toast.success('Account Verified Successfully!', {
         style: { 
           backgroundColor: '#000000',
-          color: '#bcee45'
+          color: '#ffffff',
+          borderRadius:"16px"
+          
         },
+        icon: <CheckCircle size={24} color="#00ff00" />,
       });
       
       setTimeout(() => {
@@ -131,7 +137,7 @@ const AuthPage = () => {
                       id="terms"
                       checked={acceptedTerms}
                       onChange={(e) => setAcceptedTerms(e.target.checked)}
-                      className="rounded border-primary bg-transparent focus:ring-primary"
+                      className="rounded border-primary accent-primary bg-transparent focus:ring-primary"
                     />
                     <label htmlFor="terms" className="text-sm text-white">
                       I agree to{' '}

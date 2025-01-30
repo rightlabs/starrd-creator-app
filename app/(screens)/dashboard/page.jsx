@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Star, BarChart, Bell } from 'lucide-react';
+import { MessageSquare, Star, BarChart, Bell, Eye, Share2, Users, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import PreviewButton from '@/components/PreviewButton';
@@ -104,7 +104,7 @@ const DashboardPage = () => {
                   />
                 </div>
               </div>
-              <Link href="/complete-profile/hair-type">
+              <Link href="/complete-media-kit/intro">
               <motion.button
                 className="w-full mt-4 py-3 bg-gradient-to-r from-[#bcee45] to-[#9BC53D] text-black rounded-xl font-semibold hover:opacity-90 transition-opacity"
                 whileHover={{ scale: 1.02 }}
@@ -120,13 +120,7 @@ const DashboardPage = () => {
 
           {/* Welcome Section */}
           <div className="px-6 ">
-            <motion.h2 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="text-xl text-[#888888] mb-3"
-            >
-              Dashboard
-            </motion.h2>
+         
             <motion.h1 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -170,7 +164,7 @@ const DashboardPage = () => {
                           initial={{ rotate: 0 }}
                           whileHover={{ rotate: 360 }}
                           transition={{ duration: 0.6 }}
-                          className="text-[#bcee45]"
+                          className="text-[#bcee45]  w-14 h-14  flex items-center justify-center"
                         >
                           {item.icon}
                         </motion.div>
@@ -200,17 +194,48 @@ const DashboardPage = () => {
          
             </div> <Link href="/send-feedback"> 
             <motion.button 
-                className="w-full p-4 mb-14  bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl flex items-center gap-3 text-[#888888] border border-[#333333] hover:border-[#bcee45]/20 transition-colors"
+                className="w-full p-4 mb-10  bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl flex items-center gap-3 text-[#888888] border border-[#333333] hover:border-[#bcee45]/20 transition-colors"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.5 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <MessageSquare className="w-6 h-6" />
+               <div className="relative w-14 h-14 bg-gradient-to-br from-[#1A1A1A] to-[#252525] rounded-xl border border-[#bcee45]/20 flex items-center justify-center">
+                  <MessageSquare className="w-7 h-7 text-[#bcee45]" />
+                </div>
               <span className="font-medium">Send Feedback</span> 
               </motion.button>
               </Link>
+                   {/* Recent Activity */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4 mb-14"
+        >
+          <h3 className="text-lg font-bold">Recent Activity</h3>
+          {[
+            { action: 'Profile viewed mb-14by Nike', time: '2 hours ago', icon: Eye },
+            { action: 'Media Kit shared', time: '5 hours ago', icon: Share2 },
+            { action: 'New follower gained', time: '1 day ago', icon: Users }
+          ].map((activity, index) => (
+            <div
+              key={index}
+              className="p-4 bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333] flex items-center justify-between"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#bcee45]/10 flex items-center justify-center">
+                  <activity.icon className="w-5 h-5 text-[#bcee45]" />
+                </div>
+                <div>
+                  <div className="font-medium">{activity.action}</div>
+                  <div className="text-sm text-[#888888]">{activity.time}</div>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-[#888888]" />
+            </div>
+          ))}
+        </motion.div>
           </div>
           <PreviewButton />
           <Navbar />

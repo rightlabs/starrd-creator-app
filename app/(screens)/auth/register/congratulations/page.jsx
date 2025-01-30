@@ -2,13 +2,96 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Star, Sparkles } from 'lucide-react';
-import { useWindowSize } from 'react-use'
-import Confetti from 'react-confetti'
+import { Star, Sparkles, Zap, Users, Crown, Rocket } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { BackgroundBeamsWithCollision } from '@/components/background-beams-with-collision';
-import { BackgroundLines } from '@/components/background-lines';
+
+// Confetti animation function
+const fireConfetti = () => {
+  const duration = 3000;
+  const animationEnd = Date.now() + duration;
+  const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+  const randomInRange = (min, max) => {
+    return Math.random() * (max - min) + min;
+  }
+
+  const interval = setInterval(() => {
+    const timeLeft = animationEnd - Date.now();
+
+    if (timeLeft <= 0) {
+      return clearInterval(interval);
+    }
+
+    const particleCount = 50 * (timeLeft / duration);
+
+    // Green confetti burst
+    confetti({
+      ...defaults,
+      particleCount,
+      colors: ['#bcee45', '#90ff45'],
+      origin: { x: randomInRange(0.2, 0.4), y: randomInRange(0.5, 0.7) }
+    });
+
+    // White confetti burst
+    confetti({
+      ...defaults,
+      particleCount,
+      colors: ['#ffffff', '#f0f0f0'],
+      origin: { x: randomInRange(0.6, 0.8), y: randomInRange(0.5, 0.7) }
+    });
+
+  }, 250);
+};
+
+const FloatingSparkles = () => {
+  return (
+    <>
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ 
+            opacity: [0.5, 1, 0.5], 
+            scale: [0.5, 1, 0.5],
+            y: [0, -20, 0],
+            x: [0, Math.random() * 20 - 10, 0]
+          }}
+          transition={{
+            duration: 2 + Math.random() * 2,
+            repeat: Infinity,
+            delay: i * 0.4
+          }}
+          style={{
+            left: `${20 + i * 10}%`,
+            top: `${30 + (i % 3) * 20}%`
+          }}
+        >
+          <Sparkles className="w-4 h-4 text-primary/40" />
+        </motion.div>
+      ))}
+    </>
+  );
+};
+
+const FeatureCard = ({ icon: Icon, title, description, delay }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay }}
+    className="bg-black/40 backdrop-blur-sm border border-primary/20 rounded-2xl p-4 flex items-start gap-3 hover:border-primary/40 transition-colors"
+  >
+    <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+      <Icon className="w-5 h-5 text-primary" />
+    </div>
+    <div>
+      <h3 className="text-white text-sm font-semibold mb-0.5">{title}</h3>
+      <p className="text-gray-400 text-xs leading-relaxed">{description}</p>
+    </div>
+  </motion.div>
+);
 
 const LoadingScreen = ({ progress }) => (
   <motion.div 
@@ -70,35 +153,15 @@ const LoadingScreen = ({ progress }) => (
     </motion.p>  </motion.div>
 );
 
+
 const CongratulationsPage = () => {
-  const { width, height } = useWindowSize()
   const [showLoader, setShowLoader] = useState(false);
   const [progress, setProgress] = useState(0);
   const router = useRouter();
-  const [isRunning, setIsRunning] = useState(true);
-
-
-
-  const confettiConfig = {
-    width,
-    height,
-    // recycle: true,
-    numberOfPieces: 100,
-    // gravity: 0.2,
-    // initialVelocityY: { min: -15, max: -5 },
-    // initialVelocityX: { min: -5, max: 5 },
-    confettiSource: { x: width/2, y: height/4 },
-    // tweenDuration: 3000,
-    // run: true
-  }
-
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsRunning(false);
-    }, 4000); // Run confetti for 4 seconds
-
-    return () => clearTimeout(timer);
+    // Fire confetti on component mount
+    fireConfetti();
   }, []);
 
   const handleGetStarted = () => {
@@ -112,10 +175,9 @@ const CongratulationsPage = () => {
           }, 500);
           return 50;
         }
-        return prev + 1;
+        return prev + 2;
       });
     }, 50);
- 
   };
 
   return (
@@ -123,115 +185,129 @@ const CongratulationsPage = () => {
       {showLoader ? (
         <LoadingScreen progress={progress} />
       ) : (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-between pt-16 pb-[90px] px-6">
+        <div className="relative min-h-screen bg-gradient-to-b from-black via-black/95 to-black overflow-hidden">
+          {/* Background Effects */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(188,238,69,0.15),rgba(0,0,0,0.9))]" />
+            <FloatingSparkles />
+          </div>
 
-          <Confetti {...confettiConfig} />
-
-          <motion.div 
-            className="flex flex-col items-center text-center space-y-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <div className="relative px-6  flex flex-col min-h-screen">
+            {/* Logo Section */}
             <motion.div 
-              className="w-52 h-2  rounded-full flex items-center justify-center mb-8"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+              className="flex flex-col items-center text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
             >
-              <div className="relative">
-                <Image src={"/starrd-logo.png"} alt='logo' height={200} width={200} />
+              <motion.div 
+                className="relative w-44 h-44 mb-2"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+              >
+                <Image
+                  src="/starrd-logo.png"
+                  alt="Starrd Logo"
+                  fill
+                  className="object-contain"
+                />
+              
+              </motion.div>
+
+              {/* Main Text */}
+              <motion.div
+                className="space-y-2 mb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">
+                  Congratulations!
+                  <br />
+                  <span className="text-4xl font-extrabold">
+                    You're In
+                  </span>
+                </h1>
+{/*                 
+                <p className="text-sm text-gray-400 max-w-[280px] mx-auto leading-relaxed">
+                  Welcome to the creator community. Let's start building your amazing presence!
+                </p> */}
+              </motion.div>
+
+              {/* Feature Cards */}
+              <div className="grid grid-cols-1 gap-2 w-full mb-4">
+                <FeatureCard
+                  icon={Rocket}
+                  title="Launch Your Creator Journey"
+                  description="Build a stunning media kit that makes you stand out from the crowd"
+                  delay={0.8}
+                />
+                <FeatureCard
+                  icon={Star}
+                  title="Shine with Your Work"
+                  description="Showcase your best content and achievements to potential partners"
+                  delay={0.9}
+                />
+              </div>
+
+              {/* Image Cards */}
+              <div className="relative w-full h-36 ">
                 <motion.div
-                  className="absolute -top-2 -right-2"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
+                  initial={{ opacity: 0, x: -50, rotate: -10 }}
+                  animate={{ opacity: 1, x: 0, rotate: -6 }}
+                  whileHover={{ scale: 1.05, rotate: -4 }}
+                  transition={{ delay: 1.0 }}
+                  className="absolute left-4 w-36 h-44 rounded-2xl overflow-hidden shadow-lg transform -rotate-6"
                 >
-                  <Sparkles className="w-6 h-6 text-black" />
+                  <div className="w-full h-full bg-black p-1 rounded-2xl">
+                    <div className="relative w-full h-full overflow-hidden rounded-xl">
+                      <Image
+                        src="/pixar-2.jpg"
+                        alt="Creator"
+                        fill
+                        className="object-cover rounded-xl hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 50, rotate: 10 }}
+                  animate={{ opacity: 1, x: 0, rotate: 6 }}
+                  whileHover={{ scale: 1.05, rotate: 4 }}
+                  transition={{ delay: 1.2 }}
+                  className="absolute right-4 w-36 h-44 rounded-2xl overflow-hidden shadow-lg transform rotate-6"
+                >
+                  <div className="w-full h-full bg-black p-1 rounded-2xl">
+                    <div className="relative w-full h-full overflow-hidden rounded-xl">
+                      <Image
+                        src="/pixar-1.jpg"
+                        alt="Creator"
+                        fill
+                        className="object-cover rounded-xl hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
+                  </div>
                 </motion.div>
               </div>
             </motion.div>
-            {/* <BackgroundLines> */}
-            <BackgroundBeamsWithCollision>
 
+            {/* CTA Button */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="space-y-4"
+              className="w-full mt-20"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.4 }}
             >
-              <h1 className="text-4xl  text-primary font-bold">
-                Congratulations!
-                <br />
-                <span className="text-5xl text-primary font-extrabold relative">
-                  You're In
-                  <motion.div
-                    className="absolute -right-20 top-0"
-                    animate={{ rotate: [0, 15, 0] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                  >
-                    🎉
-                  </motion.div>
-                </span>
-              </h1>
-              
-              <p className="text-lg text-gray-400 pb-4 max-w-md mx-auto">
-                Welcome to the creator community. Let's start building your amazing presence!
-              </p>
+              <Button 
+                className="w-full bg-gradient-to-r from-primary to-[#90ff45] text-black hover:opacity-90 text-base py-6 rounded-3xl font-bold shadow-xl shadow-primary/20"
+                onClick={handleGetStarted}
+              >
+                GO TO DASHBOARD
+              </Button>
             </motion.div>
-            </BackgroundBeamsWithCollision>
-            {/* </BackgroundLines> */}
-
-
-          </motion.div>
-          <div className="relative block md:hidden w-full h-[200px] sm:h-[400px] pt-8">
-
-          <motion.div
-        initial={{ opacity: 0, x: -100, rotate: -20 }}
-        animate={{ opacity: 1, x: 0, rotate: -10 }}
-        transition={{ delay: 0.2 }}
-        className="absolute bottom-14 left-8 w-40 h-56 rounded-2xl overflow-hidden shadow-lg transform -rotate-6"
-      >
-        <div className="w-full h-full bg-black p-1 rounded-2xl">
-          <Image
-            src={"/pixar-2.jpg"}
-            alt="welcome"
-            fill
-            className="object-cover rounded-xl"
-          />
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, x: 100, rotate: 10 }}
-        animate={{ opacity: 1, x: 0, rotate: 5 }}
-        transition={{ delay: 0.3 }}
-        className="absolute bottom-14 right-8 w-40 h-56 rounded-2xl overflow-hidden shadow-lg transform rotate-6"
-      >
-        <div className="w-full h-full bg-black p-1 rounded-2xl">
-          <Image
-            src={"/pixar-1.jpg"}
-            alt="welcome"
-            fill
-            className="object-cover rounded-xl"
-          />
-        </div>
-      </motion.div>
-      </div>  
-
-
-          <motion.div
-            className="w-full max-w-md"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2 }}
-          >
-            <Button 
-              className="w-full bg-primary text-black hover:bg-primary/90 text-lg py-6 rounded-3xl"
-              onClick={handleGetStarted}
-            >
-              GO TO DASHBOARD
-            </Button>
-          </motion.div>
+          </div>
         </div>
       )}
     </AnimatePresence>

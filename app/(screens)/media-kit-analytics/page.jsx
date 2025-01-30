@@ -88,7 +88,6 @@ const MediaKitAnalytics = () => {
                   <div className="text-sm text-[#888888]">{metric.label}</div>
                   <div className="text-xl font-bold">{metric.value}</div>
                 </div>
-                <div className="text-sm text-[#bcee45]">{metric.change}</div>
               </div>
             </motion.div>
           ))}
@@ -190,35 +189,7 @@ const MediaKitAnalytics = () => {
           </div>
         </motion.div>
 
-        {/* Recent Activity */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
-        >
-          <h3 className="text-lg font-bold">Recent Activity</h3>
-          {[
-            { action: 'Profile viewed by Nike', time: '2 hours ago', icon: Eye },
-            { action: 'Media Kit shared', time: '5 hours ago', icon: Share2 },
-            { action: 'New follower gained', time: '1 day ago', icon: Users }
-          ].map((activity, index) => (
-            <div
-              key={index}
-              className="p-4 bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333] flex items-center justify-between"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#bcee45]/10 flex items-center justify-center">
-                  <activity.icon className="w-5 h-5 text-[#bcee45]" />
-                </div>
-                <div>
-                  <div className="font-medium">{activity.action}</div>
-                  <div className="text-sm text-[#888888]">{activity.time}</div>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-[#888888]" />
-            </div>
-          ))}
-        </motion.div>
+   
       </div>
 
       <Navbar />

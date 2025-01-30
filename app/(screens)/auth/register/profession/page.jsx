@@ -117,10 +117,10 @@ const CategoryCard = ({ category, isSelected, onClick }) => (
     <div className="flex items-center gap-3">
       <span className="text-2xl">{category.icon}</span>
       <div>
-        <h3 className={`font-semibold ${isSelected ? 'text-black' : 'text-primary'}`}>
+        <h3 className={`font-semibold ${isSelected ? 'text-black' : 'text-white'}`}>
           {category.title}
         </h3>
-        <p className={`text-sm ${isSelected ? 'text-black/70' : 'text-primary/60'}`}>
+        <p className={`text-sm ${isSelected ? 'text-black/70' : 'text-gray-600'}`}>
           {category.description}
         </p>
       </div>
@@ -154,7 +154,13 @@ const CreatorType = () => {
     try {
       setLoading(true);
       toast.success('Categories saved successfully!', {
-        style: { backgroundColor: '#000000', color: '#bcee45' },
+        style: { 
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          borderRadius:"16px"
+          
+        },
+        icon: <CheckCircle size={24} color="#00ff00" />,
       });
       setTimeout(() => {
         window.location.href = '/auth/register/connect-socials';
@@ -199,10 +205,10 @@ const CreatorType = () => {
           className="space-y-6"
         >
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-primary">
+            <h1 className="text-3xl font-bold text-white">
               What type of creator are you?
             </h1>
-            <p className="text-primary/60">
+            <p className="text-gray-600">
               Select all that apply to you
             </p>
           </div>
