@@ -9,40 +9,66 @@ import Image from 'next/image';
 
 // Confetti animation function
 const fireConfetti = () => {
-  const duration = 3000;
-  const animationEnd = Date.now() + duration;
-  const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+  const end = Date.now() + 1000; // Run for 2 seconds
 
-  const randomInRange = (min, max) => {
-    return Math.random() * (max - min) + min;
-  }
-
+  // Create a more rapid interval for continuous effect
   const interval = setInterval(() => {
-    const timeLeft = animationEnd - Date.now();
-
-    if (timeLeft <= 0) {
+    if (Date.now() > end) {
       return clearInterval(interval);
     }
 
-    const particleCount = 50 * (timeLeft / duration);
-
-    // Green confetti burst
+    // Launch multiple confetti bursts from different positions
     confetti({
-      ...defaults,
-      particleCount,
-      colors: ['#bcee45', '#90ff45'],
-      origin: { x: randomInRange(0.2, 0.4), y: randomInRange(0.5, 0.7) }
+      particleCount: 15,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.65 },
+      colors: ['#bcee45', '#ffffff'],
+      ticks: 200,
+      gravity: 1.2,
+      scalar: 1.2,
+      drift: 0
     });
 
-    // White confetti burst
     confetti({
-      ...defaults,
-      particleCount,
-      colors: ['#ffffff', '#f0f0f0'],
-      origin: { x: randomInRange(0.6, 0.8), y: randomInRange(0.5, 0.7) }
+      particleCount: 15,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.65 },
+      colors: ['#bcee45', '#ffffff'],
+      ticks: 200,
+      gravity: 1.2,
+      scalar: 1.2,
+      drift: 0
     });
 
-  }, 250);
+    // Add some random bursts in the middle
+    if (Math.random() > 0.5) {
+      confetti({
+        particleCount: 15,
+        angle: 90,
+        spread: 360,
+        origin: { x: 0.5, y: 0.65 },
+        colors: ['#bcee45', '#ffffff'],
+        ticks: 200,
+        gravity: 1,
+        scalar: 1.2,
+        drift: 0
+      });
+    }
+  }, 50); // Run every 50ms for more continuous effect
+
+  // Fire initial bursts
+  confetti({
+    particleCount: 30,
+    spread: 70,
+    origin: { y: 0.9 },
+    colors: ['#bcee45', '#ffffff'],
+    ticks: 200,
+    gravity: 1,
+    scalar: 1.2,
+    drift: 0
+  });
 };
 
 const FloatingSparkles = () => {

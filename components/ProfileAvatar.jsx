@@ -17,13 +17,12 @@ const ProfileAvatar = ({
   return (
     <div className="relative w-32 h-32">
       {/* SVG Progress Ring */}
-      <svg
+      {/* <svg
         width={size}
         height={size}
         viewBox={`0 0 ${size} ${size}`}
         className="absolute top-0 left-0 -rotate-90"
       >
-        {/* Background circle */}
         <circle
           cx={center}
           cy={center}
@@ -33,7 +32,6 @@ const ProfileAvatar = ({
           strokeWidth={strokeWidth}
         />
         
-        {/* Progress circle with gradient */}
         <defs>
           <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#bcee45" />
@@ -54,7 +52,7 @@ const ProfileAvatar = ({
           animate={{ strokeDashoffset }}
           transition={{ duration: 1.5, ease: "easeInOut" }}
         />
-      </svg>
+      </svg> */}
 
       {/* Avatar Container */}
       <motion.div 

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, X, Search } from 'lucide-react';
+import { ArrowLeft, X, Search, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -242,7 +242,7 @@ const CreatorType = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={selectedCategories.length === 0 ? "Search creator types..." : ""}
-                className="flex-1 min-w-[120px] bg-transparent text-primary placeholder-primary/40 outline-none text-sm h-8"
+                className="flex-1 min-w-[120px] bg-transparent text-primary placeholder-white/40 outline-none text-sm h-8"
               />
             </div>
           </div>
