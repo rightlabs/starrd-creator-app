@@ -82,7 +82,7 @@ const FeatureCard = ({ item, index }) => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-4 py-2 bg-[#bcee45] text-black rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-[#bcee45]/90 transition-colors"
+                  className="px-4 py-2 h-10 w-28 bg-[#bcee45] text-black rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-[#bcee45]/90 transition-colors"
                 >
                   {item.buttonText || 'Manage'}
                   <ChevronRight className="w-4 h-4" />
@@ -106,10 +106,7 @@ const FeatureCards = () => {
       badge: 'Popular',
       tags: ['Creator Tools'],
       link: '/edit-media-kit',
-      stats: [
-        { label: 'Views', value: '2.5K' },
-        { label: 'Saves', value: '128' }
-      ],
+   
       buttonText: 'Edit Kit'
     },
     {
@@ -124,7 +121,7 @@ const FeatureCards = () => {
         { label: 'Profile Views', value: '850' },
         { label: 'Brand Clicks', value: '42' }
       ],
-      buttonText: 'View Stats'
+      buttonText: ' Stats'
     }
   ];
 

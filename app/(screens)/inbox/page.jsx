@@ -97,7 +97,7 @@ const InboxPage = () => {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 * index }}
-                className={`p-4 rounded-2xl border transition-all hover:border-[#bcee45]/20 ${
+                className={`p-4 m-2 rounded-2xl border transition-all hover:border-[#bcee45]/20 ${
                   message.unread
                     ? 'bg-[#1A1A1A]/60 backdrop-blur-md border-[#333333]'
                     : 'bg-[#1A1A1A]/40 border-[#333333]/50'
