@@ -1,13 +1,16 @@
 'use client';
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Ruler, User, Globe, PawPrint } from 'lucide-react';
 import Link from 'next/link';
 import { StepCompletion } from '@/components/MediaKitStepCompletion';
 import { LanguageSlide } from '@/components/LanguagesSlide';
+import HeightInputSlide from '@/components/HeightSlide';
+import EnhancedHeader from '@/components/MediaKitHeader';
 
 const totalSteps = 6;
-const currentMainStep = 5; // Personal Info is step 5
+const currentMainStep = 6;
 
 const hairTypes = [
   { id: 'straight', label: 'Straight', icon: '💇‍♂️' },
@@ -54,16 +57,6 @@ const bodyTypes = [
     icon: '🔒'
   }
 ];
-const languages = [
-  { id: 'english', label: 'English' },
-  { id: 'spanish', label: 'Spanish' },
-  { id: 'french', label: 'French' },
-  { id: 'german', label: 'German' },
-  { id: 'hindi', label: 'Hindi' },
-  { id: 'chinese', label: 'Chinese' },
-  { id: 'japanese', label: 'Japanese' },
-  { id: 'korean', label: 'Korean' }
-];
 
 const petTypes = [
   { id: 'dog', label: 'Dogs', icon: '🐕' },
@@ -81,9 +74,15 @@ const slides = [
     icon: User
   },
   {
-    id: 'body-height',
-    title: 'Height & Body Type',
-    description: 'Enter your height and body type',
+    id: 'height',
+    title: "What's your height?",
+    description: 'Enter your height',
+    icon: Ruler
+  },
+  {
+    id: 'body-type',
+    title: 'Body Type',
+    description: 'Select your body type',
     icon: Ruler
   },
   {
@@ -100,25 +99,26 @@ const slides = [
   }
 ];
 
-const SelectionCard = ({ icon:Icon, label, selected, onClick, description }) => (
+const SelectionCard = ({ icon: Icon, label, selected, onClick, description }) => (
   <motion.button
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
-    className={`p-6 rounded-2xl  bg-[#1A1A1A]/60 backdrop-blur-md border ${
+    className={`p-6 rounded-2xl bg-[#1A1A1A]/60 backdrop-blur-md border ${
       selected
         ? 'border-[#bcee45] bg-[#bcee45]/10'
         : 'border-[#bcee45]/20'
     } transition-all w-full text-left`}
   >
     <div className="flex items-center gap-4">
-    <div className="text-3xl">
+      <div className="text-3xl">
         {typeof Icon === 'string' ? (
-          Icon // If it's an emoji string
+          Icon
         ) : (
-          <Icon className="w-8 h-8 text-[#bcee45]" /> // If it's a Lucide icon component
+          <Icon className="w-8 h-8 text-[#bcee45]" />
         )}
-      </div>      <div>
+      </div>
+      <div>
         <h3 className="text-white font-medium">{label}</h3>
         {description && (
           <p className="text-gray-400 text-sm">{description}</p>
@@ -159,10 +159,12 @@ const PersonalInfoPage = () => {
       case 0:
         return formData.hairType;
       case 1:
-        return formData.height && formData.bodyType;
+        return formData.height;
       case 2:
-        return formData.languages.length > 0;
+        return formData.bodyType;
       case 3:
+        return formData.languages.length > 0;
+      case 4:
         return formData.petType;
       default:
         return false;
@@ -178,30 +180,12 @@ const PersonalInfoPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
       {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-6 bg-black/40 backdrop-blur-lg border-b border-[#bcee45]/10 sticky top-0 z-50"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/complete-media-kit/pricing">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-10 h-10 bg-black border border-[#bcee45]/20 rounded-xl flex items-center justify-center hover:border-[#bcee45] transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 text-[#bcee45]" />
-              </motion.button>
-            </Link>
-            <div>
-              <h1 className="text-xl font-bold text-white">Personal Info</h1>
-              <p className="text-sm text-[#bcee45]/60">Step {currentMainStep} of {totalSteps}</p>
-            </div>
-          </div>
-          <SlideIndicator currentSlide={currentSlide} totalSlides={slides.length} />
-        </div>
-      </motion.div>
+      <EnhancedHeader
+        currentStep={currentMainStep} 
+        currentSlide={currentSlide}
+        totalSteps={totalSteps}
+        onBackClick={setCurrentSlide}
+      />
 
       {/* Progress Bar */}
       <div className="w-full h-1 bg-[#bcee45]/10">
@@ -247,52 +231,44 @@ const PersonalInfoPage = () => {
               </div>
             )}
 
-            {/* Height & Body Type Slide */}
+            {/* Height Slide */}
             {currentSlide === 1 && (
-  <div className="space-y-6">
-    <div>
-      <label className="text-sm font-medium text-white block mb-2">Height</label>
-      <input
-        type="number"
-        value={formData.height}
-        onChange={(e) => setFormData(prev => ({ ...prev, height: e.target.value }))}
-        placeholder="Height in cm"
-        className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
-      />
-    </div>
-    <div className="grid grid-cols-1 gap-4">
-      {bodyTypes.map(type => (
-        <SelectionCard
-          key={type.id}
-          icon={type.icon}
-          label={type.label}
-          description={type.description}
-          selected={formData.bodyType === type.id}
-          onClick={() => setFormData(prev => ({ ...prev, bodyType: type.id }))}
-        />
-      ))}
-    </div>
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.6 }}
-      className="p-4 bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333] mb-8"
-    >
-      <p className="text-sm text-[#888888] text-center">
-        Every body type is unique and beautiful. This information helps us provide better-personalized content and brand collaborations.
-      </p>
-    </motion.div>
-  </div>
-)}
+              <HeightInputSlide formData={formData} setFormData={setFormData} />
+            )}
 
+            {/* Body Type Slide */}
+            {currentSlide === 2 && (
+              <div className="grid grid-cols-1 gap-4">
+                {bodyTypes.map(type => (
+                  <SelectionCard
+                    key={type.id}
+                    icon={type.icon}
+                    label={type.label}
+                    description={type.description}
+                    selected={formData.bodyType === type.id}
+                    onClick={() => setFormData(prev => ({ ...prev, bodyType: type.id }))}
+                  />
+                ))}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="p-4 bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333] mb-8"
+                >
+                  <p className="text-sm text-[#888888] text-center">
+                    Every body type is unique and beautiful. This information helps us provide better-personalized content and brand collaborations.
+                  </p>
+                </motion.div>
+              </div>
+            )}
 
             {/* Languages Slide */}
-            {currentSlide === 2 && (
+            {currentSlide === 3 && (
               <LanguageSlide formData={formData} setFormData={setFormData} />
             )}
 
             {/* Pets Slide */}
-            {currentSlide === 3 && (
+            {currentSlide === 4 && (
               <div className="grid grid-cols-2 gap-4">
                 {petTypes.map(pet => (
                   <SelectionCard
@@ -348,15 +324,15 @@ const PersonalInfoPage = () => {
         </div>
 
         <AnimatePresence>
-        {showCompletion && (
-  <StepCompletion
-    stepName="Personal Information"
-    onContinue={() => {
-      window.location.href = '/media-kit';
-    }}
-    isFinalStep={currentSlide === slides.length - 1}
-  />
-)}
+          {showCompletion && (
+            <StepCompletion
+              stepName="Personal Information"
+              onContinue={() => {
+                window.location.href = '/media-kit';
+              }}
+              isFinalStep={currentSlide === slides.length - 1}
+            />
+          )}
         </AnimatePresence>
       </div>
     </div>

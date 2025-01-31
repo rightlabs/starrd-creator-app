@@ -2,20 +2,21 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  Instagram, 
-  Youtube, 
-  Twitter, 
+import {
+  ArrowLeft,
+  ArrowRight,
+  Instagram,
+  Youtube,
+  Twitter,
   Twitch,
   Facebook,
   Linkedin,
   AlertCircle
 } from 'lucide-react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { StepCompletion } from '@/components/MediaKitStepCompletion';
+import { EnhancedHeader } from '@/components/MediaKitHeader';
 
 const TOTAL_STEPS = 6;
 const CURRENT_STEP = 3;
@@ -39,7 +40,7 @@ const SOCIAL_PLATFORMS = [
 
 const SocialCard = ({ platform, onConnect, isConnected }) => {
   const Icon = platform.icon;
-
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -48,7 +49,7 @@ const SocialCard = ({ platform, onConnect, isConnected }) => {
     >
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-4">
-          <div 
+          <div
             className="w-12 h-12 rounded-xl flex items-center justify-center"
             style={{ backgroundColor: `${platform.color}20` }}
           >
@@ -69,7 +70,6 @@ const SocialCard = ({ platform, onConnect, isConnected }) => {
           {isConnected ? 'Connected' : 'Connect'}
         </Button>
       </div>
-
       <AnimatePresence>
         {isConnected && (
           <motion.div
@@ -91,14 +91,13 @@ const SocialCard = ({ platform, onConnect, isConnected }) => {
   );
 };
 
-
-
 export default function SocialConnectPage() {
+  const router = useRouter();
   const [connectedPlatforms, setConnectedPlatforms] = useState([]);
   const [showCompletion, setShowCompletion] = useState(false);
 
   const handleConnect = (platformId) => {
-    setConnectedPlatforms(prev => 
+    setConnectedPlatforms(prev =>
       prev.includes(platformId)
         ? prev.filter(id => id !== platformId)
         : [...prev, platformId]
@@ -112,42 +111,33 @@ export default function SocialConnectPage() {
   };
 
   const handleContinue = () => {
-    // Navigate to next step
-    window.location.href = '/complete-media-kit/previous-collabs';
+    router.push('/complete-media-kit/previous-collabs');
+  };
+
+  // Updated handleBack function
+  const handleBack = () => {
+    // Get the previous step from mediaKitSteps
+    const previousStep = mediaKitSteps[CURRENT_STEP - 2];
+    if (previousStep) {
+      // If previous step has slides, go to its last slide
+      if (previousStep.totalSlides > 0) {
+        router.push(`${previousStep.path}?slide=${previousStep.totalSlides - 1}`);
+      } else {
+        router.push(previousStep.path);
+      }
+    } else {
+      router.push('/dashboard');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
-      {/* Header */}
-      <motion.header 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-6 bg-card/40 backdrop-blur-lg border-b border-border sticky top-0 z-40"
-      >
-        <div className="flex items-center justify-between max-w-5xl mx-auto">
-          <div className="flex items-center gap-4">
-            <Link href="/complete-media-kit/portfolio">
-              <Button variant="outline" size="icon">
-                <ArrowLeft className="w-5 h-5 text-primary" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Social Connect</h1>
-              <p className="text-sm text-muted-foreground">Step {CURRENT_STEP} of {TOTAL_STEPS}</p>
-            </div>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Progress Bar */}
-      <div className="w-full h-1 bg-muted">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${(CURRENT_STEP / TOTAL_STEPS) * 100}%` }}
-          className="h-full bg-primary"
-          transition={{ duration: 0.5 }}
-        />
-      </div>
+      {/* Updated Header */}
+      <EnhancedHeader
+        currentStep={CURRENT_STEP}
+        totalSteps={TOTAL_STEPS}
+        onBackClick={handleBack}
+      />
 
       {/* Main Content */}
       <main className="max-w-2xl mx-auto p-6">
@@ -158,7 +148,6 @@ export default function SocialConnectPage() {
           </p>
         </div>
 
-    
         <div className="space-y-4 mb-8">
           {SOCIAL_PLATFORMS.map((platform) => (
             <SocialCard

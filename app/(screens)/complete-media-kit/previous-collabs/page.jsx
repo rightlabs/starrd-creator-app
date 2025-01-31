@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Upload, X, Plus, Building2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Upload, X, Plus, Building2, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { StepCompletion } from '@/components/MediaKitStepCompletion';
+import EnhancedHeader from '@/components/MediaKitHeader';
 
 const TOTAL_STEPS = 6;
 const CURRENT_STEP = 4;
@@ -123,6 +124,63 @@ const CollaborationCard = ({ collaboration, onDelete }) => (
   </motion.div>
 );
 
+const InputField = ({ label, required, children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-2"
+  >
+    <label className="text-sm font-medium text-white">
+      {label}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
+    {children}
+  </motion.div>
+);
+
+const CustomSelect = ({ value, onChange, options, placeholder }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <div 
+        onClick={() => setIsOpen(!isOpen)} 
+        className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-primary/20 hover:border-primary focus:border-primary transition-colors cursor-pointer flex justify-between items-center text-white"
+      >
+        <span className={value ? "text-white" : "text-white/60"}>
+          {value ? options.find(opt => opt.value === value)?.label : placeholder}
+        </span>
+        <ChevronDown className="w-4 h-4" />
+      </div>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute z-50 top-full left-0 right-0 mt-2 bg-black rounded-xl overflow-hidden shadow-lg border border-primary/20"
+          >
+            {options.map((option) => (
+              <div
+                key={option.value}
+                onClick={() => {
+                  onChange(option.value);
+                  setIsOpen(false);
+                }}
+                className="px-4 py-3 text-white hover:bg-primary hover:text-black cursor-pointer transition-colors"
+              >
+                {option.label}
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+
 const AddCollaborationForm = ({ onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     brandName: '',
@@ -146,7 +204,7 @@ const AddCollaborationForm = ({ onSubmit, onCancel }) => {
     >
       {/* Brand Info */}
       <div>
-        <label className="text-sm font-medium text-white block mb-2">Brand Name</label>
+        <label className="text-md font-medium text-white block mb-2">Brand Name</label>
         <input
           required
           type="text"
@@ -159,8 +217,8 @@ const AddCollaborationForm = ({ onSubmit, onCancel }) => {
 
       {/* Logo Upload */}
       <div>
-        <label className="text-sm font-medium text-white block mb-2">Brand Logo</label>
-        <div className="relative  bg-[#1A1A1A]/60 w-32 h-32 rounded-xl border-2 border-dashed border-primary/20 overflow-hidden">
+        <label className="text-md font-medium text-white block mb-2">Brand Logo</label>
+        <div className="relative  bg-[#1A1A1A]/60 w-full h-32 rounded-xl border-2 border-dashed border-primary/20 overflow-hidden">
           <FileUploadButton
             id="brandLogo"
             accept="image/*"
@@ -174,40 +232,40 @@ const AddCollaborationForm = ({ onSubmit, onCancel }) => {
 
       {/* Type & Category */}
       <div className="grid grid-cols-1 gap-4">
-        <div>
-          <label className="text-sm font-medium text-white block mb-2">Type</label>
-          <select
-            required
-            value={formData.type}
-            onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-            className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
-            >
-            <option value="">Select type</option>
-            {COLLABORATION_TYPES.map(type => (
-              <option key={type.id} value={type.id}>{type.label}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-white block mb-2">Category</label>
-          <select
-            required
-            value={formData.category}
-            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-            className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
-            >
-            <option value="">Select category</option>
-            {CATEGORIES.map(category => (
-              <option key={category.id} value={category.id}>{category.label}</option>
-            ))}
-          </select>
-        </div>
+      <InputField label="Type" >
+      <CustomSelect
+value={formData.type}
+onChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
+options={[
+ { value: 'sponsored', label: 'Sponsored Post' },
+ { value: 'ambassador', label: 'Brand Ambassador' },
+ { value: 'affiliate', label: 'Affiliate Partnership' },
+ { value: 'review', label: 'Product Review' }
+ ]}
+placeholder="Select Type"
+/>
+            </InputField>
+
+            <InputField label="Category" >
+              <CustomSelect
+                value={formData.category}
+                onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                options={[
+                  { value: 'lifestyle', label: 'Lifestyle' },
+                  { value: 'fashion', label: 'Fashion' },
+                  { value: 'beauty', label: 'Beauty' },
+                  { value: 'tech', label: 'Technology' },
+                  { value: 'food', label: 'Food & Beverage' }
+                ]}
+                placeholder="Select Category"
+              />
+            </InputField>
       </div>
 
       {/* Media File */}
       <div>
-        <label className="text-sm font-medium text-white block mb-2">Collaboration Media</label>
-        <div className="relative aspect-video rounded-xl border-2 border-dashed border-primary/20 overflow-hidden">
+        <label className="text-md font-medium text-white block mb-2">Collaboration Media</label>
+        <div className="relative bg-[#1A1A1A]/60  aspect-video rounded-xl border-2 border-dashed border-primary/20 overflow-hidden">
           <FileUploadButton
             id="mediaFile"
             accept="image/*,video/*"
@@ -258,28 +316,22 @@ export default function CollaborationsPage() {
     }
   };
 
+  const TOTAL_STEPS = 6;
+const CURRENT_STEP = 4;
+const handleBack = () => {
+  router.push('/complete-media-kit/social-connects');
+};
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
       {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-6 bg-black backdrop-blur-lg border-b border-primary/10 sticky top-0 z-50"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/complete-media-kit/social-connects">
-              <Button variant="outline" size="icon">
-                <ArrowLeft className="w-5 h-5 text-primary" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl font-bold text-white">Previous Collaborations</h1>
-              <p className="text-sm text-muted-foreground">Step {CURRENT_STEP} of {TOTAL_STEPS}</p>
-            </div>
-          </div>
-        </div>
-      </motion.header>
+      <EnhancedHeader
+        currentStep={CURRENT_STEP}
+        totalSteps={TOTAL_STEPS}
+        onBackClick={handleBack}
+      />
+
 
       {/* Progress Bar */}
       <div className="w-full h-1 bg-primary/10">

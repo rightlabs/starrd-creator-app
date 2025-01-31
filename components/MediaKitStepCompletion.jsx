@@ -13,14 +13,14 @@ export const StepCompletion = ({ stepName, onContinue, isFinalStep = false }) =>
 
     const runAnimation = () => {
       const timeLeft = animationEnd - Date.now();
-      const particleCount = 50 * (timeLeft / duration);
+      const particleCount = 10 * (timeLeft / duration);
 
       // Particles from left
       confetti({
         particleCount,
         startVelocity: 30,
         spread: 30,
-        origin: { x: 0.3, y: 0.5 },
+        origin: { x: 0.2, y: 0.45 },
         colors: ['#bcee45', '#ffffff'],
         ticks: 20
       });
@@ -30,7 +30,7 @@ export const StepCompletion = ({ stepName, onContinue, isFinalStep = false }) =>
         particleCount,
         startVelocity: 30,
         spread: 30,
-        origin: { x: 0.7, y: 0.5 },
+        origin: { x: 0.8, y: 0.45 },
         colors: ['#bcee45', '#ffffff'],
         ticks: 20
       });

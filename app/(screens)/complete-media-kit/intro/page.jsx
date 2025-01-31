@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Camera, X, CheckCircle2, User, MapPin, Calendar, UserCircle2, ImageIcon, Type, FileText } from 'lucide-react';import Link from 'next/link';
 import Image from 'next/image';
 import { StepCompletion } from '@/components/MediaKitStepCompletion';
+import { EnhancedHeader } from '@/components/MediaKitHeader';
 
 const totalSteps = 6; // Total steps in media kit creation
 const currentMainStep = 1; // Intro is step 1
@@ -145,8 +146,8 @@ const slides = [
 
 const ImageUploadCard = ({ field, value, onChange, onRemove }) => (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-white">{field.label}</label>
-      <p className="text-xs text-[#888888] mb-3">{field.description}</p>
+      <label className="text-md font-medium text-white">{field.label}</label>
+      <p className="text-sm text-[#888888] mb-3">{field.description}</p>
       
       <div className="relative aspect-[3/2] rounded-xl border-2 border-dashed border-[#bcee45]/20 overflow-hidden group">
         {value ? (
@@ -198,7 +199,7 @@ const ImageUploadCard = ({ field, value, onChange, onRemove }) => (
 
 const PrefilledCard = ({ field, icon: Icon }) => (
   <motion.div
-    className="p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333] hover:border-[#bcee45]/50 transition-all"
+    className="p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333]  transition-all"
     whileHover={{ scale: 1.02 }}
   >
     <div className="flex items-center justify-between">
@@ -213,7 +214,6 @@ const PrefilledCard = ({ field, icon: Icon }) => (
       </div>
       {field.prefilled && (
         <div className="flex items-center gap-2">
-          <span className="text-xs text-[#888888]">From Signup</span>
           <CheckCircle2 className="w-5 h-5 text-[#bcee45]" />
         </div>
       )}
@@ -285,31 +285,14 @@ const MediaKitIntro = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
       {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-6 bg-black/40 backdrop-blur-lg border-b border-white/5 sticky top-0 z-50"
-      >
-        <div className="flex items-center justify-between">
-        <div className="flex items-center justify-between pt-6">
-  <Link href="/dashboard">
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className="w-10 h-10 bg-[#1A1A1A] border border-[#333333] rounded-xl flex items-center justify-center hover:border-[#bcee45]/50 transition-colors"
-    >
-      <ArrowLeft className="w-5 h-5 text-[#bcee45]" />
-    </motion.button>
-  </Link>
-  <div className='ml-4'>
-    <h1 className="text-xl font-bold text-white">Create Media Kit</h1>
-    <p className="text-sm text-[#888888]">Step {currentMainStep} of {totalSteps}</p>
-  </div>
-  <SlideIndicator currentSlide={currentSlide} totalSlides={slides.length} />
-</div>
-        </div>
-      </motion.div>
+      <EnhancedHeader
+        currentStep={currentMainStep} 
+        currentSlide={currentSlide}
+        totalSteps={totalSteps}
+        onBackClick={setCurrentSlide}
 
+      />
+ 
       {/* Progress Bar */}
       <div className="w-full h-1 bg-[#1A1A1A]">
         <motion.div
@@ -396,11 +379,11 @@ const MediaKitIntro = () => {
                   <div key={field.name} className="space-y-2">
                     <div className="flex items-center gap-2 mb-1">
                       <field.icon className="w-4 h-4 text-[#bcee45]" />
-                      <label className="text-sm font-medium text-white">
+                      <label className="text-md font-medium text-white">
                         {field.label}
                       </label>
                     </div>
-                    <p className="text-xs text-[#888888] mb-2">{field.description}</p>
+                    <p className="text-sm text-[#888888] mb-2">{field.description}</p>
                     {field.type === 'textarea' ? (
                       <textarea
                         value={formData[field.name]}

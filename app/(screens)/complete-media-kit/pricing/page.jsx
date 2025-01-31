@@ -6,6 +6,8 @@ import { ArrowLeft, ArrowRight, Package, Plus, X, DollarSign } from 'lucide-reac
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { StepCompletion } from '@/components/MediaKitStepCompletion';
+import { useRouter } from 'next/navigation';
+import EnhancedHeader from '@/components/MediaKitHeader';
 
 const TOTAL_STEPS = 6;
 const CURRENT_STEP = 5;
@@ -53,7 +55,7 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
     >
       {/* Package Name */}
       <div>
-        <label className="text-sm font-medium text-white block mb-2">Package Name</label>
+        <label className="text-md font-medium text-white block mb-2">Package Name</label>
         <input
           required
           type="text"
@@ -66,7 +68,7 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
 
       {/* Price */}
       <div>
-        <label className="text-sm font-medium text-white block mb-2">Price</label>
+        <label className="text-md font-medium text-white block mb-2">Price</label>
         <div className="relative">
           {/* <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" /> */}
           <input
@@ -75,7 +77,7 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
             value={formData.price}
             onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
             className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
-            placeholder="$299"
+            placeholder=" ₹299"
             min="0"
           />
         </div>
@@ -83,7 +85,7 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
 
       {/* Description */}
       <div>
-        <label className="text-sm font-medium text-white block mb-2">Description</label>
+        <label className="text-md font-medium text-white block mb-2">Description</label>
         <textarea
           value={formData.description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
@@ -94,14 +96,14 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
 
       {/* Deliverables */}
       <div>
-        <label className="text-sm font-medium text-white block mb-2">Deliverables</label>
+        <label className="text-md font-medium text-white block mb-2">Deliverables</label>
         <div className="space-y-3">
           {formData.deliverables.map((deliverable, index) => (
             <div key={index} className="flex gap-2">
               <input
                 value={deliverable}
                 onChange={(e) => updateDeliverable(index, e.target.value)}
-                className="flex-1 px-4 py-3 bg-[#1A1A1A]/60  rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+                className="w-full px-4 py-3 bg-[#1A1A1A]/60  rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
                 placeholder="e.g., 1 Instagram Post"
               />
               {formData.deliverables.length > 1 && (
@@ -169,7 +171,7 @@ const PackageCard = ({ package: pkg, onDelete }) => (
       </Button>
     </div>
     {pkg.description && (
-      <p className="text-muted-foreground text-sm mb-4">{pkg.description}</p>
+      <p className="text-muted-foreground text-md mb-4">{pkg.description}</p>
     )}
     <div className="space-y-2">
       {pkg.deliverables.map((deliverable, index) => (
@@ -183,6 +185,7 @@ const PackageCard = ({ package: pkg, onDelete }) => (
 );
 
 export default function PricingPage() {
+  const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [packages, setPackages] = useState([]);
   const [showCompletion, setShowCompletion] = useState(false);
@@ -202,28 +205,30 @@ export default function PricingPage() {
     }
   };
 
+  // Handle back navigation
+  const handleBack = () => {
+    // Get the previous step from mediaKitSteps
+    const previousStep = mediaKitSteps[CURRENT_STEP - 2];
+    if (previousStep) {
+      // If previous step has slides, go to its last slide
+      if (previousStep.totalSlides > 0) {
+        router.push(`${previousStep.path}?slide=${previousStep.totalSlides - 1}`);
+      } else {
+        router.push(previousStep.path);
+      }
+    } else {
+      router.push('/dashboard');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
       {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-6 bg-black backdrop-blur-lg border-b border-border sticky top-0 z-50"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/complete-media-kit/collaborations">
-              <Button variant="outline" size="icon">
-                <ArrowLeft className="w-5 h-5 text-primary" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl font-bold text-white">Pricing Packages</h1>
-              <p className="text-sm text-muted-foreground">Step {CURRENT_STEP} of {TOTAL_STEPS}</p>
-            </div>
-          </div>
-        </div>
-      </motion.header>
+      <EnhancedHeader
+        currentStep={CURRENT_STEP}
+        totalSteps={TOTAL_STEPS}
+        onBackClick={handleBack}
+      />
 
       {/* Progress Bar */}
       <div className="w-full h-1 bg-primary/10">

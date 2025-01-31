@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import PreviewButton from '@/components/PreviewButton';
 import Link from 'next/link';
+import FeatureCards from '@/components/DashborardFeatures';
 
 const DashboardPage = () => {
   return (
@@ -57,7 +58,7 @@ const DashboardPage = () => {
             >
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-xl font-bold mb-1 text-white">Profile Completion</h3>
+                  <h3 className="text-xl font-bold mb-1 text-white">Media Kit Completion</h3>
                   {/* <p className="text-sm text-[#888888]">Complete your profile to share your media kit</p> */}
                 </div>
                 
@@ -111,7 +112,7 @@ const DashboardPage = () => {
                 whileTap={{ scale: 0.98 }}
               >
              
-                Complete Profile
+                Complete Media Kit
               </motion.button>
               </Link>
 
@@ -128,71 +129,17 @@ const DashboardPage = () => {
               className="text-4xl  mb-8 flex items-center gap-3"
             >
               Welcome{" "}
-              <span className="bg-gradient-to-r from-[#1A1A1A] to-[#252525] text-[#bcee45] font-semibold rounded-2xl px-4 py-2 border border-[#333333] shadow-lg">
+              <span className="bg-gradient-to-r from-[#1A1A1A] to-[#252525] text-[#bcee45] font-extrabold rounded-2xl px-4 py-2 border border-[#333333] shadow-lg">
                 Tushar
               </span>
             </motion.h1>
 
             {/* Feature Cards */}
             <div className="space-y-4 mb-4">
-              {[
-                { 
-                  title: 'Media Kit',
-                  desc: 'Put your best self forward',
-                  icon: <Star className="w-6 h-6" />,
-                  link:"/create-media-kit"
-                },
-                { 
-                  title: 'Media Kit Analytics',
-                  desc: 'Gain insights into your media kit performance',
-                  icon: <BarChart className="w-6 h-6" />,
-                  link:"/media-kit-analytics"
-                }
-              ].map((item, index) => (
-                <motion.div
-                  key={item.title}
-                  className="p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333] hover:border-[#bcee45]/20 transition-all"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 + (index * 0.1) }}
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] rounded-xl border border-[#333333] flex items-center justify-center">
-                        <motion.div
-                          initial={{ rotate: 0 }}
-                          whileHover={{ rotate: 360 }}
-                          transition={{ duration: 0.6 }}
-                          className="text-[#bcee45]  w-14 h-14  flex items-center justify-center"
-                        >
-                          {item.icon}
-                        </motion.div>
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold mb-1 text-white">
-                          {item.title}
-                        </h3>
-                        <p className="text-[#888888] text-sm">
-                          {item.desc}
-                        </p>
-                      </div>
-                    </div>
-                    <motion.button 
-                      className="px-6 py-2.5 bg-[#1A1A1A] text-[#bcee45] rounded-xl text-sm font-semibold border border-[#333333] hover:border-[#bcee45]/50 transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Link href={item.link}>MANAGE</Link>
-                      
-                    </motion.button>
-                  </div>
-                </motion.div>
-              ))}
-
-              {/* Feedback Button */}
+            <FeatureCards />
          
-            </div> <Link href="/send-feedback"> 
+            </div>
+             <Link href="/send-feedback"> 
             <motion.button 
                 className="w-full p-4 mb-10  bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl flex items-center gap-3 text-[#888888] border border-[#333333] hover:border-[#bcee45]/20 transition-colors"
                 initial={{ y: 20, opacity: 0 }}
@@ -201,7 +148,7 @@ const DashboardPage = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-               <div className="relative w-14 h-14 bg-gradient-to-br from-[#1A1A1A] to-[#252525] rounded-xl border border-[#bcee45]/20 flex items-center justify-center">
+               <div className="relative w-12 h-12 bg-gradient-to-br from-[#1A1A1A] to-[#252525] rounded-xl border border-[#bcee45]/20 flex items-center justify-center">
                   <MessageSquare className="w-7 h-7 text-[#bcee45]" />
                 </div>
               <span className="font-medium">Send Feedback</span> 

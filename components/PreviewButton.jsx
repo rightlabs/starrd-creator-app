@@ -1,10 +1,18 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-const PreviewButton = ({ onClick, label = "Preview Media Kit" }) => {
+const PreviewButton = ({ label = "Preview Media Kit" }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const router=useRouter();
 
+ const onClick = () => {
+
+  router.push("/media-kit");
+
+
+};
   return (
     <div className="fixed bottom-24 inset-x-0 flex justify-center z-40">
       <button 
