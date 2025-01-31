@@ -95,6 +95,7 @@ export default function SocialConnectPage() {
   const router = useRouter();
   const [connectedPlatforms, setConnectedPlatforms] = useState([]);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const handleConnect = (platformId) => {
     setConnectedPlatforms(prev =>
@@ -114,27 +115,15 @@ export default function SocialConnectPage() {
     router.push('/complete-media-kit/previous-collabs');
   };
 
-  // Updated handleBack function
   const handleBack = () => {
-    // Get the previous step from mediaKitSteps
-    const previousStep = mediaKitSteps[CURRENT_STEP - 2];
-    if (previousStep) {
-      // If previous step has slides, go to its last slide
-      if (previousStep.totalSlides > 0) {
-        router.push(`${previousStep.path}?slide=${previousStep.totalSlides - 1}`);
-      } else {
-        router.push(previousStep.path);
-      }
-    } else {
-      router.push('/dashboard');
-    }
+    router.push('/complete-media-kit/portfolio');
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
       {/* Updated Header */}
       <EnhancedHeader
         currentStep={CURRENT_STEP}
+        currentSlide={currentSlide}
         totalSteps={TOTAL_STEPS}
         onBackClick={handleBack}
       />

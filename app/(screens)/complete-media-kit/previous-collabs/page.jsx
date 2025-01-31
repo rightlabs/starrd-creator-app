@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { StepCompletion } from '@/components/MediaKitStepCompletion';
 import EnhancedHeader from '@/components/MediaKitHeader';
+import { useRouter } from 'next/navigation';
 
 const TOTAL_STEPS = 6;
 const CURRENT_STEP = 4;
@@ -300,6 +301,8 @@ export default function CollaborationsPage() {
   const [isAdding, setIsAdding] = useState(false);
   const [collaborations, setCollaborations] = useState([]);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
 
   const handleSubmit = (collaboration) => {
     setCollaborations(prev => [collaboration, ...prev]);
@@ -315,6 +318,7 @@ export default function CollaborationsPage() {
       setShowCompletion(true);
     }
   };
+  const router = useRouter();
 
   const TOTAL_STEPS = 6;
 const CURRENT_STEP = 4;
@@ -328,9 +332,11 @@ const handleBack = () => {
       {/* Header */}
       <EnhancedHeader
         currentStep={CURRENT_STEP}
+        currentSlide={currentSlide}
         totalSteps={TOTAL_STEPS}
         onBackClick={handleBack}
       />
+
 
 
       {/* Progress Bar */}
