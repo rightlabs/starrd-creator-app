@@ -41,20 +41,20 @@ const CustomCalendar = ({ selectedDate, onSelect, onClose }) => {
       className="absolute z-50 top-full left-0 right-0 mt-2 bg-black rounded-xl p-4 shadow-lg border border-primary/20"
     >
       <div className="flex justify-between items-center mb-4">
-        <button onClick={handlePrevMonth} className="p-1 hover:bg-primary/10 rounded-lg text-primary">
+        <button onClick={handlePrevMonth} className="p-1 hover:bg-primary/10 rounded-lg text-white">
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <div className="font-medium text-primary">
+        <div className="font-medium text-white">
           {months[currentDate.getMonth()]} {currentDate.getFullYear()}
         </div>
-        <button onClick={handleNextMonth} className="p-1 hover:bg-primary/10 rounded-lg text-primary">
+        <button onClick={handleNextMonth} className="p-1 hover:bg-primary/10 rounded-lg text-white">
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
       
       <div className="grid grid-cols-7 gap-1 text-center text-sm mb-2">
         {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-          <div key={day} className="text-primary/60">{day}</div>
+          <div key={day} className="text-white/60">{day}</div>
         ))}
       </div>
       
@@ -66,7 +66,7 @@ const CustomCalendar = ({ selectedDate, onSelect, onClose }) => {
           <button
             key={index + 1}
             onClick={() => handleDateSelect(index + 1)}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-colors"
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-white hover:bg-primary hover:text-black transition-colors"
           >
             {index + 1}
           </button>
@@ -84,9 +84,9 @@ const CustomSelect = ({ value, onChange, options, placeholder }) => {
     <div className="relative">
       <div 
         onClick={() => setIsOpen(!isOpen)} 
-        className="w-full px-4 py-3 bg-black rounded-xl border-2 border-primary/20 hover:border-primary focus:border-primary transition-colors cursor-pointer flex justify-between items-center text-primary"
+        className="w-full px-4 py-3 bg-black rounded-xl border-2 border-primary/20 hover:border-primary focus:border-primary transition-colors cursor-pointer flex justify-between items-center text-white"
       >
-        <span className={value ? "text-primary" : "text-primary/60"}>
+        <span className={value ? "text-white" : "text-white/60"}>
           {value ? options.find(opt => opt.value === value)?.label : placeholder}
         </span>
         <ChevronDown className="w-4 h-4" />
@@ -107,7 +107,7 @@ const CustomSelect = ({ value, onChange, options, placeholder }) => {
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                className="px-4 py-3 text-primary hover:bg-primary hover:text-black cursor-pointer transition-colors"
+                className="px-4 py-3 text-white hover:bg-primary hover:text-black cursor-pointer transition-colors"
               >
                 {option.label}
               </div>
@@ -149,7 +149,7 @@ const InputField = ({ label, required, children }) => (
     animate={{ opacity: 1, y: 0 }}
     className="space-y-2"
   >
-    <label className="text-sm font-medium text-primary">
+    <label className="text-sm font-medium text-white">
       {label}
       {required && <span className="text-red-500 ml-1">*</span>}
     </label>
@@ -211,8 +211,8 @@ const PersonalInfoV2 = () => {
           className="space-y-8"
         >
           <div>
-            <h1 className="text-4xl font-extrabold text-primary">Tell us about yourself</h1>
-            <p className="text-primary/60 pt-2">This helps us personalize your experience</p>
+            <h1 className="text-4xl font-extrabold text-white">Tell us about yourself</h1>
+            <p className="text-gray-400 pt-2">This helps us personalize your experience</p>
           </div>
 
           <div className="space-y-6">
@@ -222,7 +222,7 @@ const PersonalInfoV2 = () => {
                   type="text"
                   value={formData.firstName}
                   onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                  className="w-full px-4 py-3 bg-black rounded-xl border-2 border-primary/20 focus:border-primary hover:border-primary/60 outline-none transition-colors text-primary placeholder-primary/60"
+                  className="w-full px-4 py-3 bg-black rounded-xl border-2 border-primary/20 focus:border-primary hover:border-primary/60 outline-none transition-colors text-white placeholder-white/60"
                   placeholder="John"
                 />
               </InputField>
@@ -231,7 +231,7 @@ const PersonalInfoV2 = () => {
                   type="text"
                   value={formData.lastName}
                   onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                  className="w-full px-4 py-3 bg-black rounded-xl border-2 border-primary/20 focus:border-primary hover:border-primary/60 outline-none transition-colors text-primary placeholder-primary/60"
+                  className="w-full px-4 py-3 bg-black rounded-xl border-2 border-primary/20 focus:border-primary hover:border-primary/60 outline-none transition-colors text-white placeholder-white/60"
                   placeholder="Doe"
                 />
               </InputField>
@@ -254,9 +254,9 @@ const PersonalInfoV2 = () => {
               <div className="relative">
                 <div 
                   onClick={() => setShowCalendar(!showCalendar)}
-                  className="w-full px-4 py-3 bg-black rounded-xl border-2 border-primary/20 hover:border-primary/60 focus:border-primary transition-colors cursor-pointer flex justify-between items-center text-primary"
+                  className="w-full px-4 py-3 bg-black rounded-xl border-2 border-primary/20 hover:border-primary/60 focus:border-primary transition-colors cursor-pointer flex justify-between items-center text-white"
                 >
-                  <span className={formData.dateOfBirth ? "text-primary" : "text-primary/60"}>
+                  <span className={formData.dateOfBirth ? "text-white" : "text-white/60"}>
                     {formData.dateOfBirth || 'Select date'}
                   </span>
                   <Calendar className="w-4 h-4" />

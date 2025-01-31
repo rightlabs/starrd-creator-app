@@ -45,9 +45,12 @@ const SocialConnect = () => {
       setSocialStates(prev => ({...prev, instagram: true}));
       toast.success('Instagram connected successfully', {
         style: { 
-          backgroundColor: '#000000', // Black background
-          color: '#bcee45'  // Primary (yellow/green) text
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          borderRadius:"16px"
+          
         },
+        icon: <CheckCircle size={24} color="#00ff00" />,
        });
     } catch (error) {
       toast.error('Failed to connect Instagram');
@@ -63,9 +66,12 @@ const SocialConnect = () => {
       setSocialStates(prev => ({...prev, youtube: true}));
       toast.success('YouTube connected successfully', {
         style: { 
-          backgroundColor: '#000000', // Black background
-          color: '#bcee45'  // Primary (yellow/green) text
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          borderRadius:"16px"
+          
         },
+        icon: <CheckCircle size={24} color="#00ff00" />,
        });
     } catch (error) {
       toast.error('Failed to connect YouTube');
@@ -121,7 +127,7 @@ const SocialConnect = () => {
           className="space-y-8"
         >
           <div>
-            <h1 className="text-4xl  text-primary font-extrabold mb-2">Connect your socials</h1>
+            <h1 className="text-4xl  text-white font-extrabold mb-2">Connect your socials</h1>
             <p className="text-gray-400">Your follower count will be displayed on your profile. Your analytics will integrate into the creator tools.</p>
           </div>
 
@@ -185,7 +191,7 @@ const SocialConnect = () => {
           
           </motion.div>
           <Button
-            className="w-full bg-primary rounded-3xl text-black hover:bg-black/90"
+            className="w-full bg-primary rounded-3xl text-black hover:bg-primary/90"
             size="lg"
             onClick={handleNext}
             disabled={loading}

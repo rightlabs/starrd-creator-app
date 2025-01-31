@@ -8,12 +8,20 @@ import Link from 'next/link';
 const InboxPage = () => {
   const [activeTab, setActiveTab] = useState('all');
 
+  // Get initials from name
+  const getInitials = (name) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase();
+  };
+
   const messages = [
     {
       id: 1,
       sender: {
         name: 'Nike Sports',
-        avatar: '🏢',
         verified: true
       },
       preview: 'We would love to collaborate with you on our upcoming campaign...',
@@ -25,7 +33,6 @@ const InboxPage = () => {
       id: 2,
       sender: {
         name: 'Sarah Williams',
-        avatar: '👩',
         verified: false
       },
       preview: 'Thanks for accepting my connection request! I wanted to discuss...',
@@ -37,7 +44,6 @@ const InboxPage = () => {
       id: 3,
       sender: {
         name: 'Adidas',
-        avatar: '🏢',
         verified: true
       },
       preview: 'Your proposal has been reviewed and we would like to proceed...',
@@ -52,7 +58,7 @@ const InboxPage = () => {
       {/* Header */}
       <div className="p-6 bg-black/40 backdrop-blur-lg border-b border-white/5">
         <div className="flex justify-between items-center mb-6">
-          <motion.div 
+          <motion.div
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             className="flex items-center gap-4"
@@ -67,7 +73,7 @@ const InboxPage = () => {
         </div>
 
         {/* Search Bar */}
-        <motion.div 
+        <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
@@ -80,71 +86,51 @@ const InboxPage = () => {
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#888888]" />
         </motion.div>
-
-        {/* Tabs */}
-        <motion.div 
-          className="flex gap-2 mt-6"
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          {['all', 'brands', 'creators'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                activeTab === tab 
-                  ? 'bg-gradient-to-r from-[#bcee45] to-[#9BC53D] text-black shadow-lg shadow-[#bcee45]/20' 
-                  : 'bg-[#1A1A1A]/60 text-[#888888] border border-[#333333] hover:border-[#bcee45]/50'
-              }`}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
-        </motion.div>
       </div>
 
       {/* Messages List */}
       <div className="px-6 mt-4">
         <div className="space-y-3">
           {messages.map((message, index) => (
-            <motion.div
-              key={message.id}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 * index }}
-              className={`p-4 rounded-2xl border transition-all hover:border-[#bcee45]/20 ${
-                message.unread 
-                  ? 'bg-[#1A1A1A]/60 backdrop-blur-md border-[#333333]' 
-                  : 'bg-[#1A1A1A]/40 border-[#333333]/50'
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#1A1A1A] border border-[#333333] rounded-xl flex items-center justify-center text-2xl">
-                  {message.sender.avatar}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-white truncate">
-                      {message.sender.name}
+            <Link href={`/inbox/${message.id}`} key={message.id}>
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 * index }}
+                className={`p-4 m-2 rounded-2xl border transition-all hover:border-[#bcee45]/20 ${
+                  message.unread
+                    ? 'bg-[#1A1A1A]/60 backdrop-blur-md border-[#333333]'
+                    : 'bg-[#1A1A1A]/40 border-[#333333]/50'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-[#1A1A1A] border border-[#333333] rounded-xl flex items-center justify-center">
+                    <span className="text-lg font-semibold text-primary">
+                      {getInitials(message.sender.name)}
                     </span>
-                    {message.sender.verified && (
-                      <Star className="w-4 h-4 text-[#bcee45] flex-shrink-0" />
-                    )}
                   </div>
-                  <p className="text-sm text-[#888888] line-clamp-1">
-                    {message.preview}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-white truncate">
+                        {message.sender.name}
+                      </span>
+                      {message.sender.verified && (
+                        <Star className="w-4 h-4 text-[#bcee45] flex-shrink-0" />
+                      )}
+                    </div>
+                    <p className="text-sm text-[#888888] line-clamp-1">
+                      {message.preview}
+                    </p>
+                  </div>
+                  <div className="text-xs text-[#888888] flex-shrink-0">
+                    {message.time}
+                  </div>
                 </div>
-                <div className="text-xs text-[#888888] flex-shrink-0">
-                  {message.time}
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </Link>
           ))}
         </div>
       </div>
-
       <Navbar />
     </div>
   );

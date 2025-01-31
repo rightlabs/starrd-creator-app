@@ -10,17 +10,19 @@ import {
   Camera,
   Edit,
   User,
-  Sparkles
+  Sparkles,
+  Share2
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Image from 'next/image';
+import ProfileAvatar from '@/components/ProfileAvatar';
 
 const ProfilePage = () => {
-  const stats = [
-    { label: 'Total Reach', value: '25.4K', icon: '📈' },
-    { label: 'Engagement', value: '87%', icon: '⭐' },
-    { label: 'Projects', value: '12', icon: '🎯' }
-  ];
+  // const stats = [
+  //   { label: 'Total Reach', value: '25.4K', icon: '📈' },
+  //   { label: 'Engagement', value: '87%', icon: '⭐' },
+  //   { label: 'Projects', value: '12', icon: '🎯' }
+  // ];
 
   const socialAccounts = [
     { 
@@ -54,13 +56,7 @@ const ProfilePage = () => {
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-[#0A0A0A]" />
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute top-6 right-6 w-10 h-10 rounded-xl flex items-center justify-center bg-black/30 backdrop-blur-md border border-white/20 hover:border-[#bcee45]/50 transition-all"
-        >
-          <Settings className="w-5 h-5 text-white" />
-        </motion.button>
+      
       </div>
 
       {/* Main Content */}
@@ -71,12 +67,18 @@ const ProfilePage = () => {
           animate={{ scale: 1 }}
           className="relative w-32 h-32 mx-auto mb-6"
         >
-          <div className="w-full h-full bg-gradient-to-br from-[#bcee45] to-[#9BC53D] rounded-2xl flex items-center justify-center border-4 border-black shadow-xl shadow-[#bcee45]/20">
-            <User className="w-16 h-16 text-black" />
-          </div>
-          <button className="absolute bottom-0 right-0 w-10 h-10 bg-black rounded-xl flex items-center justify-center border border-[#bcee45] shadow-lg">
-            <Camera className="w-5 h-5 text-[#bcee45]" />
-          </button>
+      {/* Profile Image */}
+<motion.div 
+  initial={{ scale: 0 }}
+  animate={{ scale: 1 }}
+  className="relative mx-auto mb-6"
+>
+  <ProfileAvatar
+    completion={50} // Pass the actual completion percentage here
+    image="/welcome-1.jpg" // Pass the user's image URL
+  />
+</motion.div>
+         
         </motion.div>
 
         {/* Profile Info */}
@@ -93,8 +95,8 @@ const ProfilePage = () => {
           </div>
           <p className="text-[#888888] text-lg">Digital Creator & UI Designer</p>
           <button className="mt-4 px-6 py-2.5 bg-gradient-to-r from-[#bcee45] to-[#9BC53D] text-black rounded-xl text-sm font-semibold flex items-center gap-2 mx-auto hover:opacity-90 transition-all">
-            <Edit className="w-4 h-4" />
-            Edit Profile
+            <Share2 className="w-4 h-4" />
+           Share Your profile
           </button>
         </motion.div>
 
@@ -137,7 +139,7 @@ const ProfilePage = () => {
           ))}
         </motion.div>
            {/* Stats */}
-           <div className="grid grid-cols-3 gap-2 mb-12">
+           {/* <div className="grid grid-cols-3 gap-2 mb-12">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -153,7 +155,7 @@ const ProfilePage = () => {
               <div className="text-sm text-[#888888]">{stat.label}</div>
             </motion.div>
           ))}
-        </div>
+        </div> */}
 
         {/* Account Settings */}
         <motion.div
@@ -167,11 +169,13 @@ const ProfilePage = () => {
           </h2>
           <div className="space-y-2">
             {[
-              { name: 'Personal Information', icon: '👤' },
-              { name: 'Notifications', icon: '🔔' },
+              // { name: 'Personal Information', icon: '👤' },
+              // { name: 'Notifications', icon: '🔔' },
               { name: 'Privacy & Security', icon: '🔒' },
               { name: 'Payment Methods', icon: '💳' },
-              { name: 'Help & Support', icon: '💡' }
+              { name: 'Help & Support', icon: '💡' },
+              { name: 'Logout', icon: '🚪' }
+              
             ].map((item) => (
               <motion.button
                 key={item.name}

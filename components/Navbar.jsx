@@ -20,7 +20,7 @@ const Navbar = () => {
     },
     { 
       icon: <User className="w-6 h-6" />, 
-      label: 'Profile', 
+      label: 'Settings', 
       path: '/profile' 
     },
   ];
