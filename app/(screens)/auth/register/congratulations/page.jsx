@@ -131,8 +131,9 @@ const FeatureCard = ({ image, title, isMain, isActive, className = "" }) => (
     className={`relative overflow-hidden rounded-3xl ${className} h-48`}
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{
-      opacity: isActive ? 1 : 0.7,
+      opacity: isActive ? 1 : 0.5,
       scale: isActive ? 1 : 0.95,
+          filter: isActive ? "brightness(2)" : "brightness(1)",
     }}
     whileHover={{ scale: 1.02 }}
     transition={{ duration: 0.3 }}
@@ -334,7 +335,7 @@ useEffect(() => {
               <div className="relative grid grid-cols-2 gap-3 w-full mt-6">
   {/* Top row cards */}
   
-  <motion.div 
+  {/* <motion.div 
     className="absolute right-[60px] bottom-[170px] translate-x-1/2 translate-y-1/2"
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -349,7 +350,7 @@ useEffect(() => {
     transition={{ delay: 0.5 }}
   >
     <Arrow className="transform rotate-0 scale-75" />
-  </motion.div>
+  </motion.div> */}
 
   <FeatureCard
     image="/cong-1.jpeg"

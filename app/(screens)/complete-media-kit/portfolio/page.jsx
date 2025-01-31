@@ -11,23 +11,23 @@ const totalSteps = 6; // Total steps in media kit creation
 const currentMainStep = 2; // Portfolio is step 2
 
 const mediaTypes = [
-  { id: 'video', label: 'Video', icon: Video },
-  { id: 'audio', label: 'Audio', icon: Music },
-  { id: 'image', label: 'Image', icon: ImageIcon }
+  { id: 'video', label: 'Video 📹', icon: Video },
+  { id: 'audio', label: 'Audio 🎶', icon: Music },
+  { id: 'image', label: 'Image 📸', icon: ImageIcon }
 ];
 
 const contentTypes = [
-  { id: 'product-review', label: 'Product Review' },
-  { id: 'testimonial', label: 'Testimonial' },
-  { id: 'misc', label: 'Miscellaneous' }
+  { id: 'product-review', label: 'Product Review ✍️⭐' },
+  { id: 'testimonial', label: 'Testimonial 💬✨' },
+  { id: 'misc', label: 'Miscellaneous 🛠️🔍' }
 ];
 
 const categories = [
-  { id: 'lifestyle', label: 'Lifestyle' },
-  { id: 'fashion', label: 'Fashion' },
-  { id: 'beauty', label: 'Beauty' },
-  { id: 'tech', label: 'Technology' },
-  { id: 'food', label: 'Food & Beverage' }
+  { id: 'lifestyle', label: 'Lifestyle 🏡🌿' },
+  { id: 'fashion', label: 'Fashion 👗👜' },
+  { id: 'beauty', label: 'Beauty 💄💅' },
+  { id: 'tech', label: 'Technology 🖥️💡' },
+  { id: 'food', label: 'Food & Beverage 🍔🥤' }
 ];
 
 const SlideIndicator = ({ currentSlide, totalSlides }) => (
