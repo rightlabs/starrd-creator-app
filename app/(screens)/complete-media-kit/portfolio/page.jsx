@@ -11,23 +11,23 @@ const totalSteps = 6; // Total steps in media kit creation
 const currentMainStep = 2; // Portfolio is step 2
 
 const mediaTypes = [
-  { id: 'video', label: 'Video 📹', icon: Video },
-  { id: 'audio', label: 'Audio 🎶', icon: Music },
-  { id: 'image', label: 'Image 📸', icon: ImageIcon }
+  { id: 'video', label: 'Video ', icon: Video },
+  { id: 'audio', label: 'Audio ', icon: Music },
+  { id: 'image', label: 'Image ', icon: ImageIcon }
 ];
 
 const contentTypes = [
-  { id: 'product-review', label: 'Product Review ✍️⭐' },
-  { id: 'testimonial', label: 'Testimonial 💬✨' },
-  { id: 'misc', label: 'Miscellaneous 🛠️🔍' }
+  { id: 'product-review', label: '✍️ Product Review ' },
+  { id: 'testimonial', label: '💬 Testimonial ' },
+  { id: 'misc', label: '🛠️ Miscellaneous ' }
 ];
 
 const categories = [
-  { id: 'lifestyle', label: 'Lifestyle 🏡🌿' },
-  { id: 'fashion', label: 'Fashion 👗👜' },
-  { id: 'beauty', label: 'Beauty 💄💅' },
-  { id: 'tech', label: 'Technology 🖥️💡' },
-  { id: 'food', label: 'Food & Beverage 🍔🥤' }
+  { id: 'lifestyle', label: '🏡 Lifestyle ' },
+  { id: 'fashion', label: '👗 Fashion ' },
+  { id: 'beauty', label: '💅 Beauty ' },
+  { id: 'tech', label: '🖥️ Technology ' },
+  { id: 'food', label: '🍔 Food & Beverage ' }
 ];
 
 const SlideIndicator = ({ currentSlide, totalSlides }) => (
@@ -271,8 +271,8 @@ const PortfolioPage = () => {
         </AnimatePresence>
 
         {/* Navigation */}
-        <div className="mt-8 flex justify-between">
-          <motion.button
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]">
+        <div className="max-w-xl mx-auto flex justify-between">          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => currentSlide > 0 && setCurrentSlide(current => current - 1)}
@@ -305,6 +305,7 @@ const PortfolioPage = () => {
             {currentSlide === slides.length - 1 ? 'Complete' : 'Next'}
             <ArrowRight className="w-5 h-5" />
           </motion.button>
+        </div>
         </div>
       </div>
     </div>

@@ -304,8 +304,8 @@ const MediaKitIntro = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-xl mx-auto p-6">
-        <AnimatePresence mode="wait">
+      <div className="fixed inset-0 top-[172px] bottom-[80px] overflow-y-auto">
+      <div className="max-w-xl mx-auto p-6">        <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
             initial={{ opacity: 0, x: 20 }}
@@ -426,10 +426,13 @@ const MediaKitIntro = () => {
     />
   )}
 </AnimatePresence>
+</div>
         
 
         {/* Navigation */}
-        <div className="mt-8 flex justify-between">
+       {/* Navigation */}
+<div className="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]">
+  <div className="max-w-xl mx-auto flex justify-between">
   <motion.button
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
@@ -460,6 +463,7 @@ const MediaKitIntro = () => {
     {isLastSlide ? 'Complete' : 'Next'}
     <ArrowRight className="w-5 h-5" />
   </motion.button>
+</div>
 </div>
       </div>
     </div>

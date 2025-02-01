@@ -159,7 +159,7 @@ const PackageCard = ({ package: pkg, onDelete }) => (
     <div className="flex items-start justify-between mb-4">
       <div>
         <h3 className="text-lg font-semibold text-white mb-1">{pkg.name}</h3>
-        <div className="text-2xl font-bold text-primary">${pkg.price}</div>
+        <div className="text-2xl font-bold text-primary">₹{pkg.price}</div>
       </div>
       <Button
         variant="ghost"

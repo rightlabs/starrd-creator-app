@@ -1,9 +1,10 @@
 // EnhancedHeader.jsx
 import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, ChevronRight } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronRight, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 // Media Kit Steps Configuration
 export const mediaKitSteps = [
@@ -51,41 +52,56 @@ export const mediaKitSteps = [
   }
 ];
 
-// Step Indicator Component
-const StepIndicator = ({ step, index, currentStep, currentSlide }) => {
+
+const StepIndicator = ({ step, index, currentStep, currentSlide, path }) => {
   const isActive = index + 1 === currentStep;
   const isCompleted = index + 1 < currentStep;
   const hasSlides = step.totalSlides > 0;
 
+  const StepContent = () => (
+    <>
+      <span
+        className={`w-6 h-6 rounded-full flex items-center justify-center border ${
+          isActive
+            ? 'border-[#bcee45] text-[#bcee45]'
+            : isCompleted
+            ? 'border-[#bcee45] bg-[#bcee45] text-black'
+            : 'border-[#333333] text-[#666666]'
+        }`}
+      >
+        {isCompleted ? (
+          <CheckCircle2 className="w-4 h-4" />
+        ) : (
+          <span className="text-xs">{index + 1}</span>
+        )}
+      </span>
+      <span className="text-sm whitespace-nowrap">{step.title}</span>
+    </>
+  );
+
   return (
     <div className="flex items-center">
       <div className="flex flex-col">
-        <div
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-            isActive
-              ? 'bg-[#bcee45]/10 border-[#bcee45] text-[#bcee45]'
-              : isCompleted
-              ? 'text-[#bcee45] border-[#333333]'
-              : 'text-[#666666] border-[#333333]'
-          } border`}
-        >
-          <span 
-            className={`w-6 h-6 rounded-full flex items-center justify-center border ${
+        {isCompleted ? (
+          <Link href={path}>
+            <div
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer
+                text-[#bcee45] border-[#333333] border`}
+            >
+              <StepContent />
+            </div>
+          </Link>
+        ) : (
+          <div
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
               isActive
-                ? 'border-[#bcee45] text-[#bcee45]'
-                : isCompleted
-                ? 'border-[#bcee45] bg-[#bcee45] text-black'
-                : 'border-[#333333] text-[#666666]'
-            }`}
+                ? 'bg-[#bcee45]/10 border-[#bcee45] text-[#bcee45]'
+                : 'text-[#666666] border-[#333333]'
+            } border`}
           >
-            {isCompleted ? (
-              <CheckCircle2 className="w-4 h-4" />
-            ) : (
-              <span className="text-xs">{index + 1}</span>
-            )}
-          </span>
-          <span className="text-sm whitespace-nowrap">{step.title}</span>
-        </div>
+            <StepContent />
+          </div>
+        )}
 
         {/* Slide Progress Indicators */}
         {isActive && hasSlides && (
@@ -107,11 +123,13 @@ const StepIndicator = ({ step, index, currentStep, currentSlide }) => {
           </div>
         )}
       </div>
-      
+
       {index < mediaKitSteps.length - 1 && (
-        <ChevronRight className={`w-5 h-5 mx-2 ${
-          isCompleted ? 'text-[#bcee45]' : 'text-[#333333]'
-        }`} />
+        <ChevronRight
+          className={`w-5 h-5 mx-2 ${
+            isCompleted ? 'text-[#bcee45]' : 'text-[#333333]'
+          }`}
+        />
       )}
     </div>
   );
@@ -171,6 +189,10 @@ export const EnhancedHeader = ({
     }
   };
 
+  const handleBackDashboard=()=>{
+    router.push('/dashboard');
+  }
+
   return (
     <div className="sticky top-0 z-50">
       <div className="bg-black/40 backdrop-blur-lg border-b border-white/5">
@@ -190,7 +212,15 @@ export const EnhancedHeader = ({
               <h1 className="text-xl font-bold text-white">Create Media Kit</h1>
               <p className="text-sm text-[#888888]">Step {currentStep} of {totalSteps}</p>
             </div>
-          </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleBackDashboard}
+              className="w-8 h-8 bg-[#1A1A1A] border border-[#333333] rounded-xl flex items-center justify-center hover:border-[#bcee45]/50 transition-colors"
+            >
+              <X className="w-4 h-4 text-[#bcee45]" />
+            </motion.button>    
+                  </div>
 
           {/* Steps Navigation */}
           <div 
@@ -207,6 +237,7 @@ export const EnhancedHeader = ({
                   index={index}
                   currentStep={currentStep}
                   currentSlide={currentSlide}
+                  path={step.path}
                 />
               </div>
             ))}

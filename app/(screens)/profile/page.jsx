@@ -168,7 +168,7 @@ const ProfilePage = () => {
             <Link href={item.link} key={item.name}>
               <motion.button
                 whileHover={{ x: 4 }}
-                className="w-full p-4 flex items-center justify-between bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333] hover:border-[#bcee45]/20 transition-all group"
+                className="w-full p-4 mt-2 flex items-center justify-between bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333] hover:border-[#bcee45]/20 transition-all group"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xl">{item.icon}</span>

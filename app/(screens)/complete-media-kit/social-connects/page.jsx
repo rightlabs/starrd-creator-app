@@ -149,7 +149,8 @@ export default function SocialConnectPage() {
         </div>
 
         {/* Navigation */}
-        <div className="mt-8 flex justify-end">
+        <div className="fixed bottom-0  right-0 p-4 bg-[#111111]">
+        <div className="max-w-xl mx-auto flex justify-between">
           <Button
             onClick={handleComplete}
             disabled={connectedPlatforms.length === 0}
@@ -158,6 +159,7 @@ export default function SocialConnectPage() {
             Continue
             <ArrowRight className="w-5 h-5" />
           </Button>
+        </div>
         </div>
 
         {/* Completion Modal */}

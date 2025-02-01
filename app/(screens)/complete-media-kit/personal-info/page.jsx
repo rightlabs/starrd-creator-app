@@ -198,8 +198,9 @@ const PersonalInfoPage = () => {
       </div>
 
       {/* Main Content */}
+      <div className="fixed inset-0 top-[172px] bottom-[80px] overflow-y-auto">
       <div className="max-w-xl mx-auto p-6">
-        <AnimatePresence mode="wait">
+                <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
             initial={{ opacity: 0, x: 20 }}
@@ -218,7 +219,7 @@ const PersonalInfoPage = () => {
 
             {/* Hair Type Slide */}
             {currentSlide === 0 && (
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-4 ">
                 {hairTypes.map(type => (
                   <SelectionCard
                     key={type.id}
@@ -283,10 +284,11 @@ const PersonalInfoPage = () => {
             )}
           </motion.div>
         </AnimatePresence>
+        </div>
 
         {/* Navigation */}
-        <div className="mt-8 flex justify-between">
-          <motion.button
+{/* Navigation */}
+<div className="fixed bottom-0 left-0 right-0 p-4 bg-[#111111] border-t border-[#333333] z-50">        <div className="max-w-xl mx-auto flex justify-between">          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => currentSlide > 0 && setCurrentSlide(current => current - 1)}
@@ -321,6 +323,7 @@ const PersonalInfoPage = () => {
             {currentSlide === slides.length - 1 ? 'Complete' : 'Next'}
             <ArrowRight className="w-5 h-5" />
           </motion.button>
+        </div>
         </div>
 
         <AnimatePresence>
