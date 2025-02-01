@@ -203,37 +203,37 @@ const HelpSupportPage = () => {
         </section>
 
         {/* Resources */}
-        {/* <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-[#bcee45]" />
-            Helpful Resources
-          </h2>
-          <div className="grid gap-3">
-            {resources.map((resource, index) => (
-              <motion.a
-                key={index}
-                href="#"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="p-4 bg-zinc-900/50 backdrop-blur-xl rounded-xl border border-white/10 flex items-center justify-between group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#bcee45]/10 flex items-center justify-center text-[#bcee45]">
-                    {resource.icon}
-                  </div>
-                  <div>
-                    <p className="font-medium text-white group-hover:text-[#bcee45] transition-colors">
-                      {resource.title}
-                    </p>
-                    <p className="text-sm text-zinc-400">{resource.description}</p>
-                  </div>
-                </div>
-                <ExternalLink className="w-5 h-5 text-zinc-400 group-hover:text-[#bcee45] transition-colors" />
-              </motion.a>
-            ))}
-          </div>
-        </section> */}
+            {/* <section className="space-y-4">
+            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-[#bcee45]" />
+                Helpful Resources
+            </h2>
+            <div className="grid gap-3">
+                {resources.map((resource, index) => (
+                <motion.a
+                    key={index}
+                    href="#"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-4 bg-zinc-900/50 backdrop-blur-xl rounded-xl border border-white/10 flex items-center justify-between group"
+                >
+                    <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-[#bcee45]/10 flex items-center justify-center text-[#bcee45]">
+                        {resource.icon}
+                    </div>
+                    <div>
+                        <p className="font-medium text-white group-hover:text-[#bcee45] transition-colors">
+                        {resource.title}
+                        </p>
+                        <p className="text-sm text-zinc-400">{resource.description}</p>
+                    </div>
+                    </div>
+                    <ExternalLink className="w-5 h-5 text-zinc-400 group-hover:text-[#bcee45] transition-colors" />
+                </motion.a>
+                ))}
+            </div>
+            </section> */}
       </main>
 
       <Navbar />
