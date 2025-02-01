@@ -1,301 +1,405 @@
-'use client'
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+'use client';
+
+import React from 'react';
+import { motion } from 'framer-motion';
 import { 
   Share2, 
   Download, 
   Instagram, 
   Youtube,
-  Twitter,
-  Globe,
   MapPin,
   Users,
   Heart,
   Star,
+  Eye,
+  BarChart3,
   ChevronRight,
-  Calendar,
-  DollarSign,
-  BarChart,
-  Play,
-  Eye
+  Link as LinkIcon,
+  Mail,
+  Phone,
+  Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 
-const MediaKitPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState('overview');
-
+const MediaKitPreview = () => {
   const creator = {
     name: "Tushar Agarwal",
+    username: "@tushar.designs",
     title: "Digital Creator & UI Designer",
     location: "Mumbai, India",
-    bio: "Passionate about creating engaging content that inspires and educates. Specializing in tech reviews, UI/UX tutorials, and lifestyle vlogs.",
-    achievements: [
-      "Forbes 30 Under 30",
-      "Adobe Creative Ambassador",
-      "Google Developer Expert"
-    ],
-    stats: {
-      followers: "45.8K",
-      engagement: "8.2%",
-      reach: "120K"
+    email: "hello@tushar.design",
+    phone: "+91 98765 43210",
+    website: "tushar.design",
+    avatar: "/welcome-2.jpg",
+    coverImage: "/pixar-1.jpg",
+    bio: "Passionate about creating engaging content that inspires and educates. Specializing in tech reviews, UI/UX tutorials, and lifestyle content that makes a difference.",
+    expertise: ['UI/UX Design', 'Tech Reviews', 'Lifestyle Content'],
+    socialStats: {
+      instagram: {
+        handle: '@tushar.design',
+        followers: '28.5K',
+        engagement: '4.8%',
+        reachPerPost: '45K+'
+      },
+      youtube: {
+        handle: 'Tushar Creates',
+        subscribers: '12.3K',
+        avgViews: '25K+',
+        watchTime: '150K mins'
+      }
     },
-    categories: ['Tech', 'Design', 'Lifestyle'],
     collaborations: [
-      { brand: "Adobe", logo: "/adobe-logo.png" },
-      { brand: "Figma", logo: "/figma-logo.png" },
-      { brand: "Dribbble", logo: "/dribbble-logo.png" }
-    ],
-    recentPosts: [
       {
-        platform: "YouTube",
-        title: "How to Design a Modern Dashboard",
-        views: "24K",
-        engagement: "12%"
+        brand: "Adobe",
+        type: "Brand Partnership",
+        date: "2024"
       },
       {
-        platform: "Instagram",
-        title: "UI Design Tips & Tricks",
-        views: "18K",
-        engagement: "9.5%"
+        brand: "Figma",
+        type: "Ambassador",
+        date: "2023-24"
+      },
+      {
+        brand: "Dribbble",
+        type: "Content Creation",
+        date: "2023"
+      }
+    ],
+    packages: [
+      {
+        name: "Basic Package",
+        price: "₹29,999",
+        deliverables: [
+          "1 YouTube Video Review",
+          "2 Instagram Posts",
+          "3 Instagram Stories"
+        ]
+      },
+      {
+        name: "Premium Package",
+        price: "₹49,999",
+        deliverables: [
+          "2 YouTube Videos",
+          "4 Instagram Posts",
+          "6 Instagram Stories",
+          "1 Dedicated Blog Post"
+        ]
       }
     ]
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F] text-white pb-24">
-      {/* Header with Action Buttons */}
-      <div className="relative h-64 overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#bcee45]/20 to-transparent animate-gradient" />
-          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-30" />
-        </div>
-        
-        <div className="relative p-6 flex justify-between items-start">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold"
-          >
-            Media Kit
-          </motion.h1>
-          <div className="flex gap-3">
-            <motion.button
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2.5 bg-white/10 rounded-xl backdrop-blur-md border border-white/20 hover:border-[#bcee45]/50 transition-colors"
-            >
-              <Share2 className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2.5 bg-[#bcee45] text-black rounded-xl"
-            >
-              <Download className="w-5 h-5" />
-            </motion.button>
+    <div className="min-h-screen bg-gradient-to-b from-black via-zinc-950 to-black text-white pb-24">
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-white/5">
+        <div className="max-w-lg mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <motion.div
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                className="w-10 h-10 rounded-xl bg-[#bcee45]/10 flex items-center justify-center"
+              >
+                <Star className="w-5 h-5 text-[#bcee45]" />
+              </motion.div>
+              <h1 className="text-lg font-bold">Media Kit</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="hover:bg-white/5">
+                <Share2 className="w-5 h-5" />
+              </Button>
+              <Button size="icon" className="bg-[#bcee45] hover:bg-[#bcee45]/90 text-black">
+                <Download className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Profile Section */}
-      <div className="px-6">
-        <motion.div 
+      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+        {/* Profile Card */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative -mt-20 p-6 bg-[#1A1A1A]/60 backdrop-blur-xl rounded-2xl border border-white/10"
+          className="relative overflow-hidden rounded-2xl bg-zinc-900/50 backdrop-blur-xl border border-white/10"
         >
-          <div className="flex items-start gap-4">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-[#bcee45] shadow-lg shadow-[#bcee45]/20"
-            >
-              <Image
-                src="/welcome-2.jpg"
-                alt={creator.name}
-                width={96}
-                height={96}
-                className="w-full h-full object-cover"
-              />
-            </motion.div>
-            
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-xl font-bold">{creator.name}</h2>
-                <Star className="w-5 h-5 text-[#bcee45]" />
+          {/* Cover Image */}
+          <div className="h-32 bg-gradient-to-r from-[#bcee45]/20 via-[#bcee45]/10 to-transparent">
+            <div className="absolute inset-0 bg-[url('/media-kit.jpg')] opacity-20" />
+          </div>
+
+          {/* Profile Info */}
+          <div className="px-6 pb-6">
+            <div className="flex items-start gap-4 -mt-10">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-[#bcee45] shadow-lg shadow-[#bcee45]/20"
+              >
+                <Image
+                  src={creator.avatar}
+                  alt={creator.name}
+                  fill
+                  className="object-cover"
+                />
+              </motion.div>
+
+              <div className="pt-10">
+                <div className="flex items-center gap-2">
+                  <div>
+                    <h2 className="text-xl font-bold flex items-center gap-2">
+                      {creator.name}
+                      <Sparkles className="w-4 h-4 text-[#bcee45]" />
+                    </h2>
+                    <p className="text-zinc-400 text-sm">{creator.username}</p>
+                  </div>
+                </div>
+                <div className="mt-1">
+                  <p className="text-sm font-medium">{creator.title}</p>
+                  <div className="flex items-center gap-1.5 mt-1 text-sm text-zinc-500">
+                    <MapPin className="w-3.5 h-3.5" />
+                    {creator.location}
+                  </div>
+                </div>
               </div>
-              <p className="text-[#888888] text-sm mb-2">{creator.title}</p>
-              <div className="flex items-center gap-2 text-sm text-[#888888]">
-                <MapPin className="w-4 h-4" />
-                {creator.location}
+            </div>
+
+            {/* Contact Info */}
+            <div className="mt-6 grid grid-cols-1 gap-3">
+              <div className="flex items-center gap-3 text-zinc-400">
+                <Mail className="w-4 h-4" />
+                <span className="text-sm">{creator.email}</span>
+              </div>
+              <div className="flex items-center gap-3 text-zinc-400">
+                <Phone className="w-4 h-4" />
+                <span className="text-sm">{creator.phone}</span>
+              </div>
+              <div className="flex items-center gap-3 text-zinc-400">
+                <LinkIcon className="w-4 h-4" />
+                <span className="text-sm">{creator.website}</span>
+              </div>
+            </div>
+
+            {/* Bio & Expertise */}
+            <div className="mt-6">
+              <p className="text-sm text-zinc-400 leading-relaxed mb-4">
+                {creator.bio}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {creator.expertise.map((category) => (
+                  <span
+                    key={category}
+                    className="px-3 py-1.5 bg-[#bcee45]/10 rounded-lg text-[#bcee45] text-sm font-medium"
+                  >
+                    {category}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
-
-          <div className="mt-6">
-            <p className="text-[#888888] text-sm leading-relaxed">{creator.bio}</p>
-          </div>
-
-          <div className="mt-6 flex gap-2">
-            {creator.categories.map((category) => (
-              <span
-                key={category}
-                className="px-3 py-1 bg-[#bcee45]/10 rounded-lg text-[#bcee45] text-sm"
-              >
-                {category}
-              </span>
-            ))}
-          </div>
         </motion.div>
 
-        {/* Statistics Grid */}
-        <div className="mt-6 grid grid-cols-3 gap-4">
+        {/* Statistics */}
+        <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'Total Followers', value: creator.stats.followers, icon: <Users className="w-5 h-5" /> },
-            { label: 'Engagement Rate', value: creator.stats.engagement, icon: <Heart className="w-5 h-5" /> },
-            { label: 'Monthly Reach', value: creator.stats.reach, icon: <Eye className="w-5 h-5" /> }
+            { icon: <Users className="w-4 h-4" />, label: 'Followers', value: '45.8K' },
+            { icon: <Heart className="w-4 h-4" />, label: 'Engagement', value: '8.2%' },
+            { icon: <Eye className="w-4 h-4" />, label: 'Reach', value: '120K' }
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="p-4 bg-[#1A1A1A]/60 backdrop-blur-xl rounded-xl border border-white/10"
+              className="p-4 rounded-xl bg-zinc-900/50 backdrop-blur-xl border border-white/10"
             >
-              <div className="w-10 h-10 bg-[#bcee45]/10 rounded-lg flex items-center justify-center mb-3 text-[#bcee45]">
-                {stat.icon}
+              <div className="w-8 h-8 mb-2 rounded-lg bg-[#bcee45]/10 flex items-center justify-center">
+                <div className="text-[#bcee45]">{stat.icon}</div>
               </div>
-              <div className="text-lg font-bold mb-1">{stat.value}</div>
-              <div className="text-xs text-[#888888]">{stat.label}</div>
+              <div className="text-lg font-bold">{stat.value}</div>
+              <div className="text-xs text-zinc-500">{stat.label}</div>
             </motion.div>
           ))}
         </div>
 
         {/* Social Platforms */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-8"
-        >
-          <h3 className="text-lg font-semibold mb-4">Social Platforms</h3>
-          <div className="space-y-3">
-            {[
-              { 
-                platform: 'Instagram',
-                handle: '@tushar.design',
-                followers: '28.5K',
-                icon: <Instagram className="w-5 h-5" />,
-                color: 'from-pink-500 to-purple-600'
-              },
-              {
-                platform: 'YouTube',
-                handle: 'Tushar Creates',
-                followers: '12.3K',
-                icon: <Youtube className="w-5 h-5" />,
-                color: 'from-red-500 to-pink-600'
-              },
-              {
-                platform: 'Twitter',
-                handle: '@tushardesigns',
-                followers: '5K',
-                icon: <Twitter className="w-5 h-5" />,
-                color: 'from-blue-400 to-blue-600'
-              }
-            ].map((platform) => (
-              <motion.div
-                key={platform.platform}
-                whileHover={{ scale: 1.02 }}
-                className="p-4 bg-[#1A1A1A]/60 backdrop-blur-xl rounded-xl border border-white/10 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${platform.color} flex items-center justify-center`}>
-                    {platform.icon}
-                  </div>
-                  <div>
-                    <div className="font-semibold mb-1">{platform.platform}</div>
-                    <div className="text-sm text-[#888888]">{platform.handle}</div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-semibold">{platform.followers}</div>
-                  <div className="text-sm text-[#888888]">followers</div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+        <div className="space-y-4">
+          {/* Instagram */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 bg-zinc-900/50 backdrop-blur-xl rounded-xl border border-white/10"
+          >
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-600 to-pink-600 flex items-center justify-center">
+                <Instagram className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-1">Instagram</h3>
+                <p className="text-sm text-zinc-400">{creator.socialStats.instagram.handle}</p>
+              </div>
+            </div>
 
-        {/* Recent Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-8"
-        >
-          <h3 className="text-lg font-semibold mb-4">Recent Content</h3>
-          <div className="space-y-3">
-            {creator.recentPosts.map((post, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.02 }}
-                className="p-4 bg-[#1A1A1A]/60 backdrop-blur-xl rounded-xl border border-white/10"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#bcee45]/10 flex items-center justify-center text-[#bcee45]">
-                    {post.platform === 'YouTube' ? <Play className="w-4 h-4" /> : <Image className="w-4 h-4" />}
-                  </div>
-                  <span className="text-sm font-medium">{post.platform}</span>
-                </div>
-                <h4 className="font-medium mb-2">{post.title}</h4>
-                <div className="flex items-center gap-4 text-sm text-[#888888]">
-                  <div className="flex items-center gap-1">
-                    <Eye className="w-4 h-4" />
-                    {post.views} views
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <BarChart className="w-4 h-4" />
-                    {post.engagement} engagement
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-zinc-400 text-sm mb-1">Followers</p>
+                <p className="text-xl font-bold">
+                  {creator.socialStats.instagram.followers}
+                </p>
+              </div>
+              <div>
+                <p className="text-zinc-400 text-sm mb-1">Engagement</p>
+                <p className="text-xl font-bold">
+                  {creator.socialStats.instagram.engagement}
+                </p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-zinc-400 text-sm mb-1">Avg. Reach per Post</p>
+                <p className="text-xl font-bold">
+                  {creator.socialStats.instagram.reachPerPost}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* YouTube */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 bg-zinc-900/50 backdrop-blur-xl rounded-xl border border-white/10"
+          >
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center">
+                <Youtube className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-1">YouTube</h3>
+                <p className="text-sm text-zinc-400">{creator.socialStats.youtube.handle}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-zinc-400 text-sm mb-1">Subscribers</p>
+                <p className="text-xl font-bold">
+                  {creator.socialStats.youtube.subscribers}
+                </p>
+              </div>
+              <div>
+                <p className="text-zinc-400 text-sm mb-1">Avg. Views</p>
+                <p className="text-xl font-bold">
+                  {creator.socialStats.youtube.avgViews}
+                </p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-zinc-400 text-sm mb-1">Watch Time</p>
+                <p className="text-xl font-bold">
+                  {creator.socialStats.youtube.watchTime}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
 
         {/* Previous Collaborations */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-8 mb-20"
+          className="bg-zinc-900/50 backdrop-blur-xl rounded-xl border border-white/10 p-6"
         >
-          <h3 className="text-lg font-semibold mb-4">Previous Collaborations</h3>
-          <div className="grid grid-cols-3 gap-4">
-            {creator.collaborations.map((collab, index) => (
+          <h3 className="text-lg font-semibold mb-6">Previous Collaborations</h3>
+          <div className="grid grid-cols-3 gap-3">
+            {creator.collaborations.map((collab) => (
               <motion.div
                 key={collab.brand}
-                whileHover={{ scale: 1.05 }}
-                className="aspect-square bg-[#1A1A1A]/60 backdrop-blur-xl rounded-xl border border-white/10 flex items-center justify-center p-4"
+                whileHover={{ scale: 1.02 }}
+                className="p-4 bg-black/40 rounded-xl border border-white/10 flex flex-col items-center gap-3"
               >
-                <Image
-                  src={collab.logo}
-                  alt={collab.brand}
-                  width={64}
-                  height={64}
-                  className="w-12 h-12 object-contain"
-                />
+                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
+                  <span className="text-xl font-bold">{collab.brand[0]}</span>
+                </div>
+                <div className="text-center">
+                  <p className="font-medium text-sm mb-0.5">{collab.brand}</p>
+                  <p className="text-xs text-zinc-500">{collab.type}</p>
+                  <p className="text-xs text-zinc-500">{collab.date}</p>
+                </div>
               </motion.div>
             ))}
           </div>
         </motion.div>
-      </div>
+
+        {/* Packages */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-zinc-900/50 backdrop-blur-xl rounded-xl border border-white/10 p-6"
+        >
+          <h3 className="text-lg font-semibold mb-6">Collaboration Packages</h3>
+          <div className="space-y-4">
+            {creator.packages.map((pkg, index) => (
+              <motion.div
+                key={pkg.name}
+                whileHover={{ scale: 1.01 }}
+                className={`p-6 rounded-xl border ${
+                index === 1 
+                  ? 'bg-[#bcee45]/10 border-[#bcee45]' 
+                  : 'bg-black/40 border-white/10'
+              }`}
+              >
+                <h4 className="font-semibold mb-2">{pkg.name}</h4>
+                <p className="text-2xl font-bold text-[#bcee45] mb-6">{pkg.price}</p>
+                <div className="space-y-3">
+                  {pkg.deliverables.map((item) => (
+                    <div key={item} className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#bcee45]" />
+                      <span className={index === 1 ? 'text-white' : 'text-zinc-400 text-sm'}>
+                        {item}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  className={`w-full mt-6 ${
+                    index === 1 
+                      ? 'bg-[#bcee45] hover:bg-[#bcee45]/90 text-black' 
+                      : 'bg-transparent border border-white/10 hover:border-[#bcee45]/50'
+                  }`}
+                >
+                  Select Package
+                </Button>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Contact CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-br from-[#bcee45]/20 to-transparent backdrop-blur-xl rounded-xl border border-[#bcee45]/20 p-6 text-center"
+        >
+          <h3 className="text-xl font-bold mb-2">Ready to Collaborate?</h3>
+          <p className="text-zinc-400 mb-6 max-w-md mx-auto text-sm">
+            Let's create something amazing together. Reach out to discuss collaboration opportunities.
+          </p>
+          <Button 
+            size="lg" 
+            className="bg-[#bcee45] hover:bg-[#bcee45]/90 text-black gap-2 w-full sm:w-auto"
+          >
+            Get in Touch
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </motion.div>
+
+       
+      </main>
 
       <Navbar />
+
     </div>
   );
 };
 
-export default MediaKitPage;
+export default MediaKitPreview;
