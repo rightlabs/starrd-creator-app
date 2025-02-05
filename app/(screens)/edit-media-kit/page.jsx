@@ -2,44 +2,17 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  ArrowLeft,
-  Link as LinkIcon,
-  User,
-  Image as ImageIcon,
-  Share2,
-  Youtube,
-  Instagram,
-  Twitter,
-  Plus,
-  X,
-  CheckCircle,
-  Camera,
-  Edit3,
-  Globe,
-  Mail,
-  MapPin,
-  AtSign,
-  Phone
-} from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/components/ui/card';
-import Navbar from '@/components/Navbar';
+import ProfileSection from '@/components/EditMediaKit/BasicInfo';
+import CategoriesSection from '@/components/EditMediaKit/CreatorCategories';
+import PortfolioSection from '@/components/EditMediaKit/Portfolio';
+import SocialConnectSection from '@/components/EditMediaKit/SocialConnect';
+import CollaborationsSection from '@/components/EditMediaKit/PreviousCollabs';
+import PricingSection from '@/components/EditMediaKit/Pricing';
+import PersonalInfoSection from '@/components/EditMediaKit/PersonalInfo';
 
-// Smooth scroll utility
-const scrollIntoView = (id) => {
-  const element = document.getElementById(id);
-  if (element) {
-    setTimeout(() => {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }, 100);
-  }
-};
-
-// Reusable components
+// Reusable ToggleSwitch component
 const ToggleSwitch = React.memo(({ isOn, onToggle, label, isExpanded }) => (
   <motion.button
     onClick={onToggle}
@@ -61,17 +34,14 @@ const ToggleSwitch = React.memo(({ isOn, onToggle, label, isExpanded }) => (
             x: isOn ? 28 : 0,
             backgroundColor: isOn ? '#000000' : '#666666' 
           }}
-          transition={{ 
-            type: "spring",
-            stiffness: 400,
-            damping: 25
-          }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
         />
       </motion.div>
     </div>
   </motion.button>
 ));
 
+// Reusable SectionContainer component
 const SectionContainer = ({ id, children, isVisible }) => (
   <AnimatePresence>
     {isVisible && (
@@ -82,10 +52,7 @@ const SectionContainer = ({ id, children, isVisible }) => (
           height: 'auto',
           opacity: 1,
           transition: {
-            height: {
-              duration: 0.3,
-              ease: [0.04, 0.62, 0.23, 0.98]
-            },
+            height: { duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] },
             opacity: { duration: 0.2, delay: 0.1 }
           }
         }}
@@ -105,32 +72,22 @@ const SectionContainer = ({ id, children, isVisible }) => (
   </AnimatePresence>
 );
 
-const InfoItem = ({ icon, label, value }) => (
-  <div className="flex items-center gap-3 text-sm">
-    <div className="w-8 h-8 rounded-lg bg-[#242424] flex items-center justify-center">
-      {icon}
-    </div>
-    <div>
-      <p className="text-[#888888]">{label}</p>
-      <p className="font-medium">{value}</p>
-    </div>
-  </div>
-);
-
 const ManageMediaKit = () => {
   const router = useRouter();
   
-  // Initial state
+  // Initial state for media kit data
   const [mediaKitData, setMediaKitData] = useState({
     profileInfo: {
       name: 'John Creator',
-      username: '@johncreator',
+      dob: '2001-01-15',
       location: 'New York, USA',
       email: 'john@creator.com',
       phone: '+1 234 567 8900',
       website: 'creator.com/john',
       bio: 'Digital creator passionate about tech and lifestyle content',
-      avatar: '/placeholder-avatar.jpg'
+      avatar: '/pixar-1.jpg',
+      coverImage: '/pixar-1.jpg',
+      tagline:'Digital creator passionate about tech and lifestyle content',
     },
     socialConnections: {
       youtube: {
@@ -146,35 +103,54 @@ const ManageMediaKit = () => {
         engagement: '5.2%'
       }
     },
-    contentCategories: ['Tech', 'Lifestyle', 'Photography'],
-    previousCollaborations: [
+    categories: ['Tech', 'Lifestyle', 'Photography'],
+    portfolio: [
       {
-        brand: 'TechGear',
-        type: 'Sponsored Video',
-        date: '2024-01',
-        image: '/brand1.jpg'
-      },
-      {
-        brand: 'LifeStyle Co',
-        type: 'Instagram Campaign',
-        date: '2023-12',
-        image: '/brand2.jpg'
-      }
-    ],
+        id: 1,
+        mediaType: 'video',
+        contentType: 'product-review',
+        category: 'tech',
+        fileUrl: '/pixar-2.jpg',
+      },],
+      collaborations: [
+        {
+          id: 1,
+          brandName: 'Example Brand',
+          brandLogo: '/starrd-logo.png',
+          type: 'sponsored',
+          category: 'tech',
+          mediaFile: '/pixar-2.jpg'
+        },],
     packages: [
       {
-        name: 'Basic Package',
+        id: 1,
+      name: 'Basic Package',
+      description: 'Perfect for small businesses',
         price: '1000',
         deliverables: ['1 YouTube Video', '2 Instagram Posts']
       },
       {
+        id: 2,
         name: 'Premium Package',
+        description: 'Perfect for medium-sized businesses',
         price: '2500',
         deliverables: ['3 YouTube Videos', '5 Instagram Posts', '10 Stories']
       }
-    ]
+    ],
+    personalInfo: {
+      hairType: 'straight',
+      heightFt: '5',
+      heightIn: '10',
+      bodyType: 'mesomorph',
+      languages: ['English', 'Spanish'],
+      petType: 'dog'
+    }
   });
 
+  // State for form editing
+  const [editForm, setEditForm] = useState({ ...mediaKitData });
+  
+  // State for section toggles
   const [sectionToggles, setSectionToggles] = useState({
     profile: true,
     social: false,
@@ -183,34 +159,39 @@ const ManageMediaKit = () => {
     packages: false
   });
 
+  // State for editing mode
   const [isEditing, setIsEditing] = useState({
-    profile: false,
+    profile: true,
     social: false,
     content: false,
     collaborations: false,
     packages: false
   });
 
-  const [editForm, setEditForm] = useState({...mediaKitData});
-
-  // Handlers
+  // Handler for toggling sections
   const handleToggleSection = (section) => {
     setSectionToggles(prev => {
       const newToggles = { ...prev, [section]: !prev[section] };
       if (newToggles[section]) {
-        scrollIntoView(`${section}-section`);
+        setIsEditing(prev => ({ ...prev, [section]: true }));
+        setTimeout(() => {
+          document.getElementById(`${section}-section`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
       }
       return newToggles;
     });
   };
 
+  // Handler for toggling edit mode
   const handleEditToggle = (section) => {
     setIsEditing(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
+    setEditForm({ ...mediaKitData });
   };
 
+  // Handler for saving section changes
   const handleSaveSection = (section) => {
     setMediaKitData(prev => ({
       ...prev,
@@ -219,167 +200,8 @@ const ManageMediaKit = () => {
     handleEditToggle(section);
   };
 
-  // Section Components
-  const ProfileSection = () => (
-    <Card className="p-6 bg-[#1A1A1A] border-[#333333]">
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex items-center gap-4">
-          <motion.div 
-            whileHover={{ scale: 1.05 }}
-            className="w-20 h-20 rounded-xl bg-[#242424] flex items-center justify-center cursor-pointer"
-          >
-            <Camera className="w-8 h-8 text-[#666666]" />
-          </motion.div>
-          <div className="space-y-1">
-            <h3 className="text-lg font-semibold">{mediaKitData.profileInfo.name}</h3>
-            <p className="text-sm text-[#888888]">{mediaKitData.profileInfo.username}</p>
-          </div>
-        </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => handleEditToggle('profile')}
-          className="p-2 rounded-lg bg-[#242424] hover:bg-[#333333]"
-        >
-          <Edit3 className="w-5 h-5" />
-        </motion.button>
-      </div>
-
-      {isEditing.profile ? (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="space-y-4"
-        >
-          <input
-            type="text"
-            value={editForm.profileInfo.name}
-            onChange={(e) => setEditForm({
-              ...editForm,
-              profileInfo: { ...editForm.profileInfo, name: e.target.value }
-            })}
-            className="w-full p-3 rounded-lg bg-[#242424] border border-[#333333]"
-            placeholder="Name"
-          />
-          <textarea
-            value={editForm.profileInfo.bio}
-            onChange={(e) => setEditForm({
-              ...editForm,
-              profileInfo: { ...editForm.profileInfo, bio: e.target.value }
-            })}
-            className="w-full p-3 rounded-lg bg-[#242424] border border-[#333333] h-32"
-            placeholder="Bio"
-          />
-          <div className="flex justify-end gap-2">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleEditToggle('profile')}
-              className="px-4 py-2 rounded-lg bg-[#242424] hover:bg-[#333333]"
-            >
-              Cancel
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleSaveSection('profileInfo')}
-              className="px-4 py-2 rounded-lg bg-[#bcee45] text-black hover:opacity-90"
-            >
-              Save Changes
-            </motion.button>
-          </div>
-        </motion.div>
-      ) : (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <InfoItem icon={<MapPin className="w-4 h-4" />} label="Location" value={mediaKitData.profileInfo.location} />
-            <InfoItem icon={<Mail className="w-4 h-4" />} label="Email" value={mediaKitData.profileInfo.email} />
-            <InfoItem icon={<Phone className="w-4 h-4" />} label="Phone" value={mediaKitData.profileInfo.phone} />
-            <InfoItem icon={<Globe className="w-4 h-4" />} label="Website" value={mediaKitData.profileInfo.website} />
-          </div>
-          <p className="text-sm text-[#888888] mt-4">{mediaKitData.profileInfo.bio}</p>
-        </div>
-      )}
-    </Card>
-  );
-
-  const SocialSection = () => (
-    <Card className="p-6 bg-[#1A1A1A] border-[#333333]">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold">Social Connections</h3>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => handleEditToggle('social')}
-          className="p-2 rounded-lg bg-[#242424] hover:bg-[#333333]"
-        >
-          <Edit3 className="w-5 h-5" />
-        </motion.button>
-      </div>
-
-      <div className="space-y-4">
-        {Object.entries(mediaKitData.socialConnections).map(([platform, data]) => (
-          <motion.div
-            key={platform}
-            whileHover={{ scale: 1.02 }}
-            className="p-4 rounded-xl bg-[#242424] border border-[#333333]"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                {platform === 'youtube' && <Youtube className="w-5 h-5 text-[#bcee45]" />}
-                {platform === 'instagram' && <Instagram className="w-5 h-5 text-[#bcee45]" />}
-                <span className="capitalize">{platform}</span>
-              </div>
-              {data.connected ? (
-                <CheckCircle className="w-5 h-5 text-[#bcee45]" />
-              ) : (
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="text-sm text-[#bcee45]"
-                >
-                  Connect
-                </motion.button>
-              )}
-            </div>
-            {data.connected && (
-              <div className="grid grid-cols-2 gap-4 mt-3">
-                <div>
-                  <p className="text-sm text-[#888888]">Handle</p>
-                  <p className="font-medium">{data.handle}</p>
-                </div>
-                {platform === 'youtube' && (
-                  <>
-                    <div>
-                      <p className="text-sm text-[#888888]">Subscribers</p>
-                      <p className="font-medium">{data.subscribers}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-[#888888]">Avg. Views</p>
-                      <p className="font-medium">{data.avgViews}</p>
-                    </div>
-                  </>
-                )}
-                {platform === 'instagram' && (
-                  <>
-                    <div>
-                      <p className="text-sm text-[#888888]">Followers</p>
-                      <p className="font-medium">{data.followers}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-[#888888]">Engagement</p>
-                      <p className="font-medium">{data.engagement}</p>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-          </motion.div>
-        ))}
-      </div>
-    </Card>
-  );
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F] text-white pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F] text-white">
       {/* Header */}
       <motion.div
         initial={false}
@@ -404,250 +226,151 @@ const ManageMediaKit = () => {
         </div>
       </motion.div>
 
-      <div className="container mx-auto p-6 space-y-4">
-        {/* Section Toggles */}
-        <div className="space-y-4">
-          <motion.div layout className="space-y-4">
-            {/* Profile Section Toggle & Content */}
-            <motion.div layout className="w-full">
-              <ToggleSwitch
-                isOn={sectionToggles.profile}
-                onToggle={() => handleToggleSection('profile')}
-                label="Profile Information"
-                isExpanded={sectionToggles.profile}
+      {/* Main Content */}
+      <div className="container mx-auto p-6 space-y-4 pb-24">
+        <motion.div layout className="space-y-4">
+          {/* Profile Section */}
+          <motion.div layout className="w-full">
+            <ToggleSwitch
+              isOn={sectionToggles.profile}
+              onToggle={() => handleToggleSection('profile')}
+              label="Basic Information"
+              isExpanded={sectionToggles.profile}
+            />
+            <SectionContainer id="profile-section" isVisible={sectionToggles.profile}>
+              <ProfileSection
+                profileInfo={mediaKitData.profileInfo}
+                editForm={editForm}
+                isEditing={isEditing.profile}
+                setEditForm={setEditForm}
+                handleEditToggle={handleEditToggle}
+                handleSaveSection={handleSaveSection}
               />
-              <SectionContainer id="profile-section" isVisible={sectionToggles.profile}>
-                <ProfileSection />
-              </SectionContainer>
-            </motion.div>
-
-            {/* Social Section Toggle & Content */}
-            <motion.div layout className="w-full">
-              <ToggleSwitch
-                isOn={sectionToggles.social}
-                onToggle={() => handleToggleSection('social')}
-                label="Social Connections"
-                isExpanded={sectionToggles.social}
-              />
-              <SectionContainer id="social-section" isVisible={sectionToggles.social}>
-                <SocialSection />
-              </SectionContainer>
-            </motion.div>
-
-            {/* Content Categories Section */}
-            <motion.div layout className="w-full">
-              <ToggleSwitch
-                isOn={sectionToggles.content}
-                onToggle={() => handleToggleSection('content')}
-                label="Content Categories"
-                isExpanded={sectionToggles.content}
-              />
-              <SectionContainer id="content-section" isVisible={sectionToggles.content}>
-                <Card className="p-6 bg-[#1A1A1A] border-[#333333]">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-semibold">Content Categories</h3>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleEditToggle('content')}
-                      className="p-2 rounded-lg bg-[#242424] hover:bg-[#333333]"
-                    >
-                      <Edit3 className="w-5 h-5" />
-                    </motion.button>
-                  </div>
-
-                  {isEditing.content ? (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="space-y-4"
-                    >
-                      <div className="flex flex-wrap gap-2">
-                        {editForm.contentCategories.map((category, index) => (
-                          <motion.div
-                            key={index}
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            exit={{ scale: 0 }}
-                            className="px-3 py-1 rounded-lg bg-[#242424] border border-[#333333] flex items-center gap-2"
-                          >
-                            <span>{category}</span>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => {
-                                const newCategories = editForm.contentCategories.filter((_, i) => i !== index);
-                                setEditForm({ ...editForm, contentCategories: newCategories });
-                              }}
-                              className="text-[#888888] hover:text-white"
-                            >
-                              <X className="w-4 h-4" />
-                            </motion.button>
-                          </motion.div>
-                        ))}
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            const newCategory = prompt('Enter new category');
-                            if (newCategory) {
-                              setEditForm({
-                                ...editForm,
-                                contentCategories: [...editForm.contentCategories, newCategory]
-                              });
-                            }
-                          }}
-                          className="px-3 py-1 rounded-lg border border-[#bcee45] text-[#bcee45] hover:bg-[#bcee45] hover:text-black flex items-center gap-2"
-                        >
-                          <Plus className="w-4 h-4" />
-                          Add Category
-                        </motion.button>
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleEditToggle('content')}
-                          className="px-4 py-2 rounded-lg bg-[#242424] hover:bg-[#333333]"
-                        >
-                          Cancel
-                        </motion.button>
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleSaveSection('contentCategories')}
-                          className="px-4 py-2 rounded-lg bg-[#bcee45] text-black hover:opacity-90"
-                        >
-                          Save Changes
-                        </motion.button>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {mediaKitData.contentCategories.map((category, index) => (
-                        <motion.div
-                          key={index}
-                          whileHover={{ scale: 1.05 }}
-                          className="px-3 py-1 rounded-lg bg-[#242424] border border-[#333333]"
-                        >
-                          {category}
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </Card>
-              </SectionContainer>
-            </motion.div>
-
-            {/* Previous Collaborations Section */}
-            <motion.div layout className="w-full">
-              <ToggleSwitch
-                isOn={sectionToggles.collaborations}
-                onToggle={() => handleToggleSection('collaborations')}
-                label="Previous Collaborations"
-                isExpanded={sectionToggles.collaborations}
-              />
-              <SectionContainer id="collaborations-section" isVisible={sectionToggles.collaborations}>
-                <Card className="p-6 bg-[#1A1A1A] border-[#333333]">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-semibold">Previous Collaborations</h3>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleEditToggle('collaborations')}
-                      className="p-2 rounded-lg bg-[#242424] hover:bg-[#333333]"
-                    >
-                      <Edit3 className="w-5 h-5" />
-                    </motion.button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {mediaKitData.previousCollaborations.map((collab, index) => (
-                      <motion.div
-                        key={index}
-                        whileHover={{ scale: 1.02 }}
-                        className="p-4 rounded-xl bg-[#242424] border border-[#333333]"
-                      >
-                        <div className="w-full h-40 rounded-lg bg-[#1A1A1A] mb-4 flex items-center justify-center">
-                          <ImageIcon className="w-8 h-8 text-[#666666]" />
-                        </div>
-                        <h4 className="font-medium mb-1">{collab.brand}</h4>
-                        <p className="text-sm text-[#888888]">{collab.type}</p>
-                        <p className="text-sm text-[#888888]">{collab.date}</p>
-                      </motion.div>
-                    ))}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      className="p-4 rounded-xl border border-dashed border-[#333333] flex flex-col items-center justify-center gap-2 hover:border-[#bcee45] hover:text-[#bcee45]"
-                      onClick={() => handleEditToggle('collaborations')}
-                    >
-                      <Plus className="w-6 h-6" />
-                      <span>Add Collaboration</span>
-                    </motion.button>
-                  </div>
-                </Card>
-              </SectionContainer>
-            </motion.div>
-
-            {/* Packages Section */}
-            <motion.div layout className="w-full">
-              <ToggleSwitch
-                isOn={sectionToggles.packages}
-                onToggle={() => handleToggleSection('packages')}
-                label="Packages & Pricing"
-                isExpanded={sectionToggles.packages}
-              />
-              <SectionContainer id="packages-section" isVisible={sectionToggles.packages}>
-                <Card className="p-6 bg-[#1A1A1A] border-[#333333]">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-semibold">Packages & Pricing</h3>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleEditToggle('packages')}
-                      className="p-2 rounded-lg bg-[#242424] hover:bg-[#333333]"
-                    >
-                      <Edit3 className="w-5 h-5" />
-                    </motion.button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {mediaKitData.packages.map((pkg, index) => (
-                      <motion.div
-                        key={index}
-                        whileHover={{ scale: 1.02 }}
-                        className="p-4 rounded-xl bg-[#242424] border border-[#333333]"
-                      >
-                        <h4 className="font-medium mb-2">{pkg.name}</h4>
-                        <p className="text-2xl font-bold mb-4">${pkg.price}</p>
-                        <div className="space-y-2">
-                          {pkg.deliverables.map((item, i) => (
-                            <div key={i} className="flex items-center gap-2 text-sm text-[#888888]">
-                              <CheckCircle className="w-4 h-4 text-[#bcee45]" />
-                              <span>{item}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    ))}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      className="p-4 rounded-xl border border-dashed border-[#333333] flex flex-col items-center justify-center gap-2 hover:border-[#bcee45] hover:text-[#bcee45]"
-                      onClick={() => handleEditToggle('packages')}
-                    >
-                      <Plus className="w-6 h-6" />
-                      <span>Add Package</span>
-                    </motion.button>
-                  </div>
-                </Card>
-              </SectionContainer>
-            </motion.div>
+            </SectionContainer>
           </motion.div>
-        </div>
+          <motion.div layout className="w-full">
+         <ToggleSwitch
+            isOn={sectionToggles.content}
+            onToggle={() => handleToggleSection('content')}
+            label="Creator Categories"
+            isExpanded={sectionToggles.content}
+            />
+          <SectionContainer id="categories-section" isVisible={sectionToggles.content}>           
+          <CategoriesSection
+  categories={mediaKitData.categories}
+  editForm={editForm}
+  isEditing={isEditing.content}
+  setEditForm={setEditForm}
+  handleEditToggle={handleEditToggle}
+  handleSaveSection={handleSaveSection}
+/>
+            </SectionContainer>
+          </motion.div>
+
+          <motion.div layout className="w-full">
+  <ToggleSwitch
+    isOn={sectionToggles.portfolio}
+    onToggle={() => handleToggleSection('portfolio')}
+    label="Portfolio Items"
+    isExpanded={sectionToggles.portfolio}
+  />
+  <SectionContainer id="portfolio-section" isVisible={sectionToggles.portfolio}>
+    <PortfolioSection
+      portfolio={mediaKitData.portfolio}
+      editForm={editForm}
+      isEditing={isEditing.portfolio}
+      setEditForm={setEditForm}
+      handleEditToggle={handleEditToggle}
+      handleSaveSection={handleSaveSection}
+    />
+  </SectionContainer>
+</motion.div>
+<motion.div layout className="w-full">
+  <ToggleSwitch
+    isOn={sectionToggles.social}
+    onToggle={() => handleToggleSection('social')}
+    label="Social Connections"
+    isExpanded={sectionToggles.social}
+  />
+  <SectionContainer id="social-section" isVisible={sectionToggles.social}>
+    <SocialConnectSection
+      socialConnections={mediaKitData.socialConnections}
+      editForm={editForm}
+      isEditing={isEditing.social}
+      setEditForm={setEditForm}
+      handleEditToggle={handleEditToggle}
+      handleSaveSection={handleSaveSection}
+    />
+  </SectionContainer>
+</motion.div>
+<motion.div layout className="w-full">
+  <ToggleSwitch
+    isOn={sectionToggles.collaborations}
+    onToggle={() => handleToggleSection('collaborations')}
+    label="Previous Collaborations"
+    isExpanded={sectionToggles.collaborations}
+  />
+  <SectionContainer id="collaborations-section" isVisible={sectionToggles.collaborations}>
+    <CollaborationsSection
+      collaborations={mediaKitData.collaborations}
+      editForm={editForm}
+      isEditing={isEditing.collaborations}
+      setEditForm={setEditForm}
+      handleEditToggle={handleEditToggle}
+      handleSaveSection={handleSaveSection}
+    />
+  </SectionContainer>
+</motion.div>
+
+<motion.div layout className="w-full">
+  <ToggleSwitch
+    isOn={sectionToggles.packages}
+    onToggle={() => handleToggleSection('packages')}
+    label="Packages & Pricing"
+    isExpanded={sectionToggles.packages}
+  />
+  <SectionContainer id="packages-section" isVisible={sectionToggles.packages}>
+    <PricingSection
+      packages={mediaKitData.packages}
+      editForm={editForm}
+      isEditing={isEditing.packages}
+      setEditForm={setEditForm}
+      handleEditToggle={handleEditToggle}
+      handleSaveSection={handleSaveSection}
+    />
+  </SectionContainer>
+</motion.div>
+<motion.div layout className="w-full">
+  <ToggleSwitch
+    isOn={sectionToggles.personal}
+    onToggle={() => handleToggleSection('personal')}
+    label="Personal Information"
+    isExpanded={sectionToggles.personal}
+  />
+  <SectionContainer id="personal-section" isVisible={sectionToggles.personal}>
+    <PersonalInfoSection
+      personalInfo={mediaKitData.personalInfo}
+      editForm={editForm}
+      isEditing={isEditing.personal}
+      setEditForm={setEditForm}
+      handleEditToggle={handleEditToggle}
+      handleSaveSection={handleSaveSection}
+    />
+  </SectionContainer>
+</motion.div>
+
+          {/* Add other sections here */}
+          {/* Social Connections Section */}
+          {/* Content Categories Section */}
+          {/* Previous Collaborations Section */}
+          {/* Packages Section */}
+        </motion.div>
       </div>
 
       {/* Footer Actions */}
       <motion.div
         layout
-        className="fixed bottom-[10px] inset-x-0 p-6 bg-gradient-to-t from-black to-transparent"
+        className="fixed bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black to-transparent"
       >
         <div className="flex gap-3 max-w-md mx-auto">
           <motion.button
@@ -664,9 +387,6 @@ const ManageMediaKit = () => {
           </motion.button>
         </div>
       </motion.div>
-
-      {/* Bottom Navigation */}
-      {/* <Navbar /> */}
     </div>
   );
 };

@@ -1,28 +1,23 @@
 'use client'
-import React from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Settings, 
-  Star, 
-  ChevronRight, 
-  Instagram, 
-  Youtube,
-  Camera,
-  Edit,
-  User,
-  Sparkles,
-  Share2
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {  Settings,  Star,  ChevronRight,  Instagram,  Youtube, Camera, Edit, User,  Sparkles,Share2} from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Image from 'next/image';
 import ProfileAvatar from '@/components/ProfileAvatar';
+import Link from 'next/link';
+import { LogoutDialog } from '@/components/LogoutDialog';
+import { useRouter } from 'next/navigation';
 
 const ProfilePage = () => {
-  // const stats = [
-  //   { label: 'Total Reach', value: '25.4K', icon: '📈' },
-  //   { label: 'Engagement', value: '87%', icon: '⭐' },
-  //   { label: 'Projects', value: '12', icon: '🎯' }
-  // ];
+  const router=useRouter()
+
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const handleLogout = () => {
+    console.log('User logged out');
+    router.push("/welcome")
+    // Redirect to login page or handle logout
+  };
 
   const socialAccounts = [
     { 
@@ -40,6 +35,24 @@ const ProfilePage = () => {
       icon: <Youtube className="w-5 h-5" />,
       verified: true,
       gradient: 'from-red-500 to-pink-600'
+    }
+  ];
+
+  const settingsOptions = [
+    { 
+      name: 'Privacy & Security', 
+      icon: '🔒', 
+      link: '/profile/privacy-and-security' 
+    },
+    { 
+      name: 'Payment Methods', 
+      icon: '💳', 
+      link: '/profile/payment-methods' 
+    },
+    { 
+      name: 'Help & Support', 
+      icon: '💡', 
+      link: '/profile/help-and-support' 
     }
   ];
 
@@ -138,25 +151,7 @@ const ProfilePage = () => {
             </motion.div>
           ))}
         </motion.div>
-           {/* Stats */}
-           {/* <div className="grid grid-cols-3 gap-2 mb-12">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl p-4 text-center border border-[#333333] hover:border-[#bcee45]/20 transition-all"
-            >
-              <div className="text-2xl mb-1 flex items-center justify-center gap-2">
-                <span className="font-bold text-white">{stat.value}</span>
-                <span className="text-xl">{stat.icon}</span>
-              </div>
-              <div className="text-sm text-[#888888]">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div> */}
-
+   
         {/* Account Settings */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -168,33 +163,56 @@ const ProfilePage = () => {
             Account Settings
           </h2>
           <div className="space-y-2">
-            {[
-              // { name: 'Personal Information', icon: '👤' },
-              // { name: 'Notifications', icon: '🔔' },
-              { name: 'Privacy & Security', icon: '🔒' },
-              { name: 'Payment Methods', icon: '💳' },
-              { name: 'Help & Support', icon: '💡' },
-              { name: 'Logout', icon: '🚪' }
-              
-            ].map((item) => (
+          {/* Regular settings options */}
+          {settingsOptions.map((item) => (
+            <Link href={item.link} key={item.name}>
               <motion.button
-                key={item.name}
                 whileHover={{ x: 4 }}
-                className="w-full p-4 flex items-center justify-between bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333] hover:border-[#bcee45]/20 transition-all group"
+                className="w-full p-4 mt-2 flex items-center justify-between bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333] hover:border-[#bcee45]/20 transition-all group"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xl">{item.icon}</span>
-                  <span className="text-white group-hover:text-[#bcee45] transition-colors">{item.name}</span>
+                  <span className="text-white group-hover:text-[#bcee45] transition-colors">
+                    {item.name}
+                  </span>
                 </div>
                 <ChevronRight className="w-5 h-5 text-[#888888] group-hover:text-[#bcee45] transition-colors" />
               </motion.button>
-            ))}
-          </div>
-        </motion.div>
-      </div>
+            </Link>
+          ))}
+
+          {/* Logout button */}
+          <motion.button
+            whileHover={{ x: 4 }}
+            onClick={() => setShowLogoutDialog(true)}
+            className="w-full p-4 flex items-center justify-between bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333] hover:border-red-500/20 transition-all group"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🚪</span>
+              <span className="text-white group-hover:text-red-500 transition-colors">
+                Logout
+              </span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-[#888888] group-hover:text-red-500 transition-colors" />
+          </motion.button>
+        </div>
+      </motion.div>
+
+      {/* Logout Dialog */}
+      <AnimatePresence>
+        <LogoutDialog
+          isOpen={showLogoutDialog}
+          onClose={() => setShowLogoutDialog(false)}
+          onConfirm={() => {
+            handleLogout();
+            setShowLogoutDialog(false);
+          }}
+        />
+      </AnimatePresence>
 
       <Navbar />
     </div>
+  </div>
   );
 };
 

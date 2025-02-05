@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import image1 from "@/public/welcome-1.jpg";
@@ -34,15 +34,38 @@ const slides = [
   },
 ];
 
+const SWIPE_THRESHOLD = 50; // minimum distance for swipe to trigger
+
 const WelcomeCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const router = useRouter();
+  const controls = useAnimation();
 
   const handleButtonClick = () => {
     if (currentSlide === slides.length - 1) {
       router.push("/auth/register");
     } else {
       setCurrentSlide((prev) => prev + 1);
+    }
+  };
+
+  const handleDragEnd = (event, info) => {
+    const swipe = info.offset.x;
+    
+    if (Math.abs(swipe) > SWIPE_THRESHOLD) {
+      if (swipe > 0 && currentSlide > 0) {
+        // Swipe right - go to previous slide
+        setCurrentSlide((prev) => prev - 1);
+      } else if (swipe < 0 && currentSlide < slides.length - 1) {
+        // Swipe left - go to next slide
+        setCurrentSlide((prev) => prev + 1);
+      } else {
+        // Snap back if at the end
+        controls.start({ x: 0 });
+      }
+    } else {
+      // Snap back if swipe wasn't strong enough
+      controls.start({ x: 0 });
     }
   };
 
@@ -57,6 +80,10 @@ const WelcomeCarousel = () => {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="h-100vh w-full relative flex flex-col px-8"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={handleDragEnd}
           >
             <div className="flex flex-col h-full">
               {/* Stacked Images Section */}
