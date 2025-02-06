@@ -89,7 +89,7 @@ const NotificationsPage = () => {
               </motion.button>
             </Link>
             <div>
-              <h1 className="text-xl font-bold">Notifications</h1>
+              <h1 className="text-xl font-bold">Growth Trends</h1>
               <p className="text-sm text-[#888888]">Stay updated with your activity</p>
             </div>
           </div>

@@ -1,8 +1,9 @@
 'use client';
 
+import { toast } from 'sonner';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Pencil } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import ProfileSection from '@/components/EditMediaKit/BasicInfo';
 import CategoriesSection from '@/components/EditMediaKit/CreatorCategories';
@@ -13,32 +14,51 @@ import PricingSection from '@/components/EditMediaKit/Pricing';
 import PersonalInfoSection from '@/components/EditMediaKit/PersonalInfo';
 
 // Reusable ToggleSwitch component
-const ToggleSwitch = React.memo(({ isOn, onToggle, label, isExpanded }) => (
-  <motion.button
-    onClick={onToggle}
-    className={`w-full p-4 rounded-xl border ${
-      isExpanded ? 'border-[#bcee45]' : 'border-[#333333]'
-    } bg-[#1A1A1A] transition-colors duration-200`}
-    whileTap={{ scale: 0.98 }}
-  >
-    <div className="flex items-center justify-between">
-      <span className="text-sm text-[#888888]">{label}</span>
+const ToggleSwitch = React.memo(({ isOn, onToggle }) => (
+  <div className="flex items-center gap-2">
+    <motion.div
+      className={`w-14 h-7 rounded-full flex items-center p-1 cursor-pointer ${
+        isOn ? 'bg-[#bcee45]' : 'bg-[#242424]'
+      } border ${isOn ? 'border-[#bcee45]' : 'border-[#333333]'}`}
+      onClick={onToggle}
+    >
       <motion.div
-        className={`w-14 h-7 rounded-full flex items-center p-1 ${
-          isOn ? 'bg-[#bcee45]' : 'bg-[#242424]'
-        } border ${isOn ? 'border-[#bcee45]' : 'border-[#333333]'}`}
-      >
-        <motion.div
-          className="w-5 h-5 rounded-full bg-black"
-          animate={{ 
-            x: isOn ? 28 : 0,
-            backgroundColor: isOn ? '#000000' : '#666666' 
-          }}
-          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        className="w-5 h-5 rounded-full bg-black"
+        animate={{ 
+          x: isOn ? 28 : 0,
+          backgroundColor: isOn ? '#000000' : '#666666' 
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      />
+    </motion.div>
+  </div>
+));
+
+// Reusable SectionHeader component
+const SectionHeader = React.memo(({ label, isVisible, isExpanded, onToggleVisibility, onToggleExpand }) => (
+  <div className={`w-full p-4 rounded-xl border ${
+    isExpanded ? 'border-[#bcee45]' : 'border-[#333333]'
+  } bg-[#1A1A1A] transition-colors duration-200`}>
+    <div className="flex items-center justify-between">
+      <span className="text-base font-medium text-white">{label}</span>
+      <div className="flex items-center gap-4">
+      <motion.button
+          onClick={onToggleExpand}
+          whileTap={{ scale: 0.95 }}
+          className={`p-2 rounded-lg border ${
+            isExpanded ? 'border-[#bcee45] bg-[#bcee45]/10' : 'border-[#333333] bg-[#242424]'
+          }`}
+        >
+          <Pencil className={`w-4 h-4 ${isExpanded ? 'text-[#bcee45]' : 'text-[#888888]'}`} />
+        </motion.button>
+        <ToggleSwitch
+          isOn={isVisible}
+          onToggle={onToggleVisibility}
         />
-      </motion.div>
+     
+      </div>
     </div>
-  </motion.button>
+  </div>
 ));
 
 // Reusable SectionContainer component
@@ -75,7 +95,6 @@ const SectionContainer = ({ id, children, isVisible }) => (
 const ManageMediaKit = () => {
   const router = useRouter();
   
-  // Initial state for media kit data
   const [mediaKitData, setMediaKitData] = useState({
     profileInfo: {
       name: 'John Creator',
@@ -124,17 +143,26 @@ const ManageMediaKit = () => {
     packages: [
       {
         id: 1,
-      name: 'Basic Package',
-      description: 'Perfect for small businesses',
-        price: '1000',
-        deliverables: ['1 YouTube Video', '2 Instagram Posts']
+        name: 'Basic Package',
+        price: '1,000 - 1,500',
+        deliverables: [
+          'Story',
+          'Reel',
+          'Carousel Post'
+        ],
+        openToBarter: true
       },
       {
         id: 2,
         name: 'Premium Package',
-        description: 'Perfect for medium-sized businesses',
-        price: '2500',
-        deliverables: ['3 YouTube Videos', '5 Instagram Posts', '10 Stories']
+        price: '2,500 - 3,000',
+        deliverables: [
+          'Story',
+          'Reel',
+          'Carousel Post',
+          'Shoot (8 hours)'
+        ],
+        openToBarter: false
       }
     ],
     personalInfo: {
@@ -146,39 +174,83 @@ const ManageMediaKit = () => {
       petType: 'dog'
     }
   });
-
   // State for form editing
   const [editForm, setEditForm] = useState({ ...mediaKitData });
   
-  // State for section toggles
+  // State for section visibility in preview
   const [sectionToggles, setSectionToggles] = useState({
     profile: true,
+    social: true,
+    content: true,
+    collaborations: false,
+    packages: false,
+    personal: false
+  });
+
+  // New state for section expansion (edit mode)
+  const [expandedSections, setExpandedSections] = useState({
+    profile: false,
     social: false,
     content: false,
     collaborations: false,
-    packages: false
+    packages: false,
+    personal: false
   });
 
   // State for editing mode
   const [isEditing, setIsEditing] = useState({
-    profile: true,
+    profile: false,
     social: false,
     content: false,
     collaborations: false,
-    packages: false
+    packages: false,
+    personal: false
   });
 
-  // Handler for toggling sections
-  const handleToggleSection = (section) => {
-    setSectionToggles(prev => {
-      const newToggles = { ...prev, [section]: !prev[section] };
-      if (newToggles[section]) {
+// At the top of your file, import toast from sonner
+
+// Modify the handleToggleVisibility function
+const handleToggleVisibility = (section) => {
+  setSectionToggles(prev => {
+    const newValue = !prev[section];
+    
+    // Format section name for display
+    const sectionName = section.charAt(0).toUpperCase() + section.slice(1);
+    
+    // Show toast with Sonner
+    toast(newValue ? 'Section Visible' : 'Section Hidden', {
+      description: `${sectionName} section ${newValue ? 'will be visible' : 'will be hidden'} in media kit preview`,
+      duration: 2000,
+      style: { 
+        backgroundColor: '#000000',
+        color: '#bcee45',
+        borderRadius:"16px"
+        
+      },
+      success: true,
+    });
+    
+    return {
+      ...prev,
+      [section]: newValue
+    };
+  });
+};
+
+  // Handler for toggling section expansion
+  const handleToggleExpand = (section) => {
+    setExpandedSections(prev => {
+      const newExpanded = { ...prev, [section]: !prev[section] };
+      if (newExpanded[section]) {
         setIsEditing(prev => ({ ...prev, [section]: true }));
         setTimeout(() => {
-          document.getElementById(`${section}-section`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          document.getElementById(`${section}-section`)?.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
         }, 100);
       }
-      return newToggles;
+      return newExpanded;
     });
   };
 
@@ -198,6 +270,10 @@ const ManageMediaKit = () => {
       [section]: editForm[section]
     }));
     handleEditToggle(section);
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: false
+    }));
   };
 
   return (
@@ -231,13 +307,14 @@ const ManageMediaKit = () => {
         <motion.div layout className="space-y-4">
           {/* Profile Section */}
           <motion.div layout className="w-full">
-            <ToggleSwitch
-              isOn={sectionToggles.profile}
-              onToggle={() => handleToggleSection('profile')}
+            <SectionHeader
               label="Basic Information"
-              isExpanded={sectionToggles.profile}
+              isVisible={sectionToggles.profile}
+              isExpanded={expandedSections.profile}
+              onToggleVisibility={() => handleToggleVisibility('profile')}
+              onToggleExpand={() => handleToggleExpand('profile')}
             />
-            <SectionContainer id="profile-section" isVisible={sectionToggles.profile}>
+            <SectionContainer id="profile-section" isVisible={expandedSections.profile}>
               <ProfileSection
                 profileInfo={mediaKitData.profileInfo}
                 editForm={editForm}
@@ -248,122 +325,132 @@ const ManageMediaKit = () => {
               />
             </SectionContainer>
           </motion.div>
+
+          {/* Categories Section */}
           <motion.div layout className="w-full">
-         <ToggleSwitch
-            isOn={sectionToggles.content}
-            onToggle={() => handleToggleSection('content')}
-            label="Creator Categories"
-            isExpanded={sectionToggles.content}
+            <SectionHeader
+              label="Creator Categories"
+              isVisible={sectionToggles.content}
+              isExpanded={expandedSections.content}
+              onToggleVisibility={() => handleToggleVisibility('content')}
+              onToggleExpand={() => handleToggleExpand('content')}
             />
-          <SectionContainer id="categories-section" isVisible={sectionToggles.content}>           
-          <CategoriesSection
-  categories={mediaKitData.categories}
-  editForm={editForm}
-  isEditing={isEditing.content}
-  setEditForm={setEditForm}
-  handleEditToggle={handleEditToggle}
-  handleSaveSection={handleSaveSection}
-/>
+            <SectionContainer id="categories-section" isVisible={expandedSections.content}>
+              <CategoriesSection
+                categories={mediaKitData.categories}
+                editForm={editForm}
+                isEditing={isEditing.content}
+                setEditForm={setEditForm}
+                handleEditToggle={handleEditToggle}
+                handleSaveSection={handleSaveSection}
+              />
             </SectionContainer>
           </motion.div>
 
+          {/* Portfolio Section */}
           <motion.div layout className="w-full">
-  <ToggleSwitch
-    isOn={sectionToggles.portfolio}
-    onToggle={() => handleToggleSection('portfolio')}
-    label="Portfolio Items"
-    isExpanded={sectionToggles.portfolio}
-  />
-  <SectionContainer id="portfolio-section" isVisible={sectionToggles.portfolio}>
-    <PortfolioSection
-      portfolio={mediaKitData.portfolio}
-      editForm={editForm}
-      isEditing={isEditing.portfolio}
-      setEditForm={setEditForm}
-      handleEditToggle={handleEditToggle}
-      handleSaveSection={handleSaveSection}
-    />
-  </SectionContainer>
-</motion.div>
-<motion.div layout className="w-full">
-  <ToggleSwitch
-    isOn={sectionToggles.social}
-    onToggle={() => handleToggleSection('social')}
-    label="Social Connections"
-    isExpanded={sectionToggles.social}
-  />
-  <SectionContainer id="social-section" isVisible={sectionToggles.social}>
-    <SocialConnectSection
-      socialConnections={mediaKitData.socialConnections}
-      editForm={editForm}
-      isEditing={isEditing.social}
-      setEditForm={setEditForm}
-      handleEditToggle={handleEditToggle}
-      handleSaveSection={handleSaveSection}
-    />
-  </SectionContainer>
-</motion.div>
-<motion.div layout className="w-full">
-  <ToggleSwitch
-    isOn={sectionToggles.collaborations}
-    onToggle={() => handleToggleSection('collaborations')}
-    label="Previous Collaborations"
-    isExpanded={sectionToggles.collaborations}
-  />
-  <SectionContainer id="collaborations-section" isVisible={sectionToggles.collaborations}>
-    <CollaborationsSection
-      collaborations={mediaKitData.collaborations}
-      editForm={editForm}
-      isEditing={isEditing.collaborations}
-      setEditForm={setEditForm}
-      handleEditToggle={handleEditToggle}
-      handleSaveSection={handleSaveSection}
-    />
-  </SectionContainer>
-</motion.div>
+            <SectionHeader
+              label="Portfolio Items"
+              isVisible={sectionToggles.portfolio}
+              isExpanded={expandedSections.portfolio}
+              onToggleVisibility={() => handleToggleVisibility('portfolio')}
+              onToggleExpand={() => handleToggleExpand('portfolio')}
+            />
+            <SectionContainer id="portfolio-section" isVisible={expandedSections.portfolio}>
+              <PortfolioSection
+                portfolio={mediaKitData.portfolio}
+                editForm={editForm}
+                isEditing={isEditing.portfolio}
+                setEditForm={setEditForm}
+                handleEditToggle={handleEditToggle}
+                handleSaveSection={handleSaveSection}
+              />
+            </SectionContainer>
+          </motion.div>
 
-<motion.div layout className="w-full">
-  <ToggleSwitch
-    isOn={sectionToggles.packages}
-    onToggle={() => handleToggleSection('packages')}
-    label="Packages & Pricing"
-    isExpanded={sectionToggles.packages}
-  />
-  <SectionContainer id="packages-section" isVisible={sectionToggles.packages}>
-    <PricingSection
-      packages={mediaKitData.packages}
-      editForm={editForm}
-      isEditing={isEditing.packages}
-      setEditForm={setEditForm}
-      handleEditToggle={handleEditToggle}
-      handleSaveSection={handleSaveSection}
-    />
-  </SectionContainer>
-</motion.div>
-<motion.div layout className="w-full">
-  <ToggleSwitch
-    isOn={sectionToggles.personal}
-    onToggle={() => handleToggleSection('personal')}
-    label="Personal Information"
-    isExpanded={sectionToggles.personal}
-  />
-  <SectionContainer id="personal-section" isVisible={sectionToggles.personal}>
-    <PersonalInfoSection
-      personalInfo={mediaKitData.personalInfo}
-      editForm={editForm}
-      isEditing={isEditing.personal}
-      setEditForm={setEditForm}
-      handleEditToggle={handleEditToggle}
-      handleSaveSection={handleSaveSection}
-    />
-  </SectionContainer>
-</motion.div>
-
-          {/* Add other sections here */}
           {/* Social Connections Section */}
-          {/* Content Categories Section */}
-          {/* Previous Collaborations Section */}
+          <motion.div layout className="w-full">
+            <SectionHeader
+              label="Social Connections"
+              isVisible={sectionToggles.social}
+              isExpanded={expandedSections.social}
+              onToggleVisibility={() => handleToggleVisibility('social')}
+              onToggleExpand={() => handleToggleExpand('social')}
+            />
+            <SectionContainer id="social-section" isVisible={expandedSections.social}>
+              <SocialConnectSection
+                socialConnections={mediaKitData.socialConnections}
+                editForm={editForm}
+                isEditing={isEditing.social}
+                setEditForm={setEditForm}
+                handleEditToggle={handleEditToggle}
+                handleSaveSection={handleSaveSection}
+              />
+            </SectionContainer>
+          </motion.div>
+
+          {/* Collaborations Section */}
+          <motion.div layout className="w-full">
+            <SectionHeader
+              label="Previous Collaborations"
+              isVisible={sectionToggles.collaborations}
+              isExpanded={expandedSections.collaborations}
+              onToggleVisibility={() => handleToggleVisibility('collaborations')}
+              onToggleExpand={() => handleToggleExpand('collaborations')}
+            />
+            <SectionContainer id="collaborations-section" isVisible={expandedSections.collaborations}>
+              <CollaborationsSection
+                collaborations={mediaKitData.collaborations}
+                editForm={editForm}
+                isEditing={isEditing.collaborations}
+                setEditForm={setEditForm}
+                handleEditToggle={handleEditToggle}
+                handleSaveSection={handleSaveSection}
+              />
+            </SectionContainer>
+          </motion.div>
+
           {/* Packages Section */}
+          <motion.div layout className="w-full">
+            <SectionHeader
+              label="Packages & Pricing"
+              isVisible={sectionToggles.packages}
+              isExpanded={expandedSections.packages}
+              onToggleVisibility={() => handleToggleVisibility('packages')}
+              onToggleExpand={() => handleToggleExpand('packages')}
+            />
+            <SectionContainer id="packages-section" isVisible={expandedSections.packages}>
+              <PricingSection
+                packages={mediaKitData.packages}
+                editForm={editForm}
+                isEditing={isEditing.packages}
+                setEditForm={setEditForm}
+                handleEditToggle={handleEditToggle}
+                handleSaveSection={handleSaveSection}
+              />
+            </SectionContainer>
+          </motion.div>
+
+          {/* Personal Info Section */}
+          <motion.div layout className="w-full">
+            <SectionHeader
+              label="Personal Information"
+              isVisible={sectionToggles.personal}
+              isExpanded={expandedSections.personal}
+              onToggleVisibility={() => handleToggleVisibility('personal')}
+              onToggleExpand={() => handleToggleExpand('personal')}
+            />
+            <SectionContainer id="personal-section" isVisible={expandedSections.personal}>
+              <PersonalInfoSection
+                personalInfo={mediaKitData.personalInfo}
+                editForm={editForm}
+                isEditing={isEditing.personal}
+                setEditForm={setEditForm}
+                handleEditToggle={handleEditToggle}
+                handleSaveSection={handleSaveSection}
+              />
+            </SectionContainer>
+          </motion.div>
         </motion.div>
       </div>
 

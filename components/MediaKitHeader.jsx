@@ -11,8 +11,8 @@ export const mediaKitSteps = [
   {
     id: 'intro',
     title: 'Basic Info',
-    slides: ['Basic Information', 'Creator Categories', 'Profile Media', 'Bio Information'],
-    totalSlides: 4,
+    slides: ['Basic Information', 'Creator Categories', 'Profile Media', 'Bio Information','Representation'],
+    totalSlides: 5,
     path: '/complete-media-kit/intro'
   },
   {
@@ -40,7 +40,7 @@ export const mediaKitSteps = [
     id: 'pricing',
     title: 'Pricing',
     slides: ['Package Setup', 'Customization'],
-    totalSlides: 2,
+    totalSlides: 0,
     path: '/complete-media-kit/pricing'
   },
   {
@@ -148,6 +148,33 @@ export const EnhancedHeader = ({
   const currentStepObj = mediaKitSteps[currentStep - 1];
   const previousStepObj = mediaKitSteps[currentStep - 2];
 
+  const shouldShowSkip = () => {
+    // Hide skip on first slide of step 1 (Basic Info)
+    if (currentStep === 1 && (currentSlide === 0 || currentSlide === 1)) {
+      return false;
+    }
+  
+    // Show skip if the current step has multiple slides and we're not on the last slide
+    const currentStepObj = mediaKitSteps[currentStep - 1];
+    if (currentStepObj?.totalSlides > 0) {
+      return currentSlide < currentStepObj.totalSlides - 1;
+    }
+  
+    // Show skip for other steps
+    return true;
+  };
+  const handleSkip = () => {
+    if (currentStepObj?.totalSlides > 0 && currentSlide < currentStepObj.totalSlides - 1) {
+      // If we're in a multi-slide step and not on the last slide, go to next slide
+      onBackClick(currentSlide + 1);
+    } else {
+      // If we're on the last slide or in a single-slide step, go to next step
+      const nextStep = mediaKitSteps[currentStep];
+      if (nextStep) {
+        router.push(nextStep.path);
+      }
+    }
+  };
   // Auto-scroll to center active step
   useEffect(() => {
     if (stepsContainerRef.current && activeStepRef.current) {
@@ -202,7 +229,7 @@ export const EnhancedHeader = ({
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleBackNavigation}
+              onClick={handleBackDashboard}
               className="w-10 h-10 bg-[#1A1A1A] border border-[#333333] rounded-xl flex items-center justify-center hover:border-[#bcee45]/50 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-[#bcee45]" />
@@ -212,14 +239,16 @@ export const EnhancedHeader = ({
               <h1 className="text-xl font-bold text-white">Create Media Kit</h1>
               <p className="text-sm text-[#888888]">Step {currentStep} of {totalSteps}</p>
             </div>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleBackDashboard}
-              className="w-8 h-8 bg-[#1A1A1A] border border-[#333333] rounded-xl flex items-center justify-center hover:border-[#bcee45]/50 transition-colors"
-            >
-              <X className="w-4 h-4 text-[#bcee45]" />
-            </motion.button>    
+            {shouldShowSkip() && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSkip}
+                className="px-4 h-10 bg-[#1A1A1A] border border-[#333333] rounded-xl flex items-center justify-center hover:border-[#bcee45]/50 transition-colors"
+              >
+                <span className="text-sm font-medium text-[#bcee45]">Skip</span>
+              </motion.button>
+            )}
                   </div>
 
           {/* Steps Navigation */}
@@ -254,6 +283,7 @@ export const EnhancedHeader = ({
           transition={{ duration: 0.5 }}
         />
       </div>
+      
 
       {/* Add styles for hiding scrollbar */}
       <style jsx global>{`
