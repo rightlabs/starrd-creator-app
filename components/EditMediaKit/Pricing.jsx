@@ -16,6 +16,7 @@ const INITIAL_PACKAGE = {
   name: '',
   price: '',
   deliverables: [],
+  customFields: [],
   openToBarter: false
 };
 
@@ -61,8 +62,89 @@ const CustomSelect = ({ onChange, options, placeholder }) => {
   );
 };
 
+const CustomFieldInput = ({ onAdd, onRemove, fields = [] }) => {
+  const [label, setLabel] = useState('');
+  const [value, setValue] = useState('');
+
+  const handleAdd = () => {
+    if (label.trim() && value.trim()) {
+      onAdd({ label: label.trim(), value: value.trim() });
+      setLabel('');
+      setValue('');
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-4">
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="Enter field label"
+              className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+            />
+          </div>
+          <div className="flex-1">
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="Enter value"
+              className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+            />
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleAdd}
+            className="text-[#bcee45] hover:bg-[#bcee45]/10"
+            disabled={!label.trim() || !value.trim()}
+          >
+            <Plus className="w-5 h-5" />
+          </Button>
+        </div>
+      </div>
+      
+      {fields.length > 0 && (
+        <div className="space-y-2">
+          {fields.map((field, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex items-center justify-between bg-[#1A1A1A]/30 px-4 py-2 rounded-lg"
+            >
+              <div className="flex items-center gap-4">
+                <span className="text-[#888888]">{field.label}:</span>
+                <span className="text-white">{field.value}</span>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => onRemove(index)}
+                className="text-[#bcee45] hover:bg-[#bcee45]/10"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
-  const [formData, setFormData] = useState(initialData);
+  const [formData, setFormData] = useState({
+    ...initialData,
+    customFields: initialData.customFields || []
+  });
 
   const handleDeliverableSelect = (option) => {
     if (!formData.deliverables.includes(option.label)) {
@@ -187,7 +269,23 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
         </div>
       </div>
 
-  
+      {/* Add Custom Fields section */}
+      <div className="mt-6">
+        <label className="text-sm md:text-base font-medium text-white block mb-2">
+          Custom Fields
+        </label>
+        <CustomFieldInput
+          fields={formData.customFields}
+          onAdd={(field) => setFormData(prev => ({
+            ...prev,
+            customFields: [...(prev.customFields || []), field]
+          }))}
+          onRemove={(index) => setFormData(prev => ({
+            ...prev,
+            customFields: prev.customFields.filter((_, i) => i !== index)
+          }))}
+        />
+      </div>
 
       {/* Actions */}
       <div className="flex justify-end gap-2">
@@ -254,6 +352,19 @@ const PackageCard = ({ package: pkg, onEdit, onDelete }) => (
         </div>
       ))}
     </div>
+
+    {/* Add Custom Fields display */}
+    {pkg.customFields && pkg.customFields.length > 0 && (
+      <div className="mt-4 pt-4 border-t border-[#333333] space-y-2">
+        {pkg.customFields.map((field, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#bcee45]" />
+            <span className="text-[#888888]">{field.label}:</span>
+            <span className="text-white">{field.value}</span>
+          </div>
+        ))}
+      </div>
+    )}
   </motion.div>
 );
 

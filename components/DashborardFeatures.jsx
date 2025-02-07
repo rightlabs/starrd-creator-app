@@ -100,33 +100,29 @@ const FeatureCards = () => {
   const features = [
     {
       title: 'Media Kit',
-      titleEmoji: '✨',
       desc: 'Put your best self forward. Showcase your content and achievements.',
       icon:"⭐",
       image: "/media-kit.jpg",
       badge: 'Popular',
-      badgeEmoji: '🔥',
       tags: [
-        { text: 'Creator Tools', emoji: '🎨' }
+        { text: 'Creator Tools' }
       ],
       link: '/edit-media-kit',
       buttonText: 'Edit Kit',
     },
     {
       title: 'Analytics Dashboard',
-      titleEmoji: '📊',
       desc: 'Track your growth and engagement metrics in real-time.',
       icon: "📊",
       image: "/media-kit-analytics.jpg",
       badge: 'New',
-      badgeEmoji: '⚡',
       tags: [
-        { text: 'Analytics', emoji: '📈' }
+        { text: 'Analytics' }
       ],
       link: '/media-kit-analytics',
       stats: [
-        { label: 'Profile Views', value: '850', emoji: '👀' },
-        { label: 'Brand Clicks', value: '42', emoji: '🎯' }
+        { label: 'Profile Views', value: '850' },
+        { label: 'Brand Clicks', value: '42' }
       ],
       buttonText: 'Stats',
     }

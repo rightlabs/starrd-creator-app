@@ -180,12 +180,15 @@ const PersonalInfoPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
       {/* Header */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]">
+
       <EnhancedHeader
         currentStep={currentMainStep} 
         currentSlide={currentSlide}
         totalSteps={totalSteps}
         onBackClick={setCurrentSlide}
       />
+      </div>
 
       {/* Progress Bar */}
       <div className="w-full h-1 bg-[#bcee45]/10">

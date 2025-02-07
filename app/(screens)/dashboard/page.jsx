@@ -6,6 +6,8 @@ import Navbar from "@/components/Navbar";
 import PreviewButton from "@/components/PreviewButton";
 import Link from "next/link";
 import FeatureCards from "@/components/DashborardFeatures";
+import { IconGrowth } from "@tabler/icons-react";
+import { ChartNoAxesCombined } from "lucide-react";
 
 const DashboardPage = () => {
   return (
@@ -44,7 +46,7 @@ const DashboardPage = () => {
               >
                 <div className="w-12 h-12 bg-[#1A1A1A] border border-[#333333] rounded-full flex items-center justify-center hover:border-[#bcee45]/50 transition-colors">
                   <Link href="/growth-trends">
-                    <span className="text-2xl">📈</span>
+                    <span className="text-2xl"><ChartNoAxesCombined  className="text-[#bcee45]"/> </span>
                   </Link>
                   <span className="absolute -top-1 -right-1 bg-[#bcee45] text-black w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold">
                     2
@@ -78,10 +80,10 @@ const DashboardPage = () => {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-xl font-bold mb-1 text-white">
-                    Media Kit Completion 📊
+                    Media Kit Completion 
                   </h3>
                   <p className="text-sm text-[#888888]">
-                    5 steps remaining to complete your profile ✨
+                    5 steps remaining to complete your profile 
                   </p>
                 </div>
 
@@ -117,7 +119,7 @@ const DashboardPage = () => {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm text-[#888888]">
-                  <span>Progress 🚀</span>
+                  <span>Progress </span>
                   <span>5/10 steps ✅</span>
                 </div>
                 <div className="w-full bg-white/5 rounded-full h-2">
@@ -135,7 +137,7 @@ const DashboardPage = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  Complete Media Kit 🎯
+                  Complete Media Kit 
                 </motion.button>
               </Link>
             </motion.div>
@@ -147,7 +149,7 @@ const DashboardPage = () => {
               transition={{ delay: 0.3 }}
               className="space-y-4 mb-8"
             >
-              <h3 className="text-lg font-bold mb-4">Quick Actions ⚡</h3>
+              <h3 className="text-lg font-bold mb-4">Quick Actions </h3>
               <FeatureCards />
             </motion.div>
 
@@ -159,7 +161,7 @@ const DashboardPage = () => {
               className="space-y-4 mb-8"
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">Growth Trends 📈</h3>
+                <h3 className="text-lg font-bold">Growth Trends </h3>
                 <Link
                   href="/growth-trends"
                   className="text-sm text-[#888888] bg-[#1A1A1A] backdrop-blur-md px-4 py-2 rounded-3xl hover:bg-black/80 flex items-center"
@@ -219,7 +221,7 @@ const DashboardPage = () => {
                 whileTap={{ scale: 0.98 }}
               >
                 <div className="relative w-12 h-12 bg-gradient-to-br from-[#1A1A1A] to-[#252525] rounded-xl border border-[#bcee45]/20 flex items-center justify-center">
-                <p className="text-3xl">💬</p>                </div>
+                <p className="text-2xl">💬</p>                </div>
                 <span className="font-medium">Send Feedback</span>
               </motion.button>
             </Link>

@@ -128,7 +128,6 @@ const SlideIndicator = ({ currentSlide, totalSlides }) => (
           label: 'Tagline',
           description: 'A short catchy line about you (max 60 chars)',
           type: 'text',
-          icon: '✍️',
           placeholder: 'e.g., "Creative storyteller with a passion for tech"'
         },
         {
@@ -136,7 +135,6 @@ const SlideIndicator = ({ currentSlide, totalSlides }) => (
           label: 'Short Bio',
           description: 'Tell brands about yourself (max 300 chars)',
           type: 'textarea',
-          icon: '📝',
           placeholder: 'Share your journey, expertise, and what makes you unique...'
         }
       ]
@@ -150,7 +148,6 @@ const SlideIndicator = ({ currentSlide, totalSlides }) => (
           name: 'representation.name',
           label: 'Agency Name',
           type: 'text',
-          icon: '🏢',
           placeholder: 'e.g., Creator Management Agency'
         },
         {
@@ -158,13 +155,11 @@ const SlideIndicator = ({ currentSlide, totalSlides }) => (
           label: 'Agency Logo',
           type: 'image',
           description: 'Upload agency logo (optional)',
-          icon: '🎯'
         },
         {
           name: 'representation.website',
           label: 'Agency Website',
           type: 'text',
-          icon: '🌐',
           placeholder: 'e.g., https://agency.com (optional)'
         }
       ]
@@ -257,7 +252,7 @@ const CategoryButton = ({ category, selected, prefilled }) => (
       } text-sm font-medium relative`}
     >
       <div className="flex items-center justify-between gap-2">
-        <span>{category.label}</span>
+        <span> {category.icon}{' '}{category.label}</span>
         {prefilled && selected && (
           <CheckCircle2 className="w-4 h-4 text-[#bcee45]" />
         )}
@@ -340,14 +335,14 @@ const MediaKitIntro = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
       {/* Header */}
-      <EnhancedHeader
-        currentStep={currentMainStep} 
-        currentSlide={currentSlide}
-        totalSteps={totalSteps}
-        onBackClick={setCurrentSlide}
-
-      />
- 
+      <div className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]">
+    <EnhancedHeader
+      currentStep={currentMainStep} 
+      currentSlide={currentSlide}
+      totalSteps={totalSteps}
+      onBackClick={setCurrentSlide}
+    />
+  </div>
       {/* Progress Bar */}
       <div className="w-full h-1 bg-[#1A1A1A]">
         <motion.div

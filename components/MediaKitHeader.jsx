@@ -155,10 +155,10 @@ export const EnhancedHeader = ({
     }
   
     // Show skip if the current step has multiple slides and we're not on the last slide
-    const currentStepObj = mediaKitSteps[currentStep - 1];
-    if (currentStepObj?.totalSlides > 0) {
-      return currentSlide < currentStepObj.totalSlides - 1;
-    }
+    // const currentStepObj = mediaKitSteps[currentStep - 1];
+    // if (currentStepObj?.totalSlides > 0) {
+    //   return currentSlide < currentStepObj.totalSlides - 1;
+    // }
   
     // Show skip for other steps
     return true;
@@ -279,7 +279,7 @@ export const EnhancedHeader = ({
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
-          className="h-full bg-[#bcee45]"
+          className="h-full bg-[#bcee45] " 
           transition={{ duration: 0.5 }}
         />
       </div>

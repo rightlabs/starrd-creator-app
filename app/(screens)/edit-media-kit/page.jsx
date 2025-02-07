@@ -94,88 +94,93 @@ const SectionContainer = ({ id, children, isVisible }) => (
 
 const ManageMediaKit = () => {
   const router = useRouter();
-  
-  const [mediaKitData, setMediaKitData] = useState({
-    profileInfo: {
-      name: 'John Creator',
-      dob: '2001-01-15',
-      location: 'New York, USA',
-      email: 'john@creator.com',
-      phone: '+1 234 567 8900',
-      website: 'creator.com/john',
-      bio: 'Digital creator passionate about tech and lifestyle content',
-      avatar: '/pixar-1.jpg',
-      coverImage: '/pixar-1.jpg',
-      tagline:'Digital creator passionate about tech and lifestyle content',
-    },
-    socialConnections: {
-      youtube: {
-        connected: true,
-        handle: '@JohnCreates',
-        subscribers: '100K',
-        avgViews: '50K'
+    
+    const [mediaKitData, setMediaKitData] = useState({
+      profileInfo: {
+        name: 'John Creator',
+        dob: '2001-01-15',
+        location: 'New York, USA',
+        email: 'john@creator.com',
+        phone: '+1 234 567 8900',
+        website: 'creator.com/john',
+        bio: 'Digital creator passionate about tech and lifestyle content',
+        avatar: '/pixar-1.jpg',
+        coverImage: '/pixar-1.jpg',
+        tagline:'Digital creator passionate about tech and lifestyle content',
+        representation: {
+          name: 'Creator Management Agency',
+          logo: '/dribble.png',
+          website: 'https://creatogency.com'
+        }
       },
-      instagram: {
-        connected: true,
-        handle: '@john.creates',
-        followers: '50K',
-        engagement: '5.2%'
-      }
-    },
-    categories: ['Tech', 'Lifestyle', 'Photography'],
-    portfolio: [
-      {
-        id: 1,
-        mediaType: 'video',
-        contentType: 'product-review',
-        category: 'tech',
-        fileUrl: '/pixar-2.jpg',
-      },],
-      collaborations: [
+      socialConnections: {
+        youtube: {
+          connected: true,
+          handle: '@JohnCreates',
+          subscribers: '100K',
+          avgViews: '50K'
+        },
+        instagram: {
+          connected: true,
+          handle: '@john.creates',
+          followers: '50K',
+          engagement: '5.2%'
+        }
+      },
+      categories: ['Tech', 'Lifestyle', 'Photography'],
+      portfolio: [
         {
           id: 1,
-          brandName: 'Example Brand',
-          brandLogo: '/starrd-logo.png',
-          type: 'sponsored',
+          mediaType: 'video',
+          contentType: 'product-review',
           category: 'tech',
-          mediaFile: '/pixar-2.jpg'
+          fileUrl: '/pixar-2.jpg',
         },],
-    packages: [
-      {
-        id: 1,
-        name: 'Basic Package',
-        price: '1,000 - 1,500',
-        deliverables: [
-          'Story',
-          'Reel',
-          'Carousel Post'
-        ],
-        openToBarter: true
-      },
-      {
-        id: 2,
-        name: 'Premium Package',
-        price: '2,500 - 3,000',
-        deliverables: [
-          'Story',
-          'Reel',
-          'Carousel Post',
-          'Shoot (8 hours)'
-        ],
-        openToBarter: false
+        collaborations: [
+          {
+            id: 1,
+            brandName: 'Example Brand',
+            brandLogo: '/starrd-logo.png',
+            type: 'sponsored',
+            category: 'tech',
+            mediaFile: '/pixar-2.jpg'
+          },],
+      packages: [
+        {
+          id: 1,
+          name: 'Basic Package',
+          price: '1,000 - 1,500',
+          deliverables: [
+            'Story',
+            'Reel',
+            'Carousel Post'
+          ],
+          openToBarter: true
+        },
+        {
+          id: 2,
+          name: 'Premium Package',
+          price: '2,500 - 3,000',
+          deliverables: [
+            'Story',
+            'Reel',
+            'Carousel Post',
+            'Shoot (8 hours)'
+          ],
+          openToBarter: false
+        }
+      ],
+      personalInfo: {
+        hairType: 'straight',
+        heightFt: '5',
+        heightIn: '10',
+        bodyType: 'mesomorph',
+        languages: ['English', 'Spanish'],
+        petType: 'dog'
       }
-    ],
-    personalInfo: {
-      hairType: 'straight',
-      heightFt: '5',
-      heightIn: '10',
-      bodyType: 'mesomorph',
-      languages: ['English', 'Spanish'],
-      petType: 'dog'
-    }
-  });
-  // State for form editing
-  const [editForm, setEditForm] = useState({ ...mediaKitData });
+    });
+    // State for form editing
+    const [editForm, setEditForm] = useState({ ...mediaKitData });
   
   // State for section visibility in preview
   const [sectionToggles, setSectionToggles] = useState({

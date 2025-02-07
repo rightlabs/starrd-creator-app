@@ -342,7 +342,6 @@ portfolio: [
     { id: 'packages', label: 'Pricing', icon: '📊' } 
   ];
   
-
   const MediaCard = ({ item }) => {
     const renderMediaIcon = () => {
       switch (item.type) {
@@ -358,7 +357,7 @@ portfolio: [
     return (
       <motion.div
         whileHover={{ scale: 1.02 }}
-        className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900"
+        className="relative aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900"
       >
         <Image
           src={item.type === 'image' ? item.media : item.thumbnail}
@@ -386,8 +385,8 @@ portfolio: [
           {item.category}
         </div>
   
-        {/* Content Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Content Overlay (Always Visible) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-100 transition-opacity">
           <div className="absolute bottom-0 left-0 right-0 p-4">
             <h3 className="text-sm font-medium">{item.title}</h3>
             <p className="text-xs text-zinc-400 mt-1">{item.description}</p>

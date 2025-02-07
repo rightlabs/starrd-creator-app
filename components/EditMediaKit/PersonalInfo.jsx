@@ -60,9 +60,7 @@ const SelectionCard = ({ icon, label, selected, onClick, description }) => (
 const CategorySection = ({ title, icon: Icon, children }) => (
   <div className="space-y-4">
     <div className="flex items-center gap-2">
-      <div className="w-8 h-8 rounded-lg bg-[#bcee45]/10 flex items-center justify-center">
-        <Icon className="w-4 h-4 text-[#bcee45]" />
-      </div>
+    
       <h3 className="text-white font-medium">{title}</h3>
     </div>
     {children}

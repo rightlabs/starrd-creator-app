@@ -15,14 +15,17 @@ import {
   Type,
   FileText,
   ImageIcon,
-  X
+  X,
+  Building2,
+  Globe,
+  Pencil
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 const InputField = ({ label, icon: Icon, value, onChange, type = "text", placeholder, disabled, description, maxLength }) => (
   <div className="space-y-2">
     <div className="flex items-center gap-2 mb-1">
-      <Icon className="w-4 h-4 text-[#bcee45]" />
+      {/* <Icon className="w-4 h-4 text-[#bcee45]" /> */}
       <label className="text-md font-medium text-white">
         {label}
       </label>
@@ -79,14 +82,18 @@ const ImageUploadField = ({ field, value, onChange, onRemove }) => (
     <label className="text-md font-medium text-white">{field.label}</label>
     <p className="text-sm text-[#888888] mb-3">{field.description}</p>
     
-    <div className={`relative ${field.name === 'coverImage' ? 'aspect-[3/2]' : 'aspect-square'} rounded-xl border-2 border-dashed border-[#bcee45]/20 overflow-hidden group`}>
+    <div className={`relative ${
+      field.name === 'coverImage' ? 'aspect-[3/2]' : 
+      field.name === 'agencyLogo' ? 'aspect-[2/1]' :
+      'aspect-square'
+    } rounded-xl border-2 border-dashed border-[#bcee45]/20 overflow-hidden group`}>
       {value ? (
         <>
           <Image 
             src={typeof value === 'string' ? value : URL.createObjectURL(value)}
             alt={field.label}
             fill
-            className="object-cover"
+            className={field.name === 'agencyLogo' ? 'object-contain' : 'object-cover'}
           />
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
             <motion.button
@@ -273,6 +280,77 @@ const ProfileSection = ({ profileInfo, editForm, isEditing, setEditForm, handleE
         />
       </div>
 
+      {/* Agency Representation */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 mb-2">
+          <h4 className="font-medium text-white">Agency Representation</h4>
+        </div>
+        <div className="space-y-6">
+          <InputField
+            label="Agency Name"
+            icon={Building2}
+            value={editForm.profileInfo.representation?.name || ''}
+            onChange={(e) => setEditForm({
+              ...editForm,
+              profileInfo: {
+                ...editForm.profileInfo,
+                representation: {
+                  ...editForm.profileInfo.representation,
+                  name: e.target.value
+                }
+              }
+            })}
+            placeholder="e.g., Creator Management Agency"
+          />
+
+          <ImageUploadField
+            field={{
+              name: 'agencyLogo',
+              label: 'Agency Logo',
+              description: 'Upload agency logo (optional)'
+            }}
+            value={editForm.profileInfo.representation?.logo || null}
+            onChange={(name, file) => setEditForm({
+              ...editForm,
+              profileInfo: {
+                ...editForm.profileInfo,
+                representation: {
+                  ...editForm.profileInfo.representation,
+                  logo: file
+                }
+              }
+            })}
+            onRemove={() => setEditForm({
+              ...editForm,
+              profileInfo: {
+                ...editForm.profileInfo,
+                representation: {
+                  ...editForm.profileInfo.representation,
+                  logo: null
+                }
+              }
+            })}
+          />
+
+          <InputField
+            label="Agency Website"
+            icon={Globe}
+            value={editForm.profileInfo.representation?.website || ''}
+            onChange={(e) => setEditForm({
+              ...editForm,
+              profileInfo: {
+                ...editForm.profileInfo,
+                representation: {
+                  ...editForm.profileInfo.representation,
+                  website: e.target.value
+                }
+              }
+            })}
+            placeholder="e.g., https://agency.com (optional)"
+          />
+        </div>
+      </div>
+
       {/* Action Buttons */}
       <div className="flex justify-end gap-2">
         <motion.button
@@ -345,6 +423,58 @@ const ProfileSection = ({ profileInfo, editForm, isEditing, setEditForm, handleE
           />
         ))}
       </div>
+      {profileInfo.representation?.name ? (
+        <div className="space-y-4">
+          <div className="p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333]">
+            <div className="flex items-center gap-2 mb-4">
+              <Building2 className="w-5 h-5 text-[#bcee45]" />
+              <h4 className="font-medium text-white">Agency Representation</h4>
+            </div>
+            
+            <div className="space-y-6">
+              {profileInfo.representation.logo && (
+                <div className="relative h-24 w-48 mx-auto">
+                  <Image 
+                    src={profileInfo.representation.logo}
+                    alt="Agency Logo"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              )}
+              
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-[#bcee45]" />
+                  <span className="text-[#888888]">{profileInfo.representation.name}</span>
+                </div>
+                
+                {profileInfo.representation.website && (
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-[#bcee45]" />
+                    <a 
+                      href={profileInfo.representation.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#bcee45] hover:underline"
+                    >
+                      {profileInfo.representation.website}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333]">
+          <div className="flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-[#bcee45]" />
+            <h4 className="font-medium text-white">Agency Representation</h4>
+          </div>
+          <p className="text-[#888888] mt-3">No agency representation added yet</p>
+        </div>
+      )}
 
       {/* Bio Information Display */}
       <div className="space-y-4">
@@ -368,11 +498,24 @@ const ProfileSection = ({ profileInfo, editForm, isEditing, setEditForm, handleE
 
   return (
     <Card className="p-6 bg-[#1A1A1A] border-[#333333]">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold">Basic Information</h3>
-      </div>
-      {isEditing ? renderEditView() : renderViewMode()}
-    </Card>
+    <div className="flex justify-between items-center mb-6">
+      <h3 className="text-lg font-semibold">Basic Information</h3>
+      {!isEditing && (
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => handleEditToggle('profile')}
+          className="px-4 py-2 rounded-lg border border-[#bcee45]/20 text-[#bcee45] hover:bg-[#bcee45]/10"
+        >
+          <div className="flex items-center gap-2">
+            <Pencil className="w-4 h-4" />
+            <span>Edit</span>
+          </div>
+        </motion.button>
+      )}
+    </div>
+    {isEditing ? renderEditView() : renderViewMode()}
+  </Card>
   );
 };
 

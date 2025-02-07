@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Package, Plus, X, DollarSign, ChevronDown } from 'lucide-react';
+import { ArrowRight, Package, Plus, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StepCompletion } from '@/components/MediaKitStepCompletion';
 import { useRouter } from 'next/navigation';
@@ -15,6 +15,7 @@ const INITIAL_PACKAGE = {
   name: '',
   price: '',
   deliverables: [],
+  customFields: [], // Added customFields array
   openToBarter: false
 };
 
@@ -24,6 +25,85 @@ const DELIVERABLE_OPTIONS = [
   { value: 'carousel', label: 'Carousel Post' },
   { value: 'shoot', label: 'Shoot (8 hours)' }
 ];
+
+// Custom Field Input Component
+const CustomFieldInput = ({ onAdd = () => {}, onRemove = () => {}, fields = [] }) => {
+  const [label, setLabel] = useState('');
+  const [value, setValue] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (label.trim() && value.trim()) {
+      onAdd({ label: label.trim(), value: value.trim() });
+      setLabel('');
+      setValue('');
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="Enter field label"
+              className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+            />
+          </div>
+          <div className="flex-1">
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="Enter value"
+              className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+            />
+          </div>
+          <Button
+            type="submit"
+            variant="ghost"
+            size="icon"
+            className="text-[#bcee45] hover:bg-[#bcee45]/10"
+            disabled={!label.trim() || !value.trim()}
+          >
+            <Plus className="w-5 h-5" />
+          </Button>
+        </div>
+      </form>
+      
+      {fields.length > 0 && (
+        <div className="space-y-2">
+          {fields.map((field, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex items-center justify-between bg-[#1A1A1A]/30 px-4 py-2 rounded-lg"
+            >
+              <div className="flex items-center gap-4">
+                <span className="text-[#888888]">{field.label}:</span>
+                <span className="text-white">{field.value}</span>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => onRemove(index)}
+                className="text-[#bcee45] hover:bg-[#bcee45]/10"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const InputField = ({ label, required, children }) => (
   <motion.div
@@ -79,8 +159,10 @@ const CustomSelect = ({ onChange, options, placeholder }) => {
 };
 
 const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
-  const [formData, setFormData] = useState(initialData);
-
+  const [formData, setFormData] = useState({
+    ...initialData,
+    customFields: initialData.customFields || [] // Ensure customFields is initialized
+  });
   const handleDeliverableSelect = (option) => {
     if (!formData.deliverables.includes(option.label)) {
       setFormData(prev => ({
@@ -175,7 +257,7 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
 
       {/* Deliverables */}
       <div>
-        <InputField label="Deliverables" >
+        <InputField label="Deliverables">
           <CustomSelect
             onChange={handleDeliverableSelect}
             options={DELIVERABLE_OPTIONS}
@@ -183,7 +265,6 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
           />
         </InputField>
 
-        {/* Selected Deliverables */}
         <div className="space-y-2 mt-4">
           {formData.deliverables.map((deliverable, index) => (
             <div key={index} className="flex items-center justify-between bg-[#1A1A1A]/30 px-4 py-2 rounded-lg">
@@ -200,6 +281,24 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Custom Fields */}
+      <div className="mt-6">
+        <label className="text-md font-medium text-white block mb-2">
+          Custom Fields
+        </label>
+        <CustomFieldInput
+          fields={formData.customFields}
+          onAdd={(field) => setFormData(prev => ({
+            ...prev,
+            customFields: [...(prev.customFields || []), field]
+          }))}
+          onRemove={(index) => setFormData(prev => ({
+            ...prev,
+            customFields: prev.customFields.filter((_, i) => i !== index)
+          }))}
+        />
       </div>
 
       {/* Actions */}
@@ -247,6 +346,8 @@ const PackageCard = ({ package: pkg, onDelete }) => (
         <X className="w-5 h-5" />
       </Button>
     </div>
+    
+    {/* Deliverables */}
     <div className="space-y-2">
       {pkg.deliverables.map((deliverable, index) => (
         <div key={index} className="flex items-center gap-2 text-white">
@@ -255,6 +356,19 @@ const PackageCard = ({ package: pkg, onDelete }) => (
         </div>
       ))}
     </div>
+
+    {/* Custom Fields */}
+    {pkg.customFields && pkg.customFields.length > 0 && (
+      <div className="mt-4 pt-4 border-t border-[#333333] space-y-2">
+        {pkg.customFields.map((field, index) => (
+          <div key={index} className="flex items-center gap-2 text-white">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#bcee45]" />
+            <span className="text-[#888888]">{field.label}:</span>
+            <span>{field.value}</span>
+          </div>
+        ))}
+      </div>
+    )}
   </motion.div>
 );
 
@@ -265,7 +379,12 @@ export default function PricingPage() {
   const [showCompletion, setShowCompletion] = useState(false);
 
   const handleSubmit = (packageData) => {
-    setPackages(prev => [...prev, { ...packageData, id: Date.now() }]);
+    // Update this function in PricingPage component
+    setPackages(prev => [...prev, { 
+      ...packageData,
+      id: Date.now(),
+      customFields: packageData.customFields || [] // Explicitly ensure customFields exists
+    }]);
     setIsAdding(false);
   };
 
