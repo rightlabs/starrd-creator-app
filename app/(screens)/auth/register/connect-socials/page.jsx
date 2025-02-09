@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import { completeOnboarding } from '@/api/user';
 
 
 const StepIndicator = () => {
@@ -80,10 +81,33 @@ const SocialConnect = () => {
     }
    };
 
-  const handleNext = () => {
-    setTimeout(() => {
-      window.location.href = '/auth/register/congratulations';
-    }, 500);
+   const handleSkip = async () => {
+    try {
+      setLoading(true);
+      
+      // Call API to mark onboarding as complete
+      const response = await completeOnboarding(true); // true indicates skipped
+      
+      if (response.status === 200) {
+        // Set cookie as completed since we're skipping this optional step
+        document.cookie = "onboardingStep=4; path=/; max-age=2592000";
+        
+        // Then navigate to congratulations
+        setTimeout(() => {
+          window.location.href = '/auth/register/congratulations';
+        }, 500);
+      }
+    } catch (error) {
+      toast.error('Failed to complete onboarding', {
+        style: { 
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          borderRadius: "16px"
+        }
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -109,7 +133,7 @@ const SocialConnect = () => {
     {/* Skip Button */}
     <button
       className="px-4 py-2 bg-black/10 rounded-lg text-sm font-medium"
-      onClick={handleNext}
+      onClick={handleSkip}
     >
       SKIP
     </button>
@@ -193,7 +217,7 @@ const SocialConnect = () => {
           <Button
             className="w-full bg-primary rounded-3xl text-black hover:bg-primary/90"
             size="lg"
-            onClick={handleNext}
+            onClick={handleSkip}
             disabled={loading}
           >
             {loading ? 'Saving...' : 'Continue'}

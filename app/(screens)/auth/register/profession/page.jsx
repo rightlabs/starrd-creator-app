@@ -1,10 +1,11 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, X, Search, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { getUserCategories, updateUserCategories } from '@/api/user';
 
 const categories = [
   {
@@ -127,15 +128,40 @@ const CategoryCard = ({ category, isSelected, onClick }) => (
     </div>
   </motion.button>
 );
-
 const CreatorType = () => {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Fetch existing categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getUserCategories();
+        if (response.status === 200 && response.data?.data?.user?.categories) {
+          setSelectedTypes(response.data.data.user.categories);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        toast.error('Failed to load your categories', {
+          style: { 
+            backgroundColor: '#000000',
+            color: '#ffffff',
+            borderRadius: "16px"
+          }
+        });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const toggleCategory = (id) => {
-    setSelectedTypes(prev => 
-      prev.includes(id) 
+    setSelectedTypes(prev =>
+      prev.includes(id)
         ? prev.filter(type => type !== id)
         : [...prev, id]
     );
@@ -147,36 +173,65 @@ const CreatorType = () => {
 
   const handleSubmit = async () => {
     if (selectedTypes.length === 0) {
-      toast.error('Please select at least one category');
+      toast.error('Please select at least one category', {
+        style: { 
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          borderRadius: "16px"
+        }
+      });
       return;
     }
 
     try {
       setLoading(true);
-      toast.success('Categories saved successfully!', {
+      
+      const response = await updateUserCategories(selectedTypes);
+
+      if (response.status === 200) {
+        toast.success('Categories saved successfully!', {
+          style: { 
+            backgroundColor: '#000000',
+            color: '#ffffff',
+            borderRadius: "16px"
+          },
+          icon: <CheckCircle size={24} color="#00ff00" />,
+        });
+
+        // Update onboarding step cookie
+        document.cookie = "onboardingStep=3; path=/; max-age=2592000";
+
+        setTimeout(() => {
+          window.location.href = '/auth/register/connect-socials';
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Update Error:', error);
+      toast.error(error.response?.data?.message || 'Failed to save categories', {
         style: { 
           backgroundColor: '#000000',
           color: '#ffffff',
-          borderRadius:"16px"
-          
-        },
-        icon: <CheckCircle size={24} color="#00ff00" />,
+          borderRadius: "16px"
+        }
       });
-      setTimeout(() => {
-        window.location.href = '/auth/register/connect-socials';
-      }, 500);
-    } catch (error) {
-      toast.error('Failed to save categories');
     } finally {
       setLoading(false);
     }
   };
 
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
   const selectedCategories = categories.filter(cat => selectedTypes.includes(cat.id));
   const filteredCategories = categories.filter(category => 
     category.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     category.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
 
   return (
     <div className="min-h-screen bg-black">
@@ -186,7 +241,7 @@ const CreatorType = () => {
         </div>
         <div className="container px-6">
           <div className="flex items-center justify-between pt-6">
-            <Link href="/auth/register">
+            <Link href="/auth/register/personal">
               <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
                 <ArrowLeft className="w-5 h-5 text-primary" />
               </div>

@@ -8,32 +8,21 @@ import Link from 'next/link';
 import Image from 'next/image';
 import image from "@/public/image-1.jpg";
 import { toast } from 'sonner';
-import { useCookies } from 'react-cookie';
-import { singUpUser, verifyUserOTP } from '@/api/user';
+import { loginUser, verifyLoginOTP, verifyUserOTP } from '@/api/user';
 import { useRouter } from 'next/navigation';
 
-const COOKIE_OPTIONS = {
-  path: '/',
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
-  maxAge: 30 * 24 * 60 * 60,
-  httpOnly: true
-};
-
-const AuthPage = () => {
-  // Add location states
+const LoginPage = () => {
+  // Location states
   const [isIndianUser, setIsIndianUser] = useState(true);
   const [locationChecked, setLocationChecked] = useState(false);
   
-  // Existing states
+  // Auth states
   const [phone, setPhone] = useState('');
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
-  const [cookie, setCookie] = useCookies();
   const router = useRouter();
 
   // Location detection effect
@@ -104,11 +93,11 @@ const AuthPage = () => {
         });
         return;
       }
-  
+
       setLoading(true);
       setError('');
-      const response = await singUpUser(validPhone);
-  
+      const response = await loginUser(validPhone);
+
       if (response.data.statusCode === 200) {
         setShowOTP(true);
         startResendTimer();
@@ -122,22 +111,15 @@ const AuthPage = () => {
         });
       }
     } catch (err) {
-      console.log("Full error object:", err);
-  
       let errorMessage;
       if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
-      }
-      else if (err.response?.status === 409) {
-        errorMessage = "User with this phone number already exists";
-      }
-      else if (!err.response) {
+      } else if (!err.response) {
         errorMessage = "Network error. Please check your connection.";
-      }
-      else {
+      } else {
         errorMessage = "An error occurred. Please try again.";
       }
-  
+
       setError(errorMessage);
       toast.error(errorMessage, {
         style: { 
@@ -151,15 +133,18 @@ const AuthPage = () => {
     }
   };
 
-  const handleVerifyOTP = async () => {
+// Inside LoginPage component
+const handleVerifyOTP = async () => {
     try {
       setLoading(true);
       const otpString = otp.join('');
       
-      const response = await verifyUserOTP(phone, otpString);
+      const response = await verifyLoginOTP(phone, otpString);
       
       if (response.status === 200) {
-        toast.success('Account Verified Successfully!', {
+        const userData = response.data?.data?.user;
+        
+        toast.success('Login Successful!', {
           style: { 
             backgroundColor: '#000000',
             color: '#bcee45',
@@ -168,8 +153,21 @@ const AuthPage = () => {
           icon: <CheckCircle size={24} color="#00ff00" />,
         });
   
+        // Wait for cookies to be set
         await new Promise(resolve => setTimeout(resolve, 1000));
-        window.location.href = '/auth/register/personal';
+  
+        // Redirect based on onboarding step
+        if (userData?.onboardingStep === 4) {
+          window.location.href = '/dashboard';
+        } else {
+          // Redirect to appropriate onboarding step
+          const stepRoutes = {
+            1: '/auth/register/personal',
+            2: '/auth/register/profession',
+            3: '/auth/register/connect-socials'
+          };
+          window.location.href = stepRoutes[userData.onboardingStep] || '/auth/register/personal';
+        }
       }
     } catch (error) {
       console.error('Verification Error:', error);
@@ -189,7 +187,6 @@ const AuthPage = () => {
       setLoading(false);
     }
   };
-
   // Show loading state while checking location
   if (!locationChecked) {
     return (
@@ -219,10 +216,10 @@ const AuthPage = () => {
             className="max-w-md mx-auto w-full"
           >
             <div className="space-y-6 text-primary">
-              <h1 className="text-4xl font-bold mb-8 text-white">Get started</h1>
+              <h1 className="text-4xl font-bold mb-8 text-white">Welcome back</h1>
 
               {isIndianUser ? (
-                // Show phone auth for Indian users
+                // Phone auth for Indian users
                 !showOTP ? (
                   <>
                     <div className="space-y-2">
@@ -241,27 +238,11 @@ const AuthPage = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="terms"
-                        checked={acceptedTerms}
-                        onChange={(e) => setAcceptedTerms(e.target.checked)}
-                        className="rounded border-primary accent-primary bg-transparent focus:ring-primary"
-                      />
-                      <label htmlFor="terms" className="text-sm text-white">
-                        I agree to{' '}
-                        <Link href="/terms" className="text-primary underline">
-                          Terms & Conditions
-                        </Link>
-                      </label>
-                    </div>
-
                     <Button 
                       className="w-full bg-primary text-black rounded-3xl hover:bg-primary/90"
                       size="lg"
                       onClick={handleSubmit}
-                      disabled={!acceptedTerms || loading || !phone}
+                      disabled={loading || !phone}
                     >
                       {loading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -323,7 +304,7 @@ const AuthPage = () => {
                   </motion.div>
                 )
               ) : (
-                // Show only Google auth for non-Indian users
+                // Google auth for non-Indian users
                 <button className="w-full px-4 py-3 bg-transparent border-2 border-primary rounded-lg flex items-center justify-center space-x-2 hover:bg-primary/5 transition-colors text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 48 48">
                     <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
@@ -335,35 +316,10 @@ const AuthPage = () => {
                 </button>
               )}
 
-              {/* {isIndianUser && (
-                <>
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t-2 border-primary/30"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                                              <span className="px-2 bg-black text-white">
-                          or continue with
-                        </span>
-                    </div>
-                  </div>
-
-                  <button className="w-full px-4 py-3 bg-transparent border-2 border-primary rounded-lg flex items-center justify-center space-x-2 hover:bg-primary/5 transition-colors text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 48 48">
-                      <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                      <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
-                      <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
-                      <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                    </svg>
-                    <span>GOOGLE</span>
-                  </button>
-                </>
-              )} */}
-
               <p className="text-center text-sm text-white">
-                Already have an account?{' '}
-                <Link href="/auth/login" className="text-primary underline">
-                  LOG IN
+                Don't have an account?{' '}
+                <Link href="/auth/register" className="text-primary underline">
+                  SIGN UP
                 </Link>
               </p>
             </div>
@@ -374,4 +330,4 @@ const AuthPage = () => {
   );
 };
 
-export default AuthPage;
+export default LoginPage;

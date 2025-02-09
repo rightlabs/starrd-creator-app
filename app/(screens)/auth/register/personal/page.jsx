@@ -1,16 +1,14 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { getUserDetails, updateUserDetails } from '@/api/user';
 
-const api = axios.create({
-  baseURL: 'http://localhost:8080/api/v1',
-  timeout: 5000,
-});
+
 
 // Custom Calendar Component
 const CustomCalendar = ({ selectedDate, onSelect, onClose }) => {
@@ -163,27 +161,107 @@ const PersonalInfoV2 = () => {
     lastName: '',
     gender: '',
     dateOfBirth: '',
-    country: '',
+    country: ''
   });
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [showCalendar, setShowCalendar] = useState(false);
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await getUserDetails();
+        if (response.status === 200 && response.data?.data?.user) {
+          const userData = response.data.data.user;
+          setFormData({
+            firstName: userData.firstName || '',
+            lastName: userData.lastName || '',
+            gender: userData.gender?.toLowerCase() || '', // Convert to lowercase for form
+            dateOfBirth: userData.dob ? new Date(userData.dob).toISOString().split('T')[0] : '',
+            country: userData.location || ''
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        toast.error('Failed to load your information', {
+          style: { 
+            backgroundColor: '#000000',
+            color: '#ffffff',
+            borderRadius: "16px"
+          }
+        });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleSubmit = async () => {
     if (!Object.values(formData).every(Boolean)) {
-      toast.error('Please fill all required fields');
+      toast.error('Please fill all required fields', {
+        style: { 
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          borderRadius: "16px"
+        }
+      });
       return;
     }
+
     try {
       setLoading(true);
-      setTimeout(() => {
-        window.location.href = '/auth/register/profession';
-      }, 500);
+      
+      const formattedData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        gender: formData.gender.charAt(0).toUpperCase() + formData.gender.slice(1),
+        dob: new Date(formData.dateOfBirth).toISOString(),
+        location: formData.country
+      };
+
+      const response = await updateUserDetails(formattedData);
+
+      if (response.status === 200) {
+        toast.success('Personal information saved!', {
+          style: { 
+            backgroundColor: '#000000',
+            color: '#bcee45',
+            borderRadius: "16px"
+          }
+        });
+
+        // Update onboarding step cookie
+        document.cookie = "onboardingStep=2; path=/; max-age=2592000";
+
+        setTimeout(() => {
+          window.location.href = '/auth/register/profession';
+        }, 1000);
+      }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Something went wrong');
+      console.error('Update Error:', error);
+      toast.error(error.response?.data?.message || 'Failed to save information', {
+        style: { 
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          borderRadius: "16px"
+        }
+      });
     } finally {
       setLoading(false);
     }
   };
+
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-black">

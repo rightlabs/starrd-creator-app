@@ -1,57 +1,154 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {  Settings,  Star,  ChevronRight,  Instagram,  Youtube, Camera, Edit, User,  Sparkles,Share2} from 'lucide-react';
+import { Settings, Star, ChevronRight, Instagram, Youtube, Sparkles, Share2 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Image from 'next/image';
 import ProfileAvatar from '@/components/ProfileAvatar';
 import Link from 'next/link';
 import { LogoutDialog } from '@/components/LogoutDialog';
 import { useRouter } from 'next/navigation';
+import { getUserDetails } from '@/api/user';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Button } from '@/components/ui/button';
+
+const SOCIAL_PLATFORMS = [
+  {
+    id: 'instagram',
+    platform: 'Instagram',
+    icon: <Instagram className="w-5 h-5" />,
+    gradient: 'from-pink-500 to-purple-600',
+    analyticsFields: ['Followers', 'Engagement Rate', 'Avg. Likes']
+  },
+  {
+    id: 'youtube',
+    platform: 'YouTube',
+    icon: <Youtube className="w-5 h-5" />,
+    gradient: 'from-red-500 to-pink-600',
+    analyticsFields: ['Subscribers', 'Avg. Views', 'Watch Time']
+  }
+];
+
+const ConnectedAccounts = ({ socialAccounts = [] }) => {
+  return (
+    <div className="space-y-4">
+      {SOCIAL_PLATFORMS.map((platform) => {
+        const connectedAccount = socialAccounts.find(
+          account => account.platform === platform.platform
+        );
+        
+        return (
+          <motion.div
+            key={platform.id}
+            whileHover={{ scale: 1.02 }}
+            className="p-4 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333] hover:border-[#bcee45]/20 transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 bg-gradient-to-br ${platform.gradient} rounded-xl flex items-center justify-center text-white`}>
+                {platform.icon}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-white">{platform.platform}</span>
+                  {connectedAccount?.verified && (
+                    <Star className="w-4 h-4 text-[#bcee45]" />
+                  )}
+                </div>
+                <div className="text-sm text-[#888888]">
+                  {connectedAccount ? (
+                    `${connectedAccount.username} • ${connectedAccount.followers} followers`
+                  ) : (
+                    'Not Connected'
+                  )}
+                </div>
+              </div>
+              <Button
+          onClick={() => onConnect(platform.id)}
+          variant={connectedAccount ? "outline" : "default"}
+          className={connectedAccount ? 'border-primary text-primary hover:bg-primary/10' : ''}
+        >
+          {connectedAccount ? 'Connected' : 'Connect'}
+        </Button>            </div>
+
+            {connectedAccount && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-[#333333]"
+              >
+                {platform.analyticsFields.map((field, index) => (
+                  <div key={index} className="text-center">
+                    <p className="text-[#888888] text-xs mb-1">{field}</p>
+                    <p className="text-white font-medium">--</p>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </motion.div>
+        );
+      })}
+
+    </div>
+  );
+};
 
 const ProfilePage = () => {
-  const router=useRouter()
-
+  const router = useRouter();
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const handleLogout = () => {
-    console.log('User logged out');
-    router.push("/welcome")
-    // Redirect to login page or handle logout
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await getUserDetails();
+        if (response.status === 200) {
+          setUserData(response.data.data.user);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "onboardingStep=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      router.push("/welcome");
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast.error('Failed to logout');
+    }
   };
 
-  const socialAccounts = [
-    { 
-      platform: 'Instagram',
-      username: '@tushar.design',
-      followers: '12.5K',
-      icon: <Instagram className="w-5 h-5" />,
-      verified: true,
-      gradient: 'from-pink-500 to-purple-600'
-    },
-    { 
-      platform: 'YouTube',
-      username: 'Tushar Creates',
-      followers: '8.2K',
-      icon: <Youtube className="w-5 h-5" />,
-      verified: true,
-      gradient: 'from-red-500 to-pink-600'
-    }
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F] flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  // Transform social accounts data
+  const socialAccounts = userData?.socialAccounts?.map(account => ({
+    platform: account.platform === 'instagram' ? 'Instagram' : 'YouTube',
+    username: account.username,
+    followers: `${(account.followers / 1000).toFixed(1)}K`,
+    icon: account.platform === 'instagram' ? <Instagram className="w-5 h-5" /> : <Youtube className="w-5 h-5" />,
+    verified: account.isVerified,
+    gradient: account.platform === 'instagram' ? 'from-pink-500 to-purple-600' : 'from-red-500 to-pink-600'
+  })) || [];
 
   const settingsOptions = [
-    { 
-      name: 'Privacy & Policy', 
-      icon: '🔒', 
-      link: '/profile/privacy-and-security' 
-    },
- 
-    { 
-      name: 'Help & Support', 
-      icon: '💡', 
-      link: '/profile/help-and-support' 
-    }
+    { name: 'Privacy & Policy', icon: '🔒', link: '/profile/privacy-and-security' },
+    { name: 'Help & Support', icon: '💡', link: '/profile/help-and-support' }
   ];
-
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F] text-white">
       {/* Cover Image Section */}
@@ -65,30 +162,29 @@ const ProfilePage = () => {
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-[#0A0A0A]" />
-      
       </div>
 
       {/* Main Content */}
       <div className="px-6 -mt-24 relative flex-grow">
         {/* Profile Image */}
-        <motion.div 
+            {/* Profile Image */}
+
+            <motion.div 
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           className="relative w-32 h-32 mx-auto mb-6"
         >
-      {/* Profile Image */}
 <motion.div 
   initial={{ scale: 0 }}
   animate={{ scale: 1 }}
   className="relative mx-auto mb-6"
 >
-  <ProfileAvatar
-    completion={50} // Pass the actual completion percentage here
-    image="/welcome-1.jpg" // Pass the user's image URL
-  />
-</motion.div>
-         
-        </motion.div>
+<ProfileAvatar
+            completion={userData?.completionStatus?.totalCompletion || 0}
+            image="/welcome-1.jpg"
+          />
+</motion.div></motion.div>
+
 
         {/* Profile Info */}
         <motion.div
@@ -98,18 +194,18 @@ const ProfilePage = () => {
         >
           <div className="flex items-center justify-center gap-2 mb-2">
             <h1 className="text-3xl font-bold text-white">
-              Tushar Agarwal
+              {`${userData?.firstName || ''} ${userData?.lastName || ''}`}
             </h1>
             <Sparkles className="w-6 h-6 text-[#bcee45]" />
           </div>
-          <p className="text-[#888888] text-lg">Digital Creator & UI Designer</p>
+          <p className="text-[#888888] text-lg">
+            {userData?.categories?.join(' & ') || 'Digital Creator'}
+          </p>
           <button className="mt-4 px-6 py-2.5 bg-gradient-to-r from-[#bcee45] to-[#9BC53D] text-black rounded-xl text-sm font-semibold flex items-center gap-2 mx-auto hover:opacity-90 transition-all">
             <Share2 className="w-4 h-4" />
-           Share Your profile
+            Share Your profile
           </button>
         </motion.div>
-
-     
 
         {/* Connected Accounts */}
         <motion.div
@@ -121,33 +217,9 @@ const ProfilePage = () => {
           <h2 className="text-xl font-semibold mb-6 text-white">
             Connected Accounts
           </h2>
-          {socialAccounts.map((account) => (
-            <motion.div 
-              key={account.platform}
-              whileHover={{ scale: 1.02 }}
-              className="p-4 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333] hover:border-[#bcee45]/20 transition-all"
-            >
-              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 bg-gradient-to-br ${account.gradient} rounded-xl flex items-center justify-center text-white`}>
-                  {account.icon}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white">{account.platform}</span>
-                    {account.verified && (
-                      <Star className="w-4 h-4 text-[#bcee45]" />
-                    )}
-                  </div>
-                  <div className="text-sm text-[#888888]">
-                    {account.username} • {account.followers} followers
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-[#888888]" />
-              </div>
-            </motion.div>
-          ))}
+          <ConnectedAccounts socialAccounts={socialAccounts} />
         </motion.div>
-   
+
         {/* Account Settings */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}

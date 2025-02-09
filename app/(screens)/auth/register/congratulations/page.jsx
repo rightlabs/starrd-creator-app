@@ -266,6 +266,8 @@ useEffect(() => {
       setProgress(prev => {
         if (prev >= 50) {
           clearInterval(timer);
+          document.cookie = "onboardingStep=completed; path=/; max-age=2592000";
+
           setTimeout(() => {
             router.push('/dashboard');
           }, 500);

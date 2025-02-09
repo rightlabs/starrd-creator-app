@@ -1,15 +1,56 @@
 "use client";
-import React from "react";
+
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import PreviewButton from "@/components/PreviewButton";
 import Link from "next/link";
 import FeatureCards from "@/components/DashborardFeatures";
-import { IconGrowth } from "@tabler/icons-react";
 import { ChartNoAxesCombined } from "lucide-react";
+import { getUserDetails } from "@/api/user";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const DashboardPage = () => {
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await getUserDetails();
+        if (response.status === 200) {
+          setUserData(response.data.data.user);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F] flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  // Calculate remaining media kit steps
+  const totalMediaKitSteps = 6;
+  const remainingSteps = totalMediaKitSteps - (userData?.mediaKitPercentage || 0) / (50 / totalMediaKitSteps);
+
+  // Calculate total completion percentage
+  const totalCompletion = userData?.completionStatus?.totalCompletion || 0;
+
+  // Calculate progress for the circle
+  const circleCircumference = 151;
+  const progressOffset = circleCircumference - (circleCircumference * totalCompletion) / 100;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F] text-white overflow-hidden">
       {/* Animated Background */}
@@ -57,90 +98,93 @@ const DashboardPage = () => {
           </div>
 
           <div className="px-6 max-w-2xl mx-auto">
-            {/* Welcome Section */}
-            <motion.h1
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl my-8 flex items-center gap-3"
-            >
-              Welcome{" "}
-              <span className="bg-gradient-to-r from-[#1A1A1A] to-[#252525] text-[#bcee45] font-extrabold rounded-2xl px-4 py-2 border border-[#333333] shadow-lg">
-                Tushar 
+        {/* Welcome Section */}
+        <motion.h1
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="text-4xl my-8 flex items-center gap-3"
+        >
+          Welcome{" "}
+          <span className="bg-gradient-to-r from-[#1A1A1A] to-[#252525] text-[#bcee45] font-extrabold rounded-2xl px-4 py-2 border border-[#333333] shadow-lg">
+            {userData?.firstName || 'Creator'}
+          </span>
+        </motion.h1>
+
+        {/* Media Kit Progress */}
+        <motion.div
+          className="mb-8 p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333] shadow-xl"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-xl font-bold mb-1 text-white">
+                Media Kit Completion
+              </h3>
+              <p className="text-sm text-[#888888]">
+                {remainingSteps} steps remaining to complete your profile
+              </p>
+            </div>
+
+            {/* Progress Circle */}
+            <div className="relative w-14 h-14">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 56 56">
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="24"
+                  className="stroke-white/10"
+                  strokeWidth="6"
+                  fill="none"
+                />
+                <motion.circle
+                  cx="28"
+                  cy="28"
+                  r="24"
+                  className="stroke-[#bcee45]"
+                  strokeWidth="6"
+                  fill="none"
+                  strokeDasharray={circleCircumference}
+                  initial={{ strokeDashoffset: circleCircumference }}
+                  animate={{ strokeDashoffset: progressOffset }}
+                  transition={{ duration: 1.5, ease: "easeInOut" }}
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white">
+                {totalCompletion}%
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-[#888888]">
+              <span>Progress</span>
+              <span>
+                {totalMediaKitSteps - remainingSteps}/{totalMediaKitSteps} steps ✅
               </span>
-            </motion.h1>
+            </div>
+            <div className="w-full bg-white/5 rounded-full h-2">
+              <motion.div
+                className="bg-gradient-to-r from-[#bcee45] to-[#9BC53D] h-full rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${totalCompletion}%` }}
+                transition={{ duration: 1.5, delay: 0.5 }}
+              />
+            </div>
+          </div>
 
-            {/* Media Kit Progress */}
-            <motion.div
-              className="mb-8 p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333] shadow-xl"
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+          <Link href="/complete-media-kit/intro">
+            <motion.button
+              className="w-full mt-4 py-3 bg-gradient-to-r from-[#bcee45] to-[#9BC53D] text-black rounded-xl font-semibold hover:opacity-90 transition-opacity"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-xl font-bold mb-1 text-white">
-                    Media Kit Completion 
-                  </h3>
-                  <p className="text-sm text-[#888888]">
-                    5 steps remaining to complete your profile 
-                  </p>
-                </div>
-
-                {/* Progress Circle */}
-                <div className="relative w-14 h-14">
-                  <svg className="w-full h-full -rotate-90" viewBox="0 0 56 56">
-                    <circle
-                      cx="28"
-                      cy="28"
-                      r="24"
-                      className="stroke-white/10"
-                      strokeWidth="6"
-                      fill="none"
-                    />
-                    <motion.circle
-                      cx="28"
-                      cy="28"
-                      r="24"
-                      className="stroke-[#bcee45]"
-                      strokeWidth="6"
-                      fill="none"
-                      strokeDasharray="151"
-                      initial={{ strokeDashoffset: 151 }}
-                      animate={{ strokeDashoffset: 75.5 }}
-                      transition={{ duration: 1.5, ease: "easeInOut" }}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white">
-                    50%
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm text-[#888888]">
-                  <span>Progress </span>
-                  <span>5/10 steps ✅</span>
-                </div>
-                <div className="w-full bg-white/5 rounded-full h-2">
-                  <motion.div
-                    className="bg-gradient-to-r from-[#bcee45] to-[#9BC53D] h-full rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: "50%" }}
-                    transition={{ duration: 1.5, delay: 0.5 }}
-                  />
-                </div>
-              </div>
-              <Link href="/complete-media-kit/intro">
-                <motion.button
-                  className="w-full mt-4 py-3 bg-gradient-to-r from-[#bcee45] to-[#9BC53D] text-black rounded-xl font-semibold hover:opacity-90 transition-opacity"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Complete Media Kit 
-                </motion.button>
-              </Link>
-            </motion.div>
+              Complete Media Kit
+            </motion.button>
+          </Link>
+        </motion.div>
 
             {/* Feature Cards Section */}
             <motion.div
