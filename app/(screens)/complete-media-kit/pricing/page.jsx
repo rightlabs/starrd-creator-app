@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Package, Plus, X, DollarSign } from 'lucide-react';
-import Link from 'next/link';
+import { ArrowRight, Package, Plus, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StepCompletion } from '@/components/MediaKitStepCompletion';
 import { useRouter } from 'next/navigation';
@@ -14,48 +13,189 @@ const CURRENT_STEP = 5;
 
 const INITIAL_PACKAGE = {
   name: '',
-  description: '',
   price: '',
-  deliverables: ['']
+  deliverables: [],
+  customFields: [], // Added customFields array
+  openToBarter: false
+};
+
+const DELIVERABLE_OPTIONS = [
+  { value: 'story', label: 'Story' },
+  { value: 'reel', label: 'Reel' },
+  { value: 'carousel', label: 'Carousel Post' },
+  { value: 'shoot', label: 'Shoot (8 hours)' }
+];
+
+// Custom Field Input Component
+const CustomFieldInput = ({ onAdd = () => {}, onRemove = () => {}, fields = [] }) => {
+  const [label, setLabel] = useState('');
+  const [value, setValue] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (label.trim() && value.trim()) {
+      onAdd({ label: label.trim(), value: value.trim() });
+      setLabel('');
+      setValue('');
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="Enter field label"
+              className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+            />
+          </div>
+          <div className="flex-1">
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="Enter value"
+              className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+            />
+          </div>
+          <Button
+            type="submit"
+            variant="ghost"
+            size="icon"
+            className="text-[#bcee45] hover:bg-[#bcee45]/10"
+            disabled={!label.trim() || !value.trim()}
+          >
+            <Plus className="w-5 h-5" />
+          </Button>
+        </div>
+      </form>
+      
+      {fields.length > 0 && (
+        <div className="space-y-2">
+          {fields.map((field, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex items-center justify-between bg-[#1A1A1A]/30 px-4 py-2 rounded-lg"
+            >
+              <div className="flex items-center gap-4">
+                <span className="text-[#888888]">{field.label}:</span>
+                <span className="text-white">{field.value}</span>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => onRemove(index)}
+                className="text-[#bcee45] hover:bg-[#bcee45]/10"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const InputField = ({ label, required, children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-2"
+  >
+    <label className="text-sm font-medium text-white">
+      {label}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
+    {children}
+  </motion.div>
+);
+
+const CustomSelect = ({ onChange, options, placeholder }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 hover:border-[#bcee45] transition-colors cursor-pointer flex justify-between items-center text-white"
+      >
+        <span className="text-white/60">{placeholder}</span>
+        <ChevronDown className="w-4 h-4" />
+      </div>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute z-50 top-full left-0 right-0 mt-2 bg-black rounded-xl overflow-hidden shadow-lg border border-[#bcee45]/20"
+          >
+            {options.map((option) => (
+              <div
+                key={option.value}
+                onClick={() => {
+                  onChange(option);
+                  setIsOpen(false);
+                }}
+                className="px-4 py-3 text-white hover:bg-[#bcee45] hover:text-black cursor-pointer transition-colors"
+              >
+                {option.label}
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 };
 
 const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
-  const [formData, setFormData] = useState(initialData);
+  const [formData, setFormData] = useState({
+    ...initialData,
+    customFields: initialData.customFields || [] // Ensure customFields is initialized
+  });
+  const handleDeliverableSelect = (option) => {
+    if (!formData.deliverables.includes(option.label)) {
+      setFormData(prev => ({
+        ...prev,
+        deliverables: [...prev.deliverables, option.label]
+      }));
+    }
+  };
 
-  const addDeliverable = () => {
+  const removeDeliverable = (deliverable) => {
     setFormData(prev => ({
       ...prev,
-      deliverables: [...prev.deliverables, '']
+      deliverables: prev.deliverables.filter(d => d !== deliverable)
     }));
   };
 
-  const removeDeliverable = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      deliverables: prev.deliverables.filter((_, i) => i !== index)
-    }));
-  };
-
-  const updateDeliverable = (index, value) => {
-    setFormData(prev => ({
-      ...prev,
-      deliverables: prev.deliverables.map((item, i) => i === index ? value : item)
-    }));
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
   };
 
   return (
     <motion.form
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6 p-6 bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F] rounded-2xl border border-border"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit(formData);
-      }}
+      className="space-y-6 p-6 bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F] rounded-2xl border border-[#333333]"
+      onSubmit={handleSubmit}
     >
       {/* Package Name */}
       <div>
-        <label className="text-md font-medium text-white block mb-2">Package Name</label>
+        <label className="text-md font-medium text-white block mb-2">
+          Package Name
+        </label>
         <input
           required
           type="text"
@@ -68,67 +208,97 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
 
       {/* Price */}
       <div>
-        <label className="text-md font-medium text-white block mb-2">Price</label>
+        <label className="text-md font-medium text-white block mb-2">
+          Price
+        </label>
         <div className="relative">
-          {/* <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" /> */}
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#888888]">₹</span>
           <input
             required
-            type="number"
+            type="text"
             value={formData.price}
             onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-            className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
-            placeholder=" ₹299"
-            min="0"
+            className="w-full px-8 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+            placeholder="5,000 - 10,000"
           />
         </div>
       </div>
 
-      {/* Description */}
+      {/* Open to Barter */}
       <div>
-        <label className="text-md font-medium text-white block mb-2">Description</label>
-        <textarea
-          value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
-          placeholder="Describe what's included in this package"
-        />
+        <label className="text-md font-medium text-white block mb-2">
+          Open to Barter?
+        </label>
+        <div className="flex gap-4">
+          <button
+            type="button"
+            onClick={() => setFormData(prev => ({ ...prev, openToBarter: true }))}
+            className={`flex-1 py-3 rounded-xl border-2 transition-colors ${
+              formData.openToBarter
+                ? 'border-[#bcee45] bg-[#bcee45]/10 text-white'
+                : 'border-[#333333] text-[#888888]'
+            }`}
+          >
+            Yes
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData(prev => ({ ...prev, openToBarter: false }))}
+            className={`flex-1 py-3 rounded-xl border-2 transition-colors ${
+              !formData.openToBarter
+                ? 'border-[#bcee45] bg-[#bcee45]/10 text-white'
+                : 'border-[#333333] text-[#888888]'
+            }`}
+          >
+            No
+          </button>
+        </div>
       </div>
 
       {/* Deliverables */}
       <div>
-        <label className="text-md font-medium text-white block mb-2">Deliverables</label>
-        <div className="space-y-3">
+        <InputField label="Deliverables">
+          <CustomSelect
+            onChange={handleDeliverableSelect}
+            options={DELIVERABLE_OPTIONS}
+            placeholder="Select deliverable"
+          />
+        </InputField>
+
+        <div className="space-y-2 mt-4">
           {formData.deliverables.map((deliverable, index) => (
-            <div key={index} className="flex gap-2">
-              <input
-                value={deliverable}
-                onChange={(e) => updateDeliverable(index, e.target.value)}
-                className="w-full px-4 py-3 bg-[#1A1A1A]/60  rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
-                placeholder="e.g., 1 Instagram Post"
-              />
-              {formData.deliverables.length > 1 && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeDeliverable(index)}
-                  className="text-primary hover:bg-primary/10"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              )}
+            <div key={index} className="flex items-center justify-between bg-[#1A1A1A]/30 px-4 py-2 rounded-lg">
+              <span className="text-white">{deliverable}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => removeDeliverable(deliverable)}
+                className="text-[#bcee45] hover:bg-[#bcee45]/10"
+              >
+                <X className="w-4 h-4" />
+              </Button>
             </div>
           ))}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={addDeliverable}
-            className="w-full gap-2 border-dashed text-primary border-border hover:border-primary hover:bg-primary/10"
-          >
-            <Plus className="w-4 h-4" />
-            Add Deliverable
-          </Button>
         </div>
+      </div>
+
+      {/* Custom Fields */}
+      <div className="mt-6">
+        <label className="text-md font-medium text-white block mb-2">
+          Custom Fields
+        </label>
+        <CustomFieldInput
+          fields={formData.customFields}
+          onAdd={(field) => setFormData(prev => ({
+            ...prev,
+            customFields: [...(prev.customFields || []), field]
+          }))}
+          onRemove={(index) => setFormData(prev => ({
+            ...prev,
+            customFields: prev.customFields.filter((_, i) => i !== index)
+          }))}
+        />
       </div>
 
       {/* Actions */}
@@ -137,12 +307,15 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
           type="button"
           variant="outline"
           onClick={onCancel}
-          className="border-primary/20 text-primary hover:border-primary/40"
-
+          className="border-[#bcee45]/20 text-[#bcee45] hover:border-[#bcee45]/40"
         >
           Cancel
         </Button>
-        <Button type="submit">
+        <Button
+          type="submit"
+          className="bg-[#bcee45] text-black hover:bg-[#bcee45]/90"
+          disabled={!formData.name || !formData.price || formData.deliverables.length === 0}
+        >
           Add Package
         </Button>
       </div>
@@ -154,33 +327,48 @@ const PackageCard = ({ package: pkg, onDelete }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="p-6 bg-black rounded-2xl border border-border"
+    className="p-6 bg-[#1A1A1A] rounded-2xl border border-[#333333]"
   >
     <div className="flex items-start justify-between mb-4">
       <div>
         <h3 className="text-lg font-semibold text-white mb-1">{pkg.name}</h3>
-        <div className="text-2xl font-bold text-primary">₹{pkg.price}</div>
+        <div className="text-2xl font-bold text-[#bcee45]">₹{pkg.price}</div>
+        {pkg.openToBarter && (
+          <span className="text-sm text-[#bcee45]/80 mt-1">Open to Barter</span>
+        )}
       </div>
       <Button
         variant="ghost"
         size="icon"
         onClick={() => onDelete(pkg.id)}
-        className="text-primary hover:bg-primary/10"
+        className="text-[#bcee45] hover:bg-[#bcee45]/10"
       >
         <X className="w-5 h-5" />
       </Button>
     </div>
-    {pkg.description && (
-      <p className="text-muted-foreground text-md mb-4">{pkg.description}</p>
-    )}
+    
+    {/* Deliverables */}
     <div className="space-y-2">
       {pkg.deliverables.map((deliverable, index) => (
         <div key={index} className="flex items-center gap-2 text-white">
-          <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+          <div className="w-1.5 h-1.5 rounded-full bg-[#bcee45]" />
           {deliverable}
         </div>
       ))}
     </div>
+
+    {/* Custom Fields */}
+    {pkg.customFields && pkg.customFields.length > 0 && (
+      <div className="mt-4 pt-4 border-t border-[#333333] space-y-2">
+        {pkg.customFields.map((field, index) => (
+          <div key={index} className="flex items-center gap-2 text-white">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#bcee45]" />
+            <span className="text-[#888888]">{field.label}:</span>
+            <span>{field.value}</span>
+          </div>
+        ))}
+      </div>
+    )}
   </motion.div>
 );
 
@@ -191,7 +379,12 @@ export default function PricingPage() {
   const [showCompletion, setShowCompletion] = useState(false);
 
   const handleSubmit = (packageData) => {
-    setPackages(prev => [...prev, { ...packageData, id: Date.now() }]);
+    // Update this function in PricingPage component
+    setPackages(prev => [...prev, { 
+      ...packageData,
+      id: Date.now(),
+      customFields: packageData.customFields || [] // Explicitly ensure customFields exists
+    }]);
     setIsAdding(false);
   };
 
@@ -205,25 +398,12 @@ export default function PricingPage() {
     }
   };
 
-  // Handle back navigation
   const handleBack = () => {
-    // Get the previous step from mediaKitSteps
-    const previousStep = mediaKitSteps[CURRENT_STEP - 2];
-    if (previousStep) {
-      // If previous step has slides, go to its last slide
-      if (previousStep.totalSlides > 0) {
-        router.push(`${previousStep.path}?slide=${previousStep.totalSlides - 1}`);
-      } else {
-        router.push(previousStep.path);
-      }
-    } else {
-      router.push('/dashboard');
-    }
+    router.push('/dashboard');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
-      {/* Header */}
       <EnhancedHeader
         currentStep={CURRENT_STEP}
         totalSteps={TOTAL_STEPS}
@@ -231,11 +411,11 @@ export default function PricingPage() {
       />
 
       {/* Progress Bar */}
-      <div className="w-full h-1 bg-primary/10">
+      <div className="w-full h-1 bg-[#bcee45]/10">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${(CURRENT_STEP / TOTAL_STEPS) * 100}%` }}
-          className="h-full bg-primary"
+          className="h-full bg-[#bcee45]"
           transition={{ duration: 0.5 }}
         />
       </div>
@@ -246,18 +426,18 @@ export default function PricingPage() {
           <h2 className="text-2xl font-bold text-white mb-2">
             Set Your Packages
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-[#888888]">
             Create packages to showcase your services and pricing
           </p>
         </div>
 
         {!isAdding && (
-         <motion.button
-         whileHover={{ scale: 1.02 }}
-         whileTap={{ scale: 0.98 }}
-         onClick={() => setIsAdding(true)}
-         className="w-full p-6 bg-card/60 backdrop-blur-md rounded-2xl border border-primary/20 text-primary flex items-center justify-center gap-2 mb-6"
-       >
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setIsAdding(true)}
+            className="w-full p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#bcee45]/20 text-[#bcee45] flex items-center justify-center gap-2 mb-6"
+          >
             <Package className="w-5 h-5" />
             Add Package
           </motion.button>

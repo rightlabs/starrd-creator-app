@@ -45,13 +45,6 @@ const HelpSupportPage = () => {
 
   const supportOptions = [
     {
-      icon: <MessageCircle className="w-5 h-5" />,
-      title: "Live Chat Support",
-      description: "Chat with our support team",
-      available: "Available 24/7",
-      action: "Start Chat"
-    },
-    {
       icon: <Mail className="w-5 h-5" />,
       title: "Email Support",
       description: "Get help via email",
@@ -108,16 +101,7 @@ const HelpSupportPage = () => {
 
       <main className="max-w-lg mx-auto px-4 py-6 pb-24 space-y-8">
         {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
-          <input
-            type="text"
-            placeholder="Search help articles..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-zinc-900/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder:text-zinc-400 focus:outline-none focus:border-[#bcee45]/50"
-          />
-        </div>
+     
 
         {/* Support Options */}
         <section className="space-y-4">

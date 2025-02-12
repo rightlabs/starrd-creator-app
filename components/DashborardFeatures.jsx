@@ -34,24 +34,24 @@ const FeatureCard = ({ item, index }) => {
                 <motion.div
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}
-                  className="text-[#bcee45]"
+                  className="text-[#bcee45] text-xl"
                 >
                   {item.icon}
                 </motion.div>
               </div>
               {item.badge && (
                 <span className="px-3 py-1 bg-[#bcee45] text-black text-xs font-semibold rounded-full">
-                  {item.badge}
+                  {item.badge} {item.badgeEmoji}
                 </span>
               )}
             </div>
             <div className="space-x-2">
               {item.tags?.map((tag, i) => (
-                <span 
-                  key={i} 
+                <span
+                  key={i}
                   className="inline-block px-3 py-1 bg-black/30 backdrop-blur-md text-white/70 text-xs rounded-full border border-white/10"
                 >
-                  {tag}
+                  {tag.emoji} {tag.text}
                 </span>
               ))}
             </div>
@@ -60,7 +60,7 @@ const FeatureCard = ({ item, index }) => {
           {/* Bottom Section */}
           <div>
             <h3 className="text-2xl font-bold mb-2 text-white group-hover:text-[#bcee45] transition-colors">
-              {item.title}
+              {item.title} {item.titleEmoji}
             </h3>
             <p className="text-white/70 text-sm mb-4 line-clamp-2">
               {item.desc}
@@ -71,7 +71,7 @@ const FeatureCard = ({ item, index }) => {
               <div className="flex gap-4">
                 {item.stats?.map((stat, i) => (
                   <div key={i} className="text-white/70">
-                    <p className="text-xs opacity-70">{stat.label}</p>
+                    <p className="text-xs opacity-70">{stat.label} {stat.emoji}</p>
                     <p className="text-sm font-semibold">{stat.value}</p>
                   </div>
                 ))}
@@ -84,7 +84,7 @@ const FeatureCard = ({ item, index }) => {
                   whileTap={{ scale: 0.95 }}
                   className="px-4 py-2 h-10 w-28 bg-[#bcee45] text-black rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-[#bcee45]/90 transition-colors"
                 >
-                  {item.buttonText || 'Manage'}
+                  {item.buttonText} {item.buttonEmoji}
                   <ChevronRight className="w-4 h-4" />
                 </motion.button>
               </Link>
@@ -101,27 +101,30 @@ const FeatureCards = () => {
     {
       title: 'Media Kit',
       desc: 'Put your best self forward. Showcase your content and achievements.',
-      icon: <Star className="w-6 h-6" />,
-      image: "/media-kit.jpg", 
+      icon:"⭐",
+      image: "/media-kit.jpg",
       badge: 'Popular',
-      tags: ['Creator Tools'],
+      tags: [
+        { text: 'Creator Tools' }
+      ],
       link: '/edit-media-kit',
-   
-      buttonText: 'Edit Kit'
+      buttonText: 'Edit Kit',
     },
     {
       title: 'Analytics Dashboard',
       desc: 'Track your growth and engagement metrics in real-time.',
-      icon: <BarChart className="w-6 h-6" />,
-      image: "/media-kit-analytics.jpg", 
+      icon: "📊",
+      image: "/media-kit-analytics.jpg",
       badge: 'New',
-      tags: ['Analytics'],
+      tags: [
+        { text: 'Analytics' }
+      ],
       link: '/media-kit-analytics',
       stats: [
         { label: 'Profile Views', value: '850' },
         { label: 'Brand Clicks', value: '42' }
       ],
-      buttonText: ' Stats'
+      buttonText: 'Stats',
     }
   ];
 

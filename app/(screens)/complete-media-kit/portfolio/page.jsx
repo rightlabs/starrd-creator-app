@@ -11,9 +11,9 @@ const totalSteps = 6; // Total steps in media kit creation
 const currentMainStep = 2; // Portfolio is step 2
 
 const mediaTypes = [
-  { id: 'video', label: 'Video ', icon: Video },
-  { id: 'audio', label: 'Audio ', icon: Music },
-  { id: 'image', label: 'Image ', icon: ImageIcon }
+  { id: 'video', label: 'Video', icon: '🎥' },
+  { id: 'audio', label: 'Audio', icon: '🎵' },
+  { id: 'image', label: 'Image', icon: '🖼️' }
 ];
 
 const contentTypes = [
@@ -59,7 +59,7 @@ const MediaTypeCard = ({ type, selected, onSelect }) => {
       <div className="flex flex-col items-center gap-3">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${selected ? 'bg-[#bcee45]/20' : 'bg-[#1A1A1A]'
           }`}>
-          <Icon className={`w-6 h-6 ${selected ? 'text-[#bcee45]' : 'text-white/60'}`} />
+          <p className='text-xl'>{Icon}</p>
         </div>
         <span className={`font-medium ${selected ? 'text-white' : 'text-white/60'}`}>
           {type.label}

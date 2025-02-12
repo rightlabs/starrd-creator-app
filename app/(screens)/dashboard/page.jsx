@@ -1,21 +1,13 @@
 "use client";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  MessageSquare,
-  Star,
-  BarChart,
-  Bell,
-  Eye,
-  Share2,
-  Users,
-  ChevronRight,
-} from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import PreviewButton from "@/components/PreviewButton";
 import Link from "next/link";
 import FeatureCards from "@/components/DashborardFeatures";
+import { IconGrowth } from "@tabler/icons-react";
+import { ChartNoAxesCombined } from "lucide-react";
 
 const DashboardPage = () => {
   return (
@@ -53,8 +45,8 @@ const DashboardPage = () => {
                 className="relative"
               >
                 <div className="w-12 h-12 bg-[#1A1A1A] border border-[#333333] rounded-full flex items-center justify-center hover:border-[#bcee45]/50 transition-colors">
-                  <Link href="/notifications">
-                    <Bell className="w-6 h-6 text-[#bcee45]" />
+                  <Link href="/growth-trends">
+                    <span className="text-2xl"><ChartNoAxesCombined  className="text-[#bcee45]"/> </span>
                   </Link>
                   <span className="absolute -top-1 -right-1 bg-[#bcee45] text-black w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold">
                     2
@@ -65,7 +57,7 @@ const DashboardPage = () => {
           </div>
 
           <div className="px-6 max-w-2xl mx-auto">
-            {/* Welcome Section - Moved up */}
+            {/* Welcome Section */}
             <motion.h1
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -74,11 +66,11 @@ const DashboardPage = () => {
             >
               Welcome{" "}
               <span className="bg-gradient-to-r from-[#1A1A1A] to-[#252525] text-[#bcee45] font-extrabold rounded-2xl px-4 py-2 border border-[#333333] shadow-lg">
-                Tushar
+                Tushar 
               </span>
             </motion.h1>
 
-            {/* Media Kit Progress - High priority section */}
+            {/* Media Kit Progress */}
             <motion.div
               className="mb-8 p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333] shadow-xl"
               initial={{ y: 20, opacity: 0 }}
@@ -88,13 +80,14 @@ const DashboardPage = () => {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-xl font-bold mb-1 text-white">
-                    Media Kit Completion
+                    Media Kit Completion 
                   </h3>
                   <p className="text-sm text-[#888888]">
-                    5 steps remaining to complete your profile
+                    5 steps remaining to complete your profile 
                   </p>
                 </div>
 
+                {/* Progress Circle */}
                 <div className="relative w-14 h-14">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 56 56">
                     <circle
@@ -126,8 +119,8 @@ const DashboardPage = () => {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm text-[#888888]">
-                  <span>Progress</span>
-                  <span>5/10 steps</span>
+                  <span>Progress </span>
+                  <span>5/10 steps ✅</span>
                 </div>
                 <div className="w-full bg-white/5 rounded-full h-2">
                   <motion.div
@@ -144,7 +137,7 @@ const DashboardPage = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  Complete Media Kit
+                  Complete Media Kit 
                 </motion.button>
               </Link>
             </motion.div>
@@ -156,50 +149,42 @@ const DashboardPage = () => {
               transition={{ delay: 0.3 }}
               className="space-y-4 mb-8"
             >
-              <h3 className="text-lg font-bold mb-4">Quick Actions</h3>
+              <h3 className="text-lg font-bold mb-4">Quick Actions </h3>
               <FeatureCards />
             </motion.div>
-
-            {/* Feedback Button */}
-            <Link href="/send-feedback">
-              <motion.button
-                className="w-full p-4 mb-8 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl flex items-center gap-3 text-[#888888] border border-[#333333] hover:border-[#bcee45]/20 transition-colors"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className="relative w-12 h-12 bg-gradient-to-br from-[#1A1A1A] to-[#252525] rounded-xl border border-[#bcee45]/20 flex items-center justify-center">
-                  <MessageSquare className="w-7 h-7 text-[#bcee45]" />
-                </div>
-                <span className="font-medium">Send Feedback</span>
-              </motion.button>
-            </Link>
 
             {/* Recent Activity Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="space-y-4 mb-14"
+              className="space-y-4 mb-8"
             >
-              <h3 className="text-lg font-bold mb-4">Recent Activity</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold">Growth Trends </h3>
+                <Link
+                  href="/growth-trends"
+                  className="text-sm text-[#888888] bg-[#1A1A1A] backdrop-blur-md px-4 py-2 rounded-3xl hover:bg-black/80 flex items-center"
+                >
+                  View All 
+                </Link>
+              </div>
+
               {[
                 {
-                  action: "Profile viewed mb-14by Nike",
+                  action: "Profile viewed by Nike",
                   time: "2 hours ago",
-                  icon: Eye,
+                  icon: "👀",
                 },
                 {
                   action: "Media Kit shared",
                   time: "5 hours ago",
-                  icon: Share2,
+                  icon: "📤",
                 },
                 {
                   action: "New follower gained",
                   time: "1 day ago",
-                  icon: Users,
+                  icon: "👥",
                 },
               ].map((activity, index) => (
                 <motion.div
@@ -210,8 +195,8 @@ const DashboardPage = () => {
                   className="p-4 bg-[#1A1A1A]/60 backdrop-blur-md rounded-xl border border-[#333333] flex items-center justify-between hover:border-[#bcee45]/20 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#bcee45]/10 flex items-center justify-center">
-                      <activity.icon className="w-5 h-5 text-[#bcee45]" />
+                    <div className="relative w-12 h-12 bg-gradient-to-br from-[#1A1A1A] to-[#252525] rounded-xl border border-[#bcee45]/20 flex items-center justify-center">
+                      <p className="text-2xl">{activity.icon}</p>
                     </div>
                     <div>
                       <div className="font-medium">{activity.action}</div>
@@ -220,10 +205,26 @@ const DashboardPage = () => {
                       </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-[#888888]" />
+                  <span className="text-lg text-[#888888]">➜</span>
                 </motion.div>
               ))}
             </motion.div>
+
+            {/* Feedback Button */}
+            <Link href="/send-feedback">
+              <motion.button
+                className="w-full p-4 mb-14 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl flex items-center gap-3 text-[#888888] border border-[#333333] hover:border-[#bcee45]/20 transition-colors"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="relative w-12 h-12 bg-gradient-to-br from-[#1A1A1A] to-[#252525] rounded-xl border border-[#bcee45]/20 flex items-center justify-center">
+                <p className="text-2xl">💬</p>                </div>
+                <span className="font-medium">Send Feedback</span>
+              </motion.button>
+            </Link>
           </div>
 
           <PreviewButton />

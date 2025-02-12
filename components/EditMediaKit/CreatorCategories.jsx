@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Star } from 'lucide-react';
+import { CheckCircle2, Hash, Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 const CategoryButton = ({ category, selected, prefilled, onClick }) => (
@@ -18,7 +18,7 @@ const CategoryButton = ({ category, selected, prefilled, onClick }) => (
   >
     <div className="flex items-center justify-between gap-2">
       <div className="flex items-center gap-2">
-        <span>{category.label}</span>
+        <span>{category.icon}{' '}{category.label}</span>
         {prefilled && (
           <Star className="w-3 h-3 text-[#bcee45]" />
         )}
@@ -39,16 +39,16 @@ const CategoriesSection = ({
   handleSaveSection
 }) => {
   const categoryOptions = [
-    { id: 'lifestyle', label: 'Lifestyle' },
-    { id: 'fashion', label: 'Fashion' },
-    { id: 'beauty', label: 'Beauty' },
-    { id: 'travel', label: 'Travel' },
-    { id: 'food', label: 'Food' },
-    { id: 'tech', label: 'Technology' },
-    { id: 'gaming', label: 'Gaming' },
-    { id: 'fitness', label: 'Fitness' },
-    { id: 'education', label: 'Education' },
-    { id: 'entertainment', label: 'Entertainment' }
+    { id: 'lifestyle', label: 'Lifestyle', icon: '✨' },
+    { id: 'fashion', label: 'Fashion', icon: '👗' },
+    { id: 'beauty', label: 'Beauty', icon: '💄' },
+    { id: 'travel', label: 'Travel', icon: '✈️' },
+    { id: 'food', label: 'Food', icon: '🍳' },
+    { id: 'tech', label: 'Technology', icon: '💻' },
+    { id: 'gaming', label: 'Gaming', icon: '🎮' },
+    { id: 'fitness', label: 'Fitness', icon: '💪' },
+    { id: 'education', label: 'Education', icon: '📚' },
+    { id: 'youtubes', label: 'YouTuber', icon: '📹' }
   ];
 
   const handleCategoryToggle = (categoryId) => {
@@ -63,7 +63,28 @@ const CategoriesSection = ({
       categories: updatedCategories
     }));
   };
-
+  const CategoryCount = ({ count }) => (
+    <motion.div
+      initial={{ scale: 0.95 }}
+      animate={{ scale: 1 }}
+      className="flex items-center gap-2 p-2  border border-[#bcee45]/20 px-4 py-2 rounded-xl"
+    >
+      <div className="flex items-baseline gap-1.5">
+        <motion.span 
+          key={count}
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-sm font-semibold text-[#bcee45]"
+        >
+          {count}
+        </motion.span>
+        <span className="text-xs text-[#bcee45]/60">
+          Selected
+        </span>
+      </div>
+    </motion.div>
+  );
+  
   const renderEditView = () => (
     <motion.div className="space-y-6">
       <div className="space-y-4">
@@ -77,9 +98,7 @@ const CategoriesSection = ({
               <span>Pre-selected categories</span>
             </div>
           </div>
-          <span className="text-xs bg-[#bcee45]/10 px-3 py-1 rounded-lg text-[#bcee45]">
-            {editForm.categories?.length || categories.length} Selected
-          </span>
+          <CategoryCount count={editForm.categories?.length || categories.length} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           {categoryOptions.map(category => {
@@ -132,7 +151,7 @@ const CategoriesSection = ({
           {categories.length} Categories
         </span>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 p-8">
         {categoryOptions
           .filter(category => categories.includes(category.id))
           .map(category => (

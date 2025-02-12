@@ -1,46 +1,164 @@
 'use client';
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Package, 
-  Plus, 
-  X, 
-  DollarSign,
-  Pencil,
-  Trash2,
-  Check
-} from 'lucide-react';
+import { Package, Plus, X, Pencil, Trash2, Check, ChevronDown } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { Button } from '../ui/button';
+
+const DELIVERABLE_OPTIONS = [
+  { value: 'story', label: 'Story' },
+  { value: 'reel', label: 'Reel' },
+  { value: 'carousel', label: 'Carousel Post' },
+  { value: 'shoot', label: 'Shoot (8 hours)' }
+];
 
 const INITIAL_PACKAGE = {
   name: '',
-  description: '',
   price: '',
-  deliverables: ['']
+  deliverables: [],
+  customFields: [],
+  openToBarter: false
+};
+
+const CustomSelect = ({ onChange, options, placeholder }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelect = (selectedValue) => {
+    onChange(selectedValue);
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative z-50">
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 hover:border-[#bcee45] transition-colors cursor-pointer flex justify-between items-center text-white"
+      >
+        <span className="text-white/60">{placeholder}</span>
+        <ChevronDown className="w-4 h-4" />
+      </div>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute w-full left-0 top-full mt-2 bg-[#1A1A1A] rounded-xl overflow-hidden shadow-lg border border-[#bcee45]/20"
+            style={{ minWidth: '100%', zIndex: 999 }}     
+                  >
+            {options.map((option) => (
+              <div
+                key={option.value}
+                onClick={() => handleSelect(option)}
+                className="px-4 py-3 text-white hover:bg-[#bcee45] hover:text-black cursor-pointer transition-colors"
+              >
+                {option.label}
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const CustomFieldInput = ({ onAdd, onRemove, fields = [] }) => {
+  const [label, setLabel] = useState('');
+  const [value, setValue] = useState('');
+
+  const handleAdd = () => {
+    if (label.trim() && value.trim()) {
+      onAdd({ label: label.trim(), value: value.trim() });
+      setLabel('');
+      setValue('');
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-4">
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="Enter field label"
+              className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+            />
+          </div>
+          <div className="flex-1">
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="Enter value"
+              className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+            />
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleAdd}
+            className="text-[#bcee45] hover:bg-[#bcee45]/10"
+            disabled={!label.trim() || !value.trim()}
+          >
+            <Plus className="w-5 h-5" />
+          </Button>
+        </div>
+      </div>
+      
+      {fields.length > 0 && (
+        <div className="space-y-2">
+          {fields.map((field, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex items-center justify-between bg-[#1A1A1A]/30 px-4 py-2 rounded-lg"
+            >
+              <div className="flex items-center gap-4">
+                <span className="text-[#888888]">{field.label}:</span>
+                <span className="text-white">{field.value}</span>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => onRemove(index)}
+                className="text-[#bcee45] hover:bg-[#bcee45]/10"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
-  const [formData, setFormData] = useState(initialData);
+  const [formData, setFormData] = useState({
+    ...initialData,
+    customFields: initialData.customFields || []
+  });
 
-  const addDeliverable = () => {
-    setFormData(prev => ({
-      ...prev,
-      deliverables: [...prev.deliverables, '']
-    }));
+  const handleDeliverableSelect = (option) => {
+    if (!formData.deliverables.includes(option.label)) {
+      setFormData(prev => ({
+        ...prev,
+        deliverables: [...prev.deliverables, option.label]
+      }));
+    }
   };
 
-  const removeDeliverable = (index) => {
+  const removeDeliverable = (deliverable) => {
     setFormData(prev => ({
       ...prev,
-      deliverables: prev.deliverables.filter((_, i) => i !== index)
-    }));
-  };
-
-  const updateDeliverable = (index, value) => {
-    setFormData(prev => ({
-      ...prev,
-      deliverables: prev.deliverables.map((item, i) => i === index ? value : item)
+      deliverables: prev.deliverables.filter(d => d !== deliverable)
     }));
   };
 
@@ -78,67 +196,95 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#888888]">₹</span>
           <input
             required
-            type="number"
+            type="text"
             value={formData.price}
             onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
             className="w-full px-8 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
-            placeholder="299"
-            min="0"
+            placeholder="5,000 - 10,000"
           />
         </div>
       </div>
 
-      {/* Description */}
-      <div>
-        <label className="text-sm md:text-base font-medium text-white block mb-2">
-          Description
-        </label>
-        <textarea
-          value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none resize-none"
-          placeholder="Describe what's included in this package"
-          rows={3}
-        />
-      </div>
-
-      {/* Deliverables */}
-      <div>
+          {/* Deliverables */}
+          <div>
         <label className="text-sm md:text-base font-medium text-white block mb-2">
           Deliverables
         </label>
-        <div className="space-y-3">
+        <div className="space-y-3 mb-10">
+          <CustomSelect
+            onChange={handleDeliverableSelect}
+            options={DELIVERABLE_OPTIONS}
+            placeholder="Select deliverable"
+          />
+
+<div className="space-y-2 mt-4">
           {formData.deliverables.map((deliverable, index) => (
-            <div key={index} className="flex gap-2">
-              <input
-                value={deliverable}
-                onChange={(e) => updateDeliverable(index, e.target.value)}
-                className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
-                placeholder="e.g., 1 Instagram Post"
-              />
-              {formData.deliverables.length > 1 && (
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => removeDeliverable(index)}
-                  className="p-3 rounded-lg border border-[#333333] text-red-400 hover:border-red-400/50"
-                >
-                  <X className="w-4 h-4" />
-                </motion.button>
-              )}
+            <div key={index} className="flex items-center justify-between bg-[#1A1A1A]/30 px-4 py-2 rounded-lg">
+              <span className="text-white bg-black/50 p-2">{deliverable}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => removeDeliverable(deliverable)}
+                className="text-[#bcee45] hover:bg-[#bcee45]/10"
+              >
+                <X className="w-4 h-4" />
+              </Button>
             </div>
           ))}
+        </div>
+        </div>
+      </div>
+
+      {/* Open to Barter */}
+      <div>
+        <label className="text-sm md:text-base font-medium text-white block mb-2">
+          Open to Barter
+        </label>
+        <div className="flex gap-3">
           <motion.button
             type="button"
-            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
-            onClick={addDeliverable}
-            className="w-full p-3 rounded-xl border border-dashed border-[#333333] text-[#bcee45] hover:border-[#bcee45]/50 flex items-center justify-center gap-2"
+            onClick={() => setFormData(prev => ({ ...prev, openToBarter: true }))}
+            className={`flex-1 py-3 rounded-xl border-2 transition-colors ${
+              formData.openToBarter
+                ? 'border-[#bcee45] bg-[#bcee45]/10 text-white'
+                : 'border-[#333333] text-[#888888]'
+            }`}
           >
-            <Plus className="w-4 h-4" />
-            Add Deliverable
+            Yes
+          </motion.button>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setFormData(prev => ({ ...prev, openToBarter: false }))}
+            className={`flex-1 py-3 rounded-xl border-2 transition-colors ${
+              !formData.openToBarter
+                ? 'border-[#bcee45] bg-[#bcee45]/10 text-white'
+                : 'border-[#333333] text-[#888888]'
+            }`}
+          >
+            No
           </motion.button>
         </div>
+      </div>
+
+      {/* Add Custom Fields section */}
+      <div className="mt-6">
+        <label className="text-sm md:text-base font-medium text-white block mb-2">
+          Custom Fields
+        </label>
+        <CustomFieldInput
+          fields={formData.customFields}
+          onAdd={(field) => setFormData(prev => ({
+            ...prev,
+            customFields: [...(prev.customFields || []), field]
+          }))}
+          onRemove={(index) => setFormData(prev => ({
+            ...prev,
+            customFields: prev.customFields.filter((_, i) => i !== index)
+          }))}
+        />
       </div>
 
       {/* Actions */}
@@ -155,6 +301,7 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
           type="submit"
           whileTap={{ scale: 0.95 }}
           className="px-4 py-2 rounded-lg bg-[#bcee45] text-black hover:opacity-90"
+          disabled={!formData.name || !formData.price || formData.deliverables.length === 0}
         >
           {initialData === INITIAL_PACKAGE ? 'Add Package' : 'Save Changes'}
         </motion.button>
@@ -173,6 +320,9 @@ const PackageCard = ({ package: pkg, onEdit, onDelete }) => (
       <div>
         <h3 className="text-lg font-semibold text-white mb-1">{pkg.name}</h3>
         <div className="text-2xl font-bold text-[#bcee45]">₹{pkg.price}</div>
+        {pkg.openToBarter && (
+          <span className="text-sm text-[#bcee45]/80">Open to Barter</span>
+        )}
       </div>
       <div className="flex items-center gap-2">
         <motion.button
@@ -193,11 +343,7 @@ const PackageCard = ({ package: pkg, onEdit, onDelete }) => (
         </motion.button>
       </div>
     </div>
-
-    {pkg.description && (
-      <p className="text-[#888888] text-sm mb-4">{pkg.description}</p>
-    )}
-
+  
     <div className="space-y-2">
       {pkg.deliverables.map((deliverable, index) => (
         <div key={index} className="flex items-center gap-2 text-sm">
@@ -206,6 +352,19 @@ const PackageCard = ({ package: pkg, onEdit, onDelete }) => (
         </div>
       ))}
     </div>
+
+    {/* Add Custom Fields display */}
+    {pkg.customFields && pkg.customFields.length > 0 && (
+      <div className="mt-4 pt-4 border-t border-[#333333] space-y-2">
+        {pkg.customFields.map((field, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#bcee45]" />
+            <span className="text-[#888888]">{field.label}:</span>
+            <span className="text-white">{field.value}</span>
+          </div>
+        ))}
+      </div>
+    )}
   </motion.div>
 );
 

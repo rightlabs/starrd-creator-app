@@ -8,23 +8,15 @@ import {
   Instagram,
   Youtube,
   MapPin,
-  Settings,
   Image as ImageIcon,
   Globe,
-  Package,
-  BarChart2,
-  ChevronRight,
+
   Link as LinkIcon,
   Mail,
   Phone,
-  Sparkles,
   User,
   Ruler,
   PawPrint,
-  Camera,
-  Edit2,
-
-  Plus,
   Building2, Clock, Target, Award,
   Play,
   Music
@@ -217,6 +209,11 @@ export default function MediaKit() {
   const creator = {
     // Basic Info
     name: "Tushar Agarwal",
+    representation: {
+      name: "Creative Talent Agency",
+      logo: "/agency-logo.jpg",
+      website: "https://agency.com"
+    },
     username: "@tushar.designs",
     title: "Digital Creator & UI Designer",
     location: "Mumbai, India",
@@ -339,14 +336,12 @@ portfolio: [
   };
 
   const tabs = [
-    { id: 'gallery', label: 'Portfolio', icon: ImageIcon },
-    { id: 'social', label: 'Social', icon: Globe },
-    { id: 'collaborations', label: 'Collabs', icon: Package },
-    { id: 'packages', label: 'Pricing', icon: BarChart2 }
+    { id: 'gallery', label: 'Portfolio', icon: '🖼️' }, 
+    { id: 'social', label: 'Social', icon: '🌍' },
+    { id: 'collaborations', label: 'Collabs', icon: '🤝' }, 
+    { id: 'packages', label: 'Pricing', icon: '📊' } 
   ];
-
-
-
+  
   const MediaCard = ({ item }) => {
     const renderMediaIcon = () => {
       switch (item.type) {
@@ -362,7 +357,7 @@ portfolio: [
     return (
       <motion.div
         whileHover={{ scale: 1.02 }}
-        className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900"
+        className="relative aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900"
       >
         <Image
           src={item.type === 'image' ? item.media : item.thumbnail}
@@ -390,8 +385,8 @@ portfolio: [
           {item.category}
         </div>
   
-        {/* Content Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Content Overlay (Always Visible) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-100 transition-opacity">
           <div className="absolute bottom-0 left-0 right-0 p-4">
             <h3 className="text-sm font-medium">{item.title}</h3>
             <p className="text-xs text-zinc-400 mt-1">{item.description}</p>
@@ -599,6 +594,48 @@ portfolio: [
             <p className="text-sm text-zinc-400 leading-relaxed">
               {creator.bio}
             </p>
+            {creator.representation && creator.representation.name && (
+  <div className="mt-6 p-4 rounded-xl bg-zinc-900/50 border border-white/10">
+    <div className="flex items-center gap-3">
+      {creator.representation.logo ? (
+        <div className="w-12 h-12 rounded-lg bg-white flex items-center justify-center overflow-hidden">
+          <Image
+            src={creator.representation.logo}
+            alt="Agency Logo"
+            width={48}
+            height={48}
+            className="object-contain"
+          />
+        </div>
+      ) : (
+        <div className="w-12 h-12 rounded-lg bg-[#bcee45]/10 flex items-center justify-center">
+          <Building2 className="w-6 h-6 text-[#bcee45]" />
+        </div>
+      )}
+      <div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">Represented by</span>
+          <span className="px-2 py-0.5 rounded-full bg-[#bcee45]/10 text-[#bcee45] text-xs">
+            Agency
+          </span>
+        </div>
+        <h3 className="font-medium mt-1">{creator.representation.name}</h3>
+        {creator.representation.website && (
+          <a 
+            href={creator.representation.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-zinc-400 hover:text-[#bcee45] flex items-center gap-1 mt-1"
+          >
+            <Globe className="w-3 h-3" />
+            {creator.representation.website.replace('https://', '')}
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
 
             {/* Personal Info Grid */}
             <div className="grid grid-cols-2 gap-3 mt-6">
@@ -649,6 +686,7 @@ portfolio: [
                 <p className="font-medium capitalize">{creator.petType}</p>
               </div>
             </div>
+            
 
             {/* Contact Info */}
             <div className="flex flex-wrap gap-3 mt-6">
@@ -679,7 +717,7 @@ portfolio: [
                 isActive={activeTab === tab.id}
                 onClick={() => setActiveTab(tab.id)}
               >
-                <tab.icon className="w-4 h-4 inline-block mr-2" />
+                <p className='text-xl'>{tab.icon}</p>
                 {tab.label}
               </TabButton>
             ))}

@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Camera, X, CheckCircle2, User, MapPin, Calendar, UserCircle2, ImageIcon, Type, FileText } from 'lucide-react';import Link from 'next/link';
+import { ArrowLeft, ArrowRight, Camera, X, CheckCircle2, User, MapPin, Calendar, UserCircle2, ImageIcon, Type, FileText, Building2, Globe } from 'lucide-react';import Link from 'next/link';
 import Image from 'next/image';
 import { StepCompletion } from '@/components/MediaKitStepCompletion';
 import { EnhancedHeader } from '@/components/MediaKitHeader';
@@ -10,7 +10,7 @@ const totalSteps = 6; // Total steps in media kit creation
 const currentMainStep = 1; // Intro is step 1
 
 const mockUserData = {
-  fullName: 'Tushar Sharma',
+  fullName: 'Tushar Agarwal',
   gender: 'Male',
   dob: '2001-01-15',
   location: 'Mumbai, India',
@@ -34,115 +34,138 @@ const SlideIndicator = ({ currentSlide, totalSlides }) => (
       ))}
     </div>
   );
-
-const slides = [
-  {
-    id: 'basic-info',
-    title: 'Basic Information',
-    description: 'Review your profile information',
-    fields: [
-      { 
-        name: 'fullName', 
-        label: 'Full Name', 
-        type: 'text', 
-        prefilled: true, 
-        value: mockUserData.fullName,
-        icon: User
-      },
-      { 
-        name: 'gender', 
-        label: 'Gender', 
-        type: 'text', 
-        prefilled: true, 
-        value: mockUserData.gender,
-        icon: UserCircle2
-      },
-      { 
-        name: 'dob', 
-        label: 'Date of Birth', 
-        type: 'text', 
-        prefilled: true, 
-        value: mockUserData.dob,
-        icon: Calendar
-      },
-      { 
-        name: 'location', 
-        label: 'Location', 
-        type: 'text', 
-        prefilled: true, 
-        value: mockUserData.location,
-        icon: MapPin
-      }
-    ]
-  },
-  {
-    id: 'creator-info',
-    title: 'Creator Categories',
-    description: 'Select categories that best describe your content',
-    fields: [
-      {
-        name: 'categories',
-        type: 'multi-select',
-        options: [
-          { id: 'lifestyle', label: 'Lifestyle' },
-          { id: 'fashion', label: 'Fashion' },
-          { id: 'beauty', label: 'Beauty' },
-          { id: 'travel', label: 'Travel' },
-          { id: 'food', label: 'Food' },
-          { id: 'tech', label: 'Technology' },
-          { id: 'gaming', label: 'Gaming' },
-          { id: 'fitness', label: 'Fitness' },
-          { id: 'education', label: 'Education' },
-          { id: 'entertainment', label: 'Entertainment' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'media-assets',
-    title: 'Profile Media',
-    description: 'Upload your profile picture and cover image',
-    fields: [
-      { 
-        name: 'profilePic', 
-        label: 'Profile Picture',
-        description: 'Square format recommended (1:1)',
-        type: 'image',
-        icon: User
-      },
-      { 
-        name: 'coverImage', 
-        label: 'Cover Image',
-        description: 'Recommended size 1920x1080',
-        type: 'image',
-        icon: ImageIcon
-      }
-    ]
-  },
-  {
-    id: 'bio-info',
-    title: 'Bio Information',
-    description: 'Tell your story to the world',
-    fields: [
-      { 
-        name: 'tagline', 
-        label: 'Tagline',
-        description: 'A short catchy line about you (max 60 chars)',
-        type: 'text',
-        icon: Type,
-        placeholder: 'e.g., "Creative storyteller with a passion for tech"'
-      },
-      { 
-        name: 'bio', 
-        label: 'Short Bio',
-        description: 'Tell brands about yourself (max 300 chars)',
-        type: 'textarea',
-        icon: FileText,
-        placeholder: 'Share your journey, expertise, and what makes you unique...'
-      }
-    ]
-  }
-];
+  const slides = [
+    {
+      id: 'basic-info',
+      title: 'Basic Information',
+      description: 'Review your profile information',
+      fields: [
+        {
+          name: 'fullName',
+          label: 'Full Name',
+          type: 'text',
+          prefilled: true,
+          value: mockUserData.fullName,
+          icon: '👤'
+        },
+        {
+          name: 'gender',
+          label: 'Gender',
+          type: 'text',
+          prefilled: true,
+          value: mockUserData.gender,
+          icon: '🧑'
+        },
+        {
+          name: 'dob',
+          label: 'Date of Birth',
+          type: 'text',
+          prefilled: true,
+          value: mockUserData.dob,
+          icon: '📅'
+        },
+        {
+          name: 'location',
+          label: 'Location',
+          type: 'text',
+          prefilled: true,
+          value: mockUserData.location,
+          icon: '📍'
+        }
+      ]
+    },
+    {
+      id: 'creator-info',
+      title: 'Creator Categories',
+      description: 'Select categories that best describe your content',
+      fields: [
+        {
+          name: 'categories',
+          type: 'multi-select',
+          options: [
+            { id: 'lifestyle', label: 'Lifestyle', icon: '✨' },
+            { id: 'fashion', label: 'Fashion', icon: '👗' },
+            { id: 'beauty', label: 'Beauty', icon: '💄' },
+            { id: 'travel', label: 'Travel', icon: '✈️' },
+            { id: 'food', label: 'Food', icon: '🍳' },
+            { id: 'tech', label: 'Technology', icon: '💻' },
+            { id: 'gaming', label: 'Gaming', icon: '🎮' },
+            { id: 'fitness', label: 'Fitness', icon: '💪' },
+            { id: 'education', label: 'Education', icon: '📚' },
+            { id: 'entertainment', label: 'Entertainment', icon: '🎬' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'media-assets',
+      title: 'Profile Media',
+      description: 'Upload your profile picture and cover image',
+      fields: [
+        {
+          name: 'profilePic',
+          label: 'Profile Picture',
+          description: 'Square format recommended (1:1)',
+          type: 'image',
+          icon: '🖼️'
+        },
+        {
+          name: 'coverImage',
+          label: 'Cover Image',
+          description: 'Recommended size 1920x1080',
+          type: 'image',
+          icon: '🏞️'
+        }
+      ]
+    },
+    {
+      id: 'bio-info',
+      title: 'Bio Information',
+      description: 'Tell your story to the world',
+      fields: [
+        {
+          name: 'tagline',
+          label: 'Tagline',
+          description: 'A short catchy line about you (max 60 chars)',
+          type: 'text',
+          placeholder: 'e.g., "Creative storyteller with a passion for tech"'
+        },
+        {
+          name: 'bio',
+          label: 'Short Bio',
+          description: 'Tell brands about yourself (max 300 chars)',
+          type: 'textarea',
+          placeholder: 'Share your journey, expertise, and what makes you unique...'
+        }
+      ]
+    },
+    {
+      id: 'representation',
+      title: 'Representation',
+      description: 'Let us know if you are represented by an agency',
+      fields: [
+        {
+          name: 'representation.name',
+          label: 'Agency Name',
+          type: 'text',
+          placeholder: 'e.g., Creator Management Agency'
+        },
+        {
+          name: 'representation.logo',
+          label: 'Agency Logo',
+          type: 'image',
+          description: 'Upload agency logo (optional)',
+        },
+        {
+          name: 'representation.website',
+          label: 'Agency Website',
+          type: 'text',
+          placeholder: 'e.g., https://agency.com (optional)'
+        }
+      ]
+    },
+  ];
+  
 
 const ImageUploadCard = ({ field, value, onChange, onRemove }) => (
     <div className="space-y-2">
@@ -173,7 +196,7 @@ const ImageUploadCard = ({ field, value, onChange, onRemove }) => (
                 onClick={() => document.getElementById(field.name).click()}
                 className="p-2 bg-[#bcee45] rounded-xl text-black"
               >
-                <Camera className="w-5 h-5" />
+                <p className='text-3xl'>📷</p>
               </motion.button>
             </div>
           </>
@@ -182,8 +205,8 @@ const ImageUploadCard = ({ field, value, onChange, onRemove }) => (
             onClick={() => document.getElementById(field.name).click()}
             className="absolute inset-0 flex flex-col items-center justify-center text-[#bcee45]/60 hover:text-[#bcee45] transition-colors"
           >
-            <Camera className="w-8 h-8 mb-2" />
-            <span className="text-sm">Upload {field.label}</span>
+                <p className='text-3xl'>📷</p>
+                <span className="text-sm">Upload {field.label}</span>
           </button>
         )}
         <input
@@ -197,29 +220,29 @@ const ImageUploadCard = ({ field, value, onChange, onRemove }) => (
     </div>
   );
 
-const PrefilledCard = ({ field, icon: Icon }) => (
-  <motion.div
-    className="p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333]  transition-all"
-    whileHover={{ scale: 1.02 }}
-  >
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 bg-[#bcee45]/10 rounded-xl flex items-center justify-center">
-          <Icon className="w-5 h-5 text-[#bcee45]" />
+  const PrefilledCard = ({ field }) => (
+    <motion.div
+      className="p-6 bg-[#1A1A1A]/60 backdrop-blur-md rounded-2xl border border-[#333333] transition-all"
+      whileHover={{ scale: 1.02 }}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-[#bcee45]/10 rounded-xl flex items-center justify-center">
+            <span className="text-xl">{field.icon}</span>
+          </div>
+          <div>
+            <p className="text-sm text-[#888888] mb-1">{field.label}</p>
+            <p className="text-white font-medium">{field.value}</p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm text-[#888888] mb-1">{field.label}</p>
-          <p className="text-white font-medium">{field.value}</p>
-        </div>
+        {field.prefilled && (
+          <div className="flex items-center gap-2">
+            <span className="text-[#bcee45]">✅</span>
+          </div>
+        )}
       </div>
-      {field.prefilled && (
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-[#bcee45]" />
-        </div>
-      )}
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
 const CategoryButton = ({ category, selected, prefilled }) => (
     <div
       className={`p-4 rounded-xl border ${
@@ -229,7 +252,7 @@ const CategoryButton = ({ category, selected, prefilled }) => (
       } text-sm font-medium relative`}
     >
       <div className="flex items-center justify-between gap-2">
-        <span>{category.label}</span>
+        <span> {category.icon}{' '}{category.label}</span>
         {prefilled && selected && (
           <CheckCircle2 className="w-4 h-4 text-[#bcee45]" />
         )}
@@ -247,7 +270,12 @@ const MediaKitIntro = () => {
     profilePic: null,
     coverImage: null,
     tagline: '',
-    bio: ''
+    bio: '',
+    representation: {
+      name: '',
+      logo: null,
+      website: ''
+    }
   });
   const [showCompletion, setShowCompletion] = useState(false);
   const isLastSlide = currentSlide === slides.length - 1;
@@ -276,23 +304,45 @@ const MediaKitIntro = () => {
   };
   const handleComplete = () => {
     if (currentSlide === slides.length - 1) {
-      const hasRequiredData = formData.tagline && formData.bio;
-      if (hasRequiredData) {
-        setShowCompletion(true);
-      }
+      setShowCompletion(true);
     }
   };
+
+
+  const isCurrentStepValid = () => {
+    switch (currentSlide) {
+      case 0:
+        // Basic info is pre-filled, always valid
+        return true;
+      case 1:
+        // Categories are pre-selected, always valid
+        return formData.categories.length > 0;
+      case 2:
+        // Require both profile pic and cover image
+        return formData.profilePic && formData.coverImage;
+      case 3:
+        // Require both tagline and bio
+        return formData.tagline.trim() && formData.bio.trim();
+        case 4: 
+      return true;
+      default:
+        return false;
+    }
+  };
+
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
       {/* Header */}
-      <EnhancedHeader
-        currentStep={currentMainStep} 
-        currentSlide={currentSlide}
-        totalSteps={totalSteps}
-        onBackClick={setCurrentSlide}
-
-      />
- 
+      <div className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]">
+    <EnhancedHeader
+      currentStep={currentMainStep} 
+      currentSlide={currentSlide}
+      totalSteps={totalSteps}
+      onBackClick={setCurrentSlide}
+    />
+  </div>
       {/* Progress Bar */}
       <div className="w-full h-1 bg-[#1A1A1A]">
         <motion.div
@@ -378,8 +428,8 @@ const MediaKitIntro = () => {
                 {slides[3].fields.map(field => (
                   <div key={field.name} className="space-y-2">
                     <div className="flex items-center gap-2 mb-1">
-                      <field.icon className="w-4 h-4 text-[#bcee45]" />
-                      <label className="text-md font-medium text-white">
+                    <p className='text-2xl'>{field.icon}</p>
+                    <label className="text-md font-medium text-white">
                         {field.label}
                       </label>
                     </div>
@@ -413,6 +463,66 @@ const MediaKitIntro = () => {
                 ))}
               </div>
             )}
+     {currentSlide === 4 && (
+  <div className="space-y-6">
+    {slides[4].fields.map(field => {
+      const fieldName = field.name.split('.')[1]; // Extract the field name after the dot
+      
+      if (field.type === 'image') {
+        return (
+          <ImageUploadCard
+            key={field.name}
+            field={field}
+            value={formData.representation[fieldName]}
+            onChange={(name, file) => setFormData(prev => ({
+              ...prev,
+              representation: {
+                ...prev.representation,
+                [fieldName]: file
+              }
+            }))}
+            onRemove={() => setFormData(prev => ({
+              ...prev,
+              representation: {
+                ...prev.representation,
+                [fieldName]: null
+              }
+            }))}
+          />
+        );
+      }
+      return (
+        <div key={field.name} className="space-y-2">
+          <div className="flex items-center gap-2 mb-1">
+           <p className='text-2xl'>{field.icon}</p>
+            <label className="text-md font-medium text-white">
+              {field.label}
+            </label>
+          </div>
+          {field.description && (
+            <p className="text-sm text-[#888888] mb-2">{field.description}</p>
+          )}
+          <input
+            type="text"
+            value={formData.representation[fieldName] || ''}
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              representation: {
+                ...prev.representation,
+                [fieldName]: e.target.value
+              }
+            }))}
+            placeholder={field.placeholder}
+            className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+          />
+        </div>
+      );
+    })}
+    <p className="text-sm text-[#888888] text-center mt-4">
+      This information helps brands understand your professional representation
+    </p>
+  </div>
+)}
           </motion.div>
         </AnimatePresence>
         <AnimatePresence>
@@ -431,42 +541,47 @@ const MediaKitIntro = () => {
 
         {/* Navigation */}
        {/* Navigation */}
-<div className="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]">
-  <div className="max-w-xl mx-auto flex justify-between">
-  <motion.button
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    onClick={() => currentSlide > 0 && setCurrentSlide(current => current - 1)}
-    className={`px-6 py-3 rounded-xl font-semibold flex items-center gap-2 ${
-      currentSlide === 0
-        ? 'text-[#888888] border-[#333333] cursor-not-allowed'
-        : 'text-[#bcee45] border-[#bcee45]/20 hover:border-[#bcee45]/50'
-    } border`}
-    disabled={currentSlide === 0}
-  >
-    <ArrowLeft className="w-5 h-5" />
-    Back
-  </motion.button>
+       <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#111111]">
+        <div className="max-w-xl mx-auto flex justify-between">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => currentSlide > 0 && setCurrentSlide(current => current - 1)}
+            className={`px-6 py-3 rounded-xl font-semibold flex items-center gap-2 ${
+              currentSlide === 0
+                ? 'text-[#888888] border-[#333333] cursor-not-allowed'
+                : 'text-[#bcee45] border-[#bcee45]/20 hover:border-[#bcee45]/50'
+            } border`}
+            disabled={currentSlide === 0}
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back
+          </motion.button>
 
-  <motion.button
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    onClick={() => {
-      if (isLastSlide) {
-        handleComplete();
-      } else {
-        setCurrentSlide(current => current + 1);
-      }
-    }}
-    className="px-6 py-3 rounded-xl font-semibold flex items-center gap-2 bg-[#bcee45] text-black hover:opacity-90"
-  >
-    {isLastSlide ? 'Complete' : 'Next'}
-    <ArrowRight className="w-5 h-5" />
-  </motion.button>
-</div>
-</div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              if (isLastSlide) {
+                handleComplete();
+              } else {
+                setCurrentSlide(current => current + 1);
+              }
+            }}
+            className={`px-6 py-3 rounded-xl font-semibold flex items-center gap-2 ${
+              isCurrentStepValid()
+                ? 'bg-[#bcee45] text-black hover:opacity-90'
+                : 'bg-[#333333] text-[#888888] cursor-not-allowed'
+            }`}
+            disabled={!isCurrentStepValid()}
+          >
+            {isLastSlide ? 'Complete' : 'Next'}
+            <ArrowRight className="w-5 h-5" />
+          </motion.button>
+        </div>
       </div>
     </div>
+      </div>
   );
 };
 

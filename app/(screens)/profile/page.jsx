@@ -40,15 +40,11 @@ const ProfilePage = () => {
 
   const settingsOptions = [
     { 
-      name: 'Privacy & Security', 
+      name: 'Privacy & Policy', 
       icon: '🔒', 
       link: '/profile/privacy-and-security' 
     },
-    { 
-      name: 'Payment Methods', 
-      icon: '💳', 
-      link: '/profile/payment-methods' 
-    },
+ 
     { 
       name: 'Help & Support', 
       icon: '💡', 
