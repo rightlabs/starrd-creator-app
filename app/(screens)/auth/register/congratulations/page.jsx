@@ -264,14 +264,14 @@ useEffect(() => {
     setShowLoader(true);
     const timer = setInterval(() => {
       setProgress(prev => {
-        if (prev >= 50) {
+        if (prev >= 35) {
           clearInterval(timer);
           document.cookie = "onboardingStep=completed; path=/; max-age=2592000";
 
           setTimeout(() => {
             router.push('/dashboard');
           }, 500);
-          return 50;
+          return 35;
         }
         return prev + 2;
       });

@@ -91,7 +91,7 @@ export const completeOnboarding = async (skipped = false) => {
 
 export const logoutUser = async () => {
   try {
-    const res = await API_INSTANCE.post("/user/logout");
+    const res = await API_INSTANCE.get("/user/logout");
     return res;
   } catch (error) {
     throw error;

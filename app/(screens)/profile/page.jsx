@@ -8,7 +8,7 @@ import ProfileAvatar from '@/components/ProfileAvatar';
 import Link from 'next/link';
 import { LogoutDialog } from '@/components/LogoutDialog';
 import { useRouter } from 'next/navigation';
-import { getUserDetails } from '@/api/user';
+import { getUserDetails, logoutUser } from '@/api/user';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Button } from '@/components/ui/button';
 
@@ -65,9 +65,9 @@ const ConnectedAccounts = ({ socialAccounts = [] }) => {
               <Button
           onClick={() => onConnect(platform.id)}
           variant={connectedAccount ? "outline" : "default"}
-          className={connectedAccount ? 'border-primary text-primary hover:bg-primary/10' : ''}
+          className={connectedAccount ? 'border-primary text-black ' : ''}
         >
-          {connectedAccount ? 'Connected' : 'Connect'}
+          {connectedAccount ? 'Connected' : 'Connect'}  
         </Button>            </div>
 
             {connectedAccount && (
@@ -95,6 +95,7 @@ const ConnectedAccounts = ({ socialAccounts = [] }) => {
 const ProfilePage = () => {
   const router = useRouter();
   const [userData, setUserData] = useState(null);
+  const [basicDetails, setBasicDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
@@ -102,8 +103,10 @@ const ProfilePage = () => {
     const fetchUserData = async () => {
       try {
         const response = await getUserDetails();
+        console.log(response)
         if (response.status === 200) {
-          setUserData(response.data.data.user);
+          setUserData(response.data.data.userData);
+          setBasicDetails(response.data.data.userData.basicDetails);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -120,12 +123,14 @@ const ProfilePage = () => {
       await logoutUser();
       document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       document.cookie = "onboardingStep=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      router.push("/welcome");
+      router.push("/login");
     } catch (error) {
       console.error('Logout failed:', error);
       toast.error('Failed to logout');
     }
   };
+  const coverImageUrl = basicDetails?.coverImage?.url || '/default-cover.jpg';
+  const profileImageUrl = basicDetails?.profilePicture?.url || '/default-avatar.jpg';
 
   if (loading) {
     return (
@@ -154,8 +159,7 @@ const ProfilePage = () => {
       {/* Cover Image Section */}
       <div className="relative h-72">
         <Image
-          src="/welcome-2.jpg"
-          alt="Cover Image"
+          src={coverImageUrl}
           className="object-cover w-full h-full brightness-75"
           width={1200}
           height={400}
@@ -181,7 +185,7 @@ const ProfilePage = () => {
 >
 <ProfileAvatar
             completion={userData?.completionStatus?.totalCompletion || 0}
-            image="/welcome-1.jpg"
+            image={profileImageUrl}
           />
 </motion.div></motion.div>
 

@@ -172,8 +172,8 @@ const PersonalInfoV2 = () => {
     const fetchUserData = async () => {
       try {
         const response = await getUserDetails();
-        if (response.status === 200 && response.data?.data?.user) {
-          const userData = response.data.data.user;
+        if (response.status === 200 && response.data?.data?.userData) {
+          const userData = response.data.data.userData;
           setFormData({
             firstName: userData.firstName || '',
             lastName: userData.lastName || '',

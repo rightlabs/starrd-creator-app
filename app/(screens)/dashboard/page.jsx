@@ -19,8 +19,11 @@ const DashboardPage = () => {
     const fetchUserData = async () => {
       try {
         const response = await getUserDetails();
+        console.log("ressss",response)
+
         if (response.status === 200) {
-          setUserData(response.data.data.user);
+          console.log("hello")
+          setUserData(response.data.data.userData);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -42,7 +45,7 @@ const DashboardPage = () => {
 
   // Calculate remaining media kit steps
   const totalMediaKitSteps = 6;
-  const remainingSteps = totalMediaKitSteps - (userData?.mediaKitPercentage || 0) / (50 / totalMediaKitSteps);
+  const remainingSteps = userData.mediaKitCompletionStep;
 
   // Calculate total completion percentage
   const totalCompletion = userData?.completionStatus?.totalCompletion || 0;
@@ -124,7 +127,9 @@ const DashboardPage = () => {
                 Media Kit Completion
               </h3>
               <p className="text-sm text-[#888888]">
-                {remainingSteps} steps remaining to complete your profile
+             {
+              remainingSteps === 6 ? `Congrats! You have completed all steps.` : `You have completed ${remainingSteps} steps out of ${totalMediaKitSteps}.`
+             }  
               </p>
             </div>
 
@@ -162,7 +167,7 @@ const DashboardPage = () => {
             <div className="flex justify-between text-sm text-[#888888]">
               <span>Progress</span>
               <span>
-                {totalMediaKitSteps - remainingSteps}/{totalMediaKitSteps} steps ✅
+                { remainingSteps}/{totalMediaKitSteps} steps ✅
               </span>
             </div>
             <div className="w-full bg-white/5 rounded-full h-2">

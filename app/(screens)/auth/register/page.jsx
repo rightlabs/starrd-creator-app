@@ -42,6 +42,8 @@ const AuthPage = () => {
       try {
         const response = await fetch('https://api.ipapi.com/check?access_key=' + process.env.NEXT_PUBLIC_IP_API_KEY);
         const data = await response.json();
+
+        console.log("res",data)
         setIsIndianUser(data.country_code === 'IN');
       } catch (error) {
         console.error('Error detecting location:', error);
@@ -221,7 +223,7 @@ const AuthPage = () => {
             <div className="space-y-6 text-primary">
               <h1 className="text-4xl font-bold mb-8 text-white">Get started</h1>
 
-              {isIndianUser ? (
+              {!isIndianUser ? (
                 // Show phone auth for Indian users
                 !showOTP ? (
                   <>

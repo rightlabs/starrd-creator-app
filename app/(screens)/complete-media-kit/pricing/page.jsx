@@ -1,13 +1,31 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Package, Plus, X, ChevronDown } from 'lucide-react';
+import { ArrowRight, Package, Plus, X, ChevronDown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StepCompletion } from '@/components/MediaKitStepCompletion';
 import { useRouter } from 'next/navigation';
 import EnhancedHeader from '@/components/MediaKitHeader';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { 
+  getMediaKitPackages, 
+  addMediaKitPackage, 
+  deleteMediaKitPackage 
+} from '@/api/mediaKit';
 
+// Keep existing constants
 const TOTAL_STEPS = 6;
 const CURRENT_STEP = 5;
 
@@ -15,10 +33,11 @@ const INITIAL_PACKAGE = {
   name: '',
   price: '',
   deliverables: [],
-  customFields: [], // Added customFields array
+  customFields: [],
   openToBarter: false
 };
 
+// Keep existing DELIVERABLE_OPTIONS
 const DELIVERABLE_OPTIONS = [
   { value: 'story', label: 'Story' },
   { value: 'reel', label: 'Reel' },
@@ -26,13 +45,12 @@ const DELIVERABLE_OPTIONS = [
   { value: 'shoot', label: 'Shoot (8 hours)' }
 ];
 
-// Custom Field Input Component
-const CustomFieldInput = ({ onAdd = () => {}, onRemove = () => {}, fields = [] }) => {
+
+const CustomFieldInput = ({ onAdd = () => {}, onRemove = () => {}, fields = [], disabled }) => {
   const [label, setLabel] = useState('');
   const [value, setValue] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleAdd = () => {
     if (label.trim() && value.trim()) {
       onAdd({ label: label.trim(), value: value.trim() });
       setLabel('');
@@ -42,7 +60,7 @@ const CustomFieldInput = ({ onAdd = () => {}, onRemove = () => {}, fields = [] }
 
   return (
     <div className="space-y-4">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-4">
         <div className="flex gap-4">
           <div className="flex-1">
             <input
@@ -51,6 +69,7 @@ const CustomFieldInput = ({ onAdd = () => {}, onRemove = () => {}, fields = [] }
               onChange={(e) => setLabel(e.target.value)}
               placeholder="Enter field label"
               className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+              disabled={disabled}
             />
           </div>
           <div className="flex-1">
@@ -59,20 +78,22 @@ const CustomFieldInput = ({ onAdd = () => {}, onRemove = () => {}, fields = [] }
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder="Enter value"
-              className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+              className="w-full px-4 py-3 bg-[#1A1A1A] rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
+              disabled={disabled}
             />
           </div>
           <Button
-            type="submit"
+            type="button"
             variant="ghost"
             size="icon"
-            className="text-[#bcee45] hover:bg-[#bcee45]/10"
-            disabled={!label.trim() || !value.trim()}
+            onClick={handleAdd}
+            className="text-[#bcee45] bg-[#bcee45]/10 mt-2 text-2xl"
+            disabled={!label.trim() || !value.trim() || disabled}
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-8 h-8" />
           </Button>
         </div>
-      </form>
+      </div>
       
       {fields.length > 0 && (
         <div className="space-y-2">
@@ -94,6 +115,7 @@ const CustomFieldInput = ({ onAdd = () => {}, onRemove = () => {}, fields = [] }
                 size="icon"
                 onClick={() => onRemove(index)}
                 className="text-[#bcee45] hover:bg-[#bcee45]/10"
+                disabled={disabled}
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -158,16 +180,17 @@ const CustomSelect = ({ onChange, options, placeholder }) => {
   );
 };
 
-const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
+const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE, isSubmitting }) => {
   const [formData, setFormData] = useState({
     ...initialData,
-    customFields: initialData.customFields || [] // Ensure customFields is initialized
+    customFields: initialData.customFields || []
   });
+  
   const handleDeliverableSelect = (option) => {
-    if (!formData.deliverables.includes(option.label)) {
+    if (!formData.deliverables.includes(option.value)) {
       setFormData(prev => ({
         ...prev,
-        deliverables: [...prev.deliverables, option.label]
+        deliverables: [...prev.deliverables, option.value]
       }));
     }
   };
@@ -203,9 +226,10 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
           className="w-full px-4 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
           placeholder="e.g., Basic Package"
+          disabled={isSubmitting}
         />
       </div>
-
+  
       {/* Price */}
       <div>
         <label className="text-md font-medium text-white block mb-2">
@@ -220,10 +244,11 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
             onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
             className="w-full px-8 py-3 bg-[#1A1A1A]/60 rounded-xl border-2 border-[#bcee45]/20 text-white placeholder:text-[#888888] focus:border-[#bcee45] transition-colors outline-none"
             placeholder="5,000 - 10,000"
+            disabled={isSubmitting}
           />
         </div>
       </div>
-
+  
       {/* Open to Barter */}
       <div>
         <label className="text-md font-medium text-white block mb-2">
@@ -233,6 +258,7 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
           <button
             type="button"
             onClick={() => setFormData(prev => ({ ...prev, openToBarter: true }))}
+            disabled={isSubmitting}
             className={`flex-1 py-3 rounded-xl border-2 transition-colors ${
               formData.openToBarter
                 ? 'border-[#bcee45] bg-[#bcee45]/10 text-white'
@@ -244,6 +270,7 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
           <button
             type="button"
             onClick={() => setFormData(prev => ({ ...prev, openToBarter: false }))}
+            disabled={isSubmitting}
             className={`flex-1 py-3 rounded-xl border-2 transition-colors ${
               !formData.openToBarter
                 ? 'border-[#bcee45] bg-[#bcee45]/10 text-white'
@@ -254,7 +281,7 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
           </button>
         </div>
       </div>
-
+  
       {/* Deliverables */}
       <div>
         <InputField label="Deliverables">
@@ -262,19 +289,23 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
             onChange={handleDeliverableSelect}
             options={DELIVERABLE_OPTIONS}
             placeholder="Select deliverable"
+            disabled={isSubmitting}
           />
         </InputField>
-
+  
         <div className="space-y-2 mt-4">
           {formData.deliverables.map((deliverable, index) => (
             <div key={index} className="flex items-center justify-between bg-[#1A1A1A]/30 px-4 py-2 rounded-lg">
-              <span className="text-white">{deliverable}</span>
+              <span className="text-white">
+                {DELIVERABLE_OPTIONS.find(opt => opt.value === deliverable)?.label || deliverable}
+              </span>
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
                 onClick={() => removeDeliverable(deliverable)}
                 className="text-[#bcee45] hover:bg-[#bcee45]/10"
+                disabled={isSubmitting}
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -282,24 +313,24 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
           ))}
         </div>
       </div>
-
-      {/* Custom Fields */}
+  
       <div className="mt-6">
-        <label className="text-md font-medium text-white block mb-2">
-          Custom Fields
-        </label>
-        <CustomFieldInput
-          fields={formData.customFields}
-          onAdd={(field) => setFormData(prev => ({
-            ...prev,
-            customFields: [...(prev.customFields || []), field]
-          }))}
-          onRemove={(index) => setFormData(prev => ({
-            ...prev,
-            customFields: prev.customFields.filter((_, i) => i !== index)
-          }))}
-        />
-      </div>
+  <label className="text-md font-medium text-white block mb-2">
+    Custom Fields
+  </label>
+  <CustomFieldInput
+    fields={formData.customFields}
+    onAdd={(field) => setFormData(prev => ({
+      ...prev,
+      customFields: [...(prev.customFields || []), field]
+    }))}
+    onRemove={(index) => setFormData(prev => ({
+      ...prev,
+      customFields: prev.customFields.filter((_, i) => i !== index)
+    }))}
+    disabled={isSubmitting}
+  />
+</div>
 
       {/* Actions */}
       <div className="flex justify-end gap-3 pt-4">
@@ -307,16 +338,24 @@ const PackageForm = ({ onSubmit, onCancel, initialData = INITIAL_PACKAGE }) => {
           type="button"
           variant="outline"
           onClick={onCancel}
+          disabled={isSubmitting}
           className="border-[#bcee45]/20 text-[#bcee45] hover:border-[#bcee45]/40"
         >
           Cancel
         </Button>
         <Button
           type="submit"
-          className="bg-[#bcee45] text-black hover:bg-[#bcee45]/90"
-          disabled={!formData.name || !formData.price || formData.deliverables.length === 0}
+          disabled={!formData.name || !formData.price || formData.deliverables.length === 0 || isSubmitting}
+          className="min-w-[140px] bg-[#bcee45] text-black hover:bg-[#bcee45]/90"
         >
-          Add Package
+          {isSubmitting ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Adding...</span>
+            </div>
+          ) : (
+            'Add Package'
+          )}
         </Button>
       </div>
     </motion.form>
@@ -337,14 +376,39 @@ const PackageCard = ({ package: pkg, onDelete }) => (
           <span className="text-sm text-[#bcee45]/80 mt-1">Open to Barter</span>
         )}
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => onDelete(pkg.id)}
-        className="text-[#bcee45] hover:bg-[#bcee45]/10"
-      >
-        <X className="w-5 h-5" />
-      </Button>
+      
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-[#bcee45] hover:bg-[#bcee45]/10"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent className="bg-card border-primary/20">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">
+              Delete Package
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              Are you sure you want to delete this package? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-[#bcee45]/20 text-[#bcee45] hover:border-[#bcee45]/40">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => onDelete(pkg._id)}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
     
     {/* Deliverables */}
@@ -352,7 +416,7 @@ const PackageCard = ({ package: pkg, onDelete }) => (
       {pkg.deliverables.map((deliverable, index) => (
         <div key={index} className="flex items-center gap-2 text-white">
           <div className="w-1.5 h-1.5 rounded-full bg-[#bcee45]" />
-          {deliverable}
+          {DELIVERABLE_OPTIONS.find(opt => opt.value === deliverable)?.label || deliverable}
         </div>
       ))}
     </div>
@@ -377,30 +441,78 @@ export default function PricingPage() {
   const [isAdding, setIsAdding] = useState(false);
   const [packages, setPackages] = useState([]);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (packageData) => {
-    // Update this function in PricingPage component
-    setPackages(prev => [...prev, { 
-      ...packageData,
-      id: Date.now(),
-      customFields: packageData.customFields || [] // Explicitly ensure customFields exists
-    }]);
-    setIsAdding(false);
+  useEffect(() => {
+    fetchPackages();
+  }, []);
+
+  const fetchPackages = async () => {
+    try {
+      setLoading(true);
+      const response = await getMediaKitPackages();
+      if (response.statusCode === 200) {
+        setPackages(response.data.items);
+      }
+    } catch (err) {
+      toast.error("Failed to load packages");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = (id) => {
-    setPackages(prev => prev.filter(p => p.id !== id));
+  const handleSubmit = async (packageData) => {
+    try {
+      setIsSubmitting(true);
+      console.log("packageData", packageData);
+      const response = await addMediaKitPackage(packageData);
+      if (response.statusCode === 201) {
+        setPackages(prev => [response.data.package, ...prev]);
+        setIsAdding(false);
+        toast.success("Package added successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to add package");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (packageId) => {
+    try {
+      const response = await deleteMediaKitPackage(packageId);
+      if (response.statusCode === 200) {
+        setPackages(prev => prev.filter(p => p._id !== packageId));
+        toast.success("Package deleted successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to delete package");
+    }
   };
 
   const handleComplete = () => {
     if (packages.length > 0) {
       setShowCompletion(true);
+    } else {
+      toast.error("Please add at least one package");
     }
   };
 
   const handleBack = () => {
-    router.push('/dashboard');
+    router.push('/complete-media-kit/collaborations');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F] flex items-center justify-center">
+        <div className="flex items-center gap-2 text-[#bcee45]">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span className="text-lg">Loading packages...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#111111] to-[#0F0F0F]">
@@ -448,11 +560,12 @@ export default function PricingPage() {
             <PackageForm
               onSubmit={handleSubmit}
               onCancel={() => setIsAdding(false)}
+              isSubmitting={isSubmitting}
             />
           )}
           {packages.map(pkg => (
             <PackageCard
-              key={pkg.id}
+              key={pkg._id}
               package={pkg}
               onDelete={handleDelete}
             />
@@ -464,25 +577,25 @@ export default function PricingPage() {
           <Button
             onClick={handleComplete}
             disabled={packages.length === 0}
-            className="gap-2"
-          >
-            Continue
-            <ArrowRight className="w-5 h-5" />
-          </Button>
-        </div>
-
-        {/* Completion Modal */}
-        <AnimatePresence>
-          {showCompletion && (
-            <StepCompletion
-              onClose={() => setShowCompletion(false)}
-              onContinue={() => {
-                window.location.href = '/complete-media-kit/personal-info';
-              }}
-            />
-          )}
-        </AnimatePresence>
-      </main>
-    </div>
-  );
-}
+            className="gap-2 bg-[#bcee45] text-black hover:bg-[#bcee45]/90"
+            >
+              Continue
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+  
+          {/* Completion Modal */}
+          <AnimatePresence>
+            {showCompletion && (
+              <StepCompletion
+                onClose={() => setShowCompletion(false)}
+                onContinue={() => {
+                  router.push('/complete-media-kit/personal-info');
+                }}
+              />
+            )}
+          </AnimatePresence>
+        </main>
+      </div>
+    );
+  }

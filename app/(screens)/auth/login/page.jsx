@@ -218,7 +218,7 @@ const handleVerifyOTP = async () => {
             <div className="space-y-6 text-primary">
               <h1 className="text-4xl font-bold mb-8 text-white">Welcome back</h1>
 
-              {isIndianUser ? (
+              {!isIndianUser ? (
                 // Phone auth for Indian users
                 !showOTP ? (
                   <>
